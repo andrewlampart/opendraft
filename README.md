@@ -125,14 +125,15 @@ See `engine/README.md` for detailed API documentation.
 
 ## Which AI Model Should I Use?
 
-| Model | Speed | Quality | Cost | Best For |
-|-------|-------|---------|------|----------|
-| **Gemini 2.5 Flash** | ⚡ Fast | Good | FREE | Most users |
-| Gemini 2.5 Pro | Medium | Excellent | ~$0.50/draft | Important papers |
-| Claude 3.5 Sonnet | Medium | Excellent | ~$1/draft | Nuanced writing |
-| GPT-4o | Medium | Excellent | ~$1/draft | OpenAI users |
+| Model | Speed | Quality | Cost/Draft | Best For |
+|-------|-------|---------|------------|----------|
+| **Gemini 3 Flash** | ⚡ Fast | Good | ~$0.35 | Most users |
+| Gemini 3 Pro | Medium | Excellent | ~$1.40 | Important papers |
+| GPT-5.2 | Medium | Excellent | ~$1.60 | OpenAI users |
+| Claude Sonnet 4.5 | Medium | Excellent | ~$1.80 | Nuanced writing |
+| Claude Opus 4.5 | Slow | Best | ~$3.00 | Maximum quality |
 
-**Recommendation:** Start with Gemini 2.5 Flash (free tier). Upgrade only if needed.
+**Recommendation:** Start with Gemini 3 Flash for most use cases. Use Gemini 3 Pro or Claude Sonnet 4.5 for important papers.
 
 ---
 
@@ -169,7 +170,7 @@ opendraft/
 
 ### Is this really free?
 
-**Yes.** OpenDraft is 100% open source under the MIT license. Self-host with your own API keys. Google Gemini has a generous free tier.
+**Yes.** OpenDraft is 100% open source under the MIT license. Self-host with your own API keys. A typical thesis draft costs ~$0.35-$3 depending on the model.
 
 ### Is this better than ChatGPT for thesis writing?
 
@@ -208,7 +209,7 @@ Most AI tools use a single model. OpenDraft uses **19 specialized agents**—one
 ## Tech Stack
 
 - **Engine:** Python 3.10+, multi-agent orchestration
-- **Models:** Google Gemini, Anthropic Claude, OpenAI GPT-4
+- **Models:** Google Gemini 3, Anthropic Claude 4.5, OpenAI GPT-5
 - **Citations:** CrossRef API, Semantic Scholar API, arXiv API
 - **Export:** WeasyPrint (PDF), python-docx (Word)
 

@@ -48,12 +48,10 @@ class ModelConfig:
     def __post_init__(self):
         """Validate model configuration."""
         valid_models = [
-            'gemini-3-pro-preview',  # Latest preview (Gemini 3)
-            'gemini-2.5-flash',
-            'gemini-2.5-pro',
-            'gemini-2.0-flash-exp',  # Legacy support
-            'gemini-1.5-flash',
-            'gemini-1.5-pro'
+            'gemini-3-pro-preview',  # Default - highest quality
+            'gemini-3-flash',        # Fast, cost-effective
+            'gemini-2.5-flash',      # Legacy
+            'gemini-2.5-pro',        # Legacy
         ]
         if self.provider == 'gemini' and self.model_name not in valid_models:
             raise ValueError(
