@@ -2,35 +2,21 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are currently being supported with security updates.
-
-| Version | Supported          |
-| ------- | ------------------ |
-| Latest  | :white_check_mark: |
+| Version | Supported |
+| ------- | --------- |
+| Latest  | ✅ Yes    |
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities to: security@opendraft.xyz
+Please report security vulnerabilities via [GitHub's private vulnerability reporting](https://github.com/federicodeponte/opendraft/security/advisories/new).
 
-We will respond within 24 hours and provide updates every 72 hours until resolution.
+We will respond within 48 hours.
 
-## Security Features
+## Security Best Practices
 
-This repository has the following security features enabled:
+When using OpenDraft:
 
-- ✅ Secret scanning with push protection
-- ✅ Dependency vulnerability scanning  
-- ✅ Automated security updates
-- ✅ Private vulnerability reporting
-- ✅ Code scanning with CodeQL
-
-## Development Security
-
-All developers must:
-
-1. Use branch protection rules
-2. Enable 2FA on GitHub accounts
-3. Sign commits with GPG keys
-4. Never commit secrets or API keys
-5. Run security scans before merging
+1. Never commit API keys - use `.env` files (gitignored)
+2. Review generated content before publishing
+3. Verify citations independently
 
