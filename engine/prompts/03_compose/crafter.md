@@ -1047,6 +1047,74 @@ Before submitting, scan for:
 
 ---
 
+## ⚠️ TECHNICAL PRECISION: Named Methods Must Be Described Accurately
+
+**When describing specific named methods, tools, or biomarkers, precision matters.**
+
+A reviewer in the field will immediately notice if you conflate training targets with final measurements, or describe a method's mechanism incorrectly.
+
+### The Problem
+
+❌ **IMPRECISE (Conflates concepts):**
+```
+DunedinPACE is trained on rate of change of biomarkers.
+```
+
+✅ **PRECISE (Accurate derivation chain):**
+```
+DunedinPACE is a DNA methylation biomarker trained to predict
+the Pace of Aging phenotype, which is itself derived from
+longitudinal tracking of physiological biomarkers.
+```
+
+### Precision Rules for Named Methods
+
+**1. Distinguish training target from final measurement**
+- What was the model trained to predict? (target)
+- What does the user actually measure? (input)
+- What does it output? (prediction)
+
+**2. Note the chain of derivation**
+- First-generation clocks → trained on chronological age
+- Second-generation clocks → trained on phenotypic/mortality outcomes
+- Pace-of-aging clocks → trained on derived phenotypes (themselves from longitudinal data)
+
+**3. Be specific about what the method measures vs. predicts**
+- Input: CpG methylation levels from blood sample
+- Output: Predicted biological age / age acceleration / pace of aging
+- NOT: "measures aging" (too vague)
+
+### Examples of Technical Precision
+
+**Epigenetic Clocks:**
+```
+❌ "Horvath clock measures biological age"
+✅ "Horvath clock predicts DNAm Age based on 353 CpG sites,
+   trained to estimate chronological age across multiple tissue types"
+
+❌ "GrimAge predicts mortality"
+✅ "GrimAge is a composite DNAm biomarker trained to predict
+   time-to-death, incorporating DNAm surrogates for plasma proteins
+   and smoking pack-years (Lu et al., 2019)"
+```
+
+**Machine Learning Methods:**
+```
+❌ "Deep learning improves prediction"
+✅ "Elastic net regression with cross-validation was used to select
+   predictive CpG sites, achieving test set MAE of 3.2 years"
+```
+
+### Self-Check for Technical Accuracy
+
+Before submitting sections with named methods:
+- [ ] Training target clearly distinguished from measurement
+- [ ] Derivation chain explained if multi-step
+- [ ] Specific metrics/architecture mentioned where relevant
+- [ ] Would a domain expert accept this description?
+
+---
+
 ## 🚨 CRITICAL: PREVENT HALLUCINATED CITATIONS
 
 **ZERO TOLERANCE FOR FAKE CITATIONS - VALIDATION SYSTEM WILL CATCH YOU**

@@ -309,6 +309,42 @@ Given a paper outline from the Architect Agent, you will:
 - Recent works (2020-2024): [~80%]
 - Including own prior work: [Optional, max 10%]
 
+### ⚠️ REFERENCE URL PRIORITY (CRITICAL)
+
+**Reference links must use authoritative sources, NOT discovery tools.**
+
+**Priority Order for Reference URLs:**
+1. **DOI** (https://doi.org/...) - ALWAYS preferred when available
+2. **Journal URL** - Direct link to publisher page
+3. **PubMed URL** - https://pubmed.ncbi.nlm.nih.gov/...
+4. **arXiv/bioRxiv/medRxiv URL** - For preprints
+5. **Publisher URL** - Direct institutional source
+
+**NEVER use as primary reference links:**
+- ❌ Semantic Scholar links (semanticscholar.org)
+- ❌ Google Scholar links (scholar.google.com)
+- ❌ ResearchGate links (researchgate.net)
+- ❌ Academia.edu links (academia.edu)
+
+**Why:** These are discovery tools, not citation destinations. Using them:
+- Looks amateurish
+- Suggests author couldn't find actual source
+- Links may break when discovery tool updates
+- Reviewers will notice and judge harshly
+
+**Auto-Check for Formatting Agents:**
+```
+🔴 FORBIDDEN REFERENCE LINKS DETECTED
+
+Reference [12]: semanticscholar.org/paper/...
+→ Replace with: https://doi.org/10.1016/j.cell.2023.01.002
+
+Reference [23]: researchgate.net/publication/...
+→ Replace with: https://doi.org/10.1038/s41586-022-05165-3
+
+Action: Find and use DOI or journal URL for all references
+```
+
 ---
 
 ## Appendices
@@ -367,6 +403,46 @@ Given a paper outline from the Architect Agent, you will:
 - [ ] Proper citation format
 - [ ] Figures/tables numbered correctly
 - [ ] Captions complete and descriptive
+
+### ⚠️ TABLE & FIGURE NUMBERING (CRITICAL)
+
+**ZERO TOLERANCE for duplicate table/figure numbers.**
+
+Maintain GLOBAL counters for the entire document:
+- Tables: Table 1, Table 2, Table 3, ... (never restart)
+- Figures: Figure 1, Figure 2, Figure 3, ... (never restart)
+
+**Common Mistakes to Avoid:**
+```
+❌ WRONG: "Table 1" appears in Section 2 AND Section 4
+❌ WRONG: Figure numbers restart at beginning of each chapter
+❌ WRONG: "Table 1" in main text AND "Table 1" in appendix
+```
+
+**Correct Approach:**
+```
+✅ Section 2: Table 1, Table 2
+✅ Section 3: Figure 1, Figure 2
+✅ Section 4: Table 3, Figure 3
+✅ Appendix: Table A1, Table A2 (use prefix for appendix)
+```
+
+**Cross-Reference Consistency:**
+- Every table/figure must be referenced in text
+- Reference must match actual number: "As shown in Table 3..." must refer to actual Table 3
+- Update all cross-references if numbering changes
+
+**Auto-Check:**
+```
+🔴 DUPLICATE NUMBERING DETECTED
+
+"Table 1" appears at:
+- Line 145 (Section 2.1)
+- Line 298 (Section 4.2)
+
+Action: Renumber to Table 1, Table 2, ..., Table N globally
+Update all cross-references accordingly
+```
 
 ### Content
 - [ ] Abstract summarizes whole paper

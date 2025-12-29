@@ -115,6 +115,114 @@ If any answer is "no" → Soften the claim.
 
 ---
 
+## ⚠️ REPETITION DETECTION
+
+**Varied vocabulary demonstrates command of subject matter. Repetition signals lazy writing.**
+
+### Phrase Frequency Scan
+
+Build a frequency map for the document and flag:
+- Any phrase (3+ words) appearing more than twice
+- Overused single words appearing more than 5x per page
+
+### Commonly Overused Academic Words
+
+Watch especially for these "crutch" words:
+- "significant" / "significantly" - often used without statistical meaning
+- "important" / "importantly"
+- "notable" / "notably"
+- "major" / "mainly"
+- "clearly" / "obviously" (weak hedges)
+- "interesting" / "interestingly"
+
+### Repetition Detection Output
+
+```
+🔴 REPETITION DETECTED
+
+Phrase: "significant major change"
+- Line 45, Line 123, Line 267
+→ Vary to: "substantial shift," "notable transformation," "marked evolution"
+
+Word: "significant" (12 occurrences)
+- Lines: 23, 45, 67, 89, 112, 134, 156, 178, 201, 223, 245, 267
+→ Vary with: "substantial," "considerable," "notable," "marked," "appreciable"
+
+Total repeated phrases: 5
+Total overused words: 3
+Action: Vary vocabulary to demonstrate subject matter command
+```
+
+### Self-Check
+
+Before finalizing:
+- [ ] No phrase (3+ words) appears more than twice
+- [ ] No "crutch" words appear more than 5x per page
+- [ ] Vocabulary varies across sections
+
+---
+
+## ⚠️ GRAMMAR CONSISTENCY
+
+**Subject-verb agreement and tense consistency are non-negotiable.**
+
+### Critical Grammar Checks
+
+**1. Subject-Verb Agreement with Collective Nouns**
+```
+❌ "The data shows a clear trend"
+✅ "The data show a clear trend" (data is plural in academic writing)
+
+❌ "The team were divided"
+✅ "The team was divided" (team is singular in US English)
+```
+
+**2. Tense Consistency Within Sections**
+- Introduction: Present tense ("X is a challenge")
+- Literature Review: Past tense ("Smith (2020) found...")
+- Methods: Past tense ("We collected data...")
+- Results: Past tense ("Analysis revealed...")
+- Discussion: Present tense ("These findings suggest...")
+
+**3. "Which" vs "That"**
+```
+❌ "Methods which improve accuracy"
+✅ "Methods that improve accuracy" (restrictive clause)
+
+✅ "The Horvath clock, which was developed in 2013, remains widely used"
+   (non-restrictive clause - commas + which)
+```
+
+**4. Parallel Structure**
+```
+❌ "The study aims to identify biomarkers, validating their accuracy, and to assess clinical utility"
+✅ "The study aims to identify biomarkers, validate their accuracy, and assess clinical utility"
+```
+
+### Grammar Check Output
+
+```
+🔴 GRAMMAR ISSUES DETECTED
+
+**Line 47:** Subject-verb agreement
+"The model perform well" → "The model performs well"
+
+**Line 103:** Data plurality
+"data was collected" → "data were collected"
+
+**Lines 45-67:** Tense inconsistency
+Introduction mixes present and past tense
+→ Standardize to present tense for current state discussion
+
+**Line 234:** Which/that error
+"Methods which improve" → "Methods that improve"
+
+Total grammar issues: 8
+Action: Fix all before submission
+```
+
+---
+
 ## Output Format
 
 ```markdown
