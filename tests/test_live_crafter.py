@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""
+Live test for TICKET-001 and TICKET-002
+
+Runs the crafter agent with methodology and analysis requests,
+then checks output for forbidden/required patterns.
+
+Run with: cd /Users/federicodeponte/opendraft && python tests/test_live_crafter.py
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Project root
+PROJECT_ROOT = Path(__file__).parent.parent
+
+# Load environment with override to ensure fresh values
+from dotenv import load_dotenv
+load_dotenv(PROJECT_ROOT / ".env", override=True)
+load_dotenv(PROJECT_ROOT / ".env.local", override=True)
+
+import google.generativeai as genai
+
+
+def load_prompt(prompt_path: str) -> str:
+    """Load prompt file"""
+    path = PROJECT_ROOT / prompt_path
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()
+
+
+def setup_model():
+    """Setup Gemini model"""
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("No API key found")
+    genai.configure(api_key=api_key)
+    model_name = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+    return genai.GenerativeModel(model_name)
+
+# TICKET-001: Forbidden methodology phrases
+FORBIDDEN_METHODOLOGY = [
+    "systematic review was conducted",
+    "following PRISMA guidelines",
+    "PRISMA flow",
+    "records identified",
+    "records screened",
+    "duplicates removed (n=",
+    "inter-rater reliability",
+]
+
+# TICKET-002: Required analysis elements
+REQUIRED_ANALYSIS = [
+    # At least one of these metric types
+    ("HR", "AUC", "r²", "r=", "CI", "n=", "p<", "p =", "effect size", "Cohen"),
+]
+
+
+def run_crafter_test(test_name: str, user_input: str, checks: dict) -> bool:
+    """Run crafter with input and check output"""
+    print(f"\n{'='*60}")
+    print(f"LIVE TEST: {test_name}")
+    print("="*60)
+
+    try:
+        # Setup model
+        model = setup_model()
+
+        # Load crafter prompt
+        prompt = load_prompt("engine/prompts/03_compose/crafter.md")
+        full_prompt = f"{prompt}\n\n---\n\nUser Request:\n{user_input}"
+
+        print("  Running crafter agent...")
+        response = model.generate_content(full_prompt)
+        output = response.text
+
+        print(f"  Output length: {len(output)} chars")
+        print(f"  Preview: {output[:300]}...")
+
+        # Check forbidden phrases
+        all_passed = True
+
+        if "forbidden" in checks:
+            print("\n  Checking for forbidden phrases...")
+            found_forbidden = []
+            for phrase in checks["forbidden"]:
+                if phrase.lower() in output.lower():
+                    found_forbidden.append(phrase)
+
+            if found_forbidden:
+                print(f"  ❌ FAIL: Found forbidden phrases: {found_forbidden}")
+                all_passed = False
+            else:
+                print("  ✅ PASS: No forbidden phrases found")
+
+        # Check required phrases (at least one from each group)
+        if "required_any" in checks:
+            print("\n  Checking for required elements...")
+            for phrase_group in checks["required_any"]:
+                found = any(p.lower() in output.lower() for p in phrase_group)
+                if found:
+                    print(f"  ✅ PASS: Found metric/data element from {phrase_group[:3]}...")
+                else:
+                    print(f"  ❌ FAIL: Missing metrics - need one of {phrase_group}")
+                    all_passed = False
+
+        # Check for tables
+        if checks.get("require_table"):
+            print("\n  Checking for comparison table...")
+            has_table = "|" in output and "---" in output
+            if has_table:
+                print("  ✅ PASS: Found markdown table")
+            else:
+                print("  ⚠️  WARNING: No markdown table found (may still be valid)")
+
+        return all_passed
+
+    except Exception as e:
+        print(f"  ❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
+def main():
+    print("\n" + "="*60)
+    print("LIVE CRAFTER TESTS - TICKET-001 & TICKET-002")
+    print("="*60)
+
+    results = {}
+
+    # Test 1: Methodology section (TICKET-001)
+    results["methodology"] = run_crafter_test(
+        "Methodology Section (TICKET-001)",
+        """
+        Write a methodology section for a literature review paper on:
+        "Machine learning approaches to cancer detection"
+
+        The paper includes 42 academic sources from Semantic Scholar and CrossRef.
+        Search terms: "machine learning cancer", "deep learning oncology", "AI tumor detection"
+        Date range: 2019-2024.
+        This is a narrative review, not a systematic review.
+        """,
+        checks={
+            "forbidden": FORBIDDEN_METHODOLOGY,
+        }
+    )
+
+    # Test 2: Analysis section (TICKET-002)
+    results["analysis"] = run_crafter_test(
+        "Analysis Section (TICKET-002)",
+        """
+        Write a results/analysis section comparing machine learning models for cancer detection.
+
+        Include findings from these papers:
+        - Smith et al. (2023): CNN achieved AUC 0.94 (n=1,200 patients)
+        - Chen et al. (2022): Random Forest achieved AUC 0.87 (n=800 patients)
+        - Kumar et al. (2024): Transformer model achieved AUC 0.96 (n=2,500 patients)
+
+        Create a comparison table and synthesize the findings.
+        """,
+        checks={
+            "required_any": REQUIRED_ANALYSIS,
+            "require_table": True,
+        }
+    )
+
+    # Summary
+    print("\n" + "="*60)
+    print("SUMMARY")
+    print("="*60)
+
+    passed = sum(1 for r in results.values() if r)
+    failed = len(results) - passed
+
+    for name, result in results.items():
+        status = "✅ PASS" if result else "❌ FAIL"
+        print(f"  {status}: {name}")
+
+    print(f"\n  Total: {passed} passed, {failed} failed")
+
+    return 0 if failed == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
