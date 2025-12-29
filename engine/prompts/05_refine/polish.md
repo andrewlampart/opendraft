@@ -47,6 +47,74 @@ Final polish:
 
 ---
 
+## ⚠️ CRITICAL: CLAIM CALIBRATION (Epistemic Humility)
+
+**Academic writing requires confidence that matches evidence strength.**
+
+Marketing-style language destroys academic credibility. Scan and soften overconfident claims.
+
+### Banned Phrases (Auto-Replace)
+
+| ❌ Overconfident | ✅ Calibrated Replacement |
+|------------------|---------------------------|
+| "indisputable" | "strong evidence suggests" |
+| "proves conclusively" | "provides strong support for" |
+| "without doubt" | "with high confidence" |
+| "the only" | "among the few" / "a primary" |
+| "the best" | "among the strongest" / "highly effective" |
+| "revolutionary" | "represents significant advancement" |
+| "paradigm shift" | "important development" (unless citing Kuhn) |
+| "always" | "in most studied contexts" / "consistently" |
+| "never" | "rarely" / "in no observed cases" |
+| "perfect" | "highly accurate" / "near-optimal" |
+| "solves" | "addresses" / "substantially mitigates" |
+| "proves" | "supports" / "demonstrates" |
+
+### Calibration Rules
+
+**Rule 1: Match confidence to evidence**
+- Strong evidence (multiple RCTs, meta-analyses) → Can use confident language
+- Moderate evidence (observational studies) → Use hedged language
+- Weak evidence (single study, pilot) → Must hedge heavily
+
+**Rule 2: Absolute claims need absolute evidence**
+- "Always works" requires evidence across ALL contexts
+- "The best" requires comparison to ALL alternatives
+- If you can't prove "all," don't claim "all"
+
+**Rule 3: Comparative claims need comparisons**
+- "Superior performance" → Superior to what? By how much?
+- "Significant improvement" → Statistically significant? Effect size?
+
+### Overconfidence Detection Pattern
+
+```
+🔴 OVERCONFIDENT CLAIMS DETECTED
+
+**Line 45:** "Indisputable predictive power"
+→ Replace with: "Strong predictive associations, though generalizability varies"
+
+**Line 123:** "This approach solves the problem of..."
+→ Replace with: "This approach substantially addresses..."
+
+**Line 267:** "The best method for age prediction"
+→ Replace with: "Among the most accurate methods for age prediction"
+
+**Total overconfident claims:** 8
+**Auto-corrections applied:** 8
+```
+
+### The Calibration Test
+
+Before finalizing, ask for EACH strong claim:
+1. Do I have evidence for ALL cases this implies?
+2. Would a skeptical reviewer accept this wording?
+3. Am I claiming more than my sources support?
+
+If any answer is "no" → Soften the claim.
+
+---
+
 ## Output Format
 
 ```markdown

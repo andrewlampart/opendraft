@@ -133,6 +133,101 @@ A 30-source paper with all relevant citations is stronger than a 60-source paper
 
 ---
 
+## ⚠️ CRITICAL: INTERNAL CONTRADICTION DETECTION
+
+**ZERO TOLERANCE FOR SELF-CONTRADICTING PAPERS**
+
+A paper that contradicts itself destroys its own credibility. Scan for and resolve ALL contradictions.
+
+### 6. Claim Consistency Check
+
+Scan the FULL document for contradictory claims about the same topic:
+
+**Common Contradiction Patterns:**
+
+```
+❌ CONTRADICTION: Interpretability
+Section 2: "Deep learning improves model interpretability..."
+Section 5: "...the black-box nature of deep learning limits clinical adoption"
+→ Can't be both interpretable AND a black box
+
+❌ CONTRADICTION: Certainty
+Section 1: "Indisputable predictive power of epigenetic clocks..."
+Section 6: "Significant limitations remain, including population bias, tissue variability..."
+→ Can't be "indisputable" with "significant limitations"
+
+❌ CONTRADICTION: Novelty
+Section 1: "Revolutionary breakthrough in aging research..."
+Section 2: "Building on decades of prior work by Horvath, Hannum, and others..."
+→ Can't be "revolutionary" if building on extensive prior work
+```
+
+### 7. Hedge Consistency
+
+If you use strong language, you cannot then contradict it:
+
+| If You Say... | You Cannot Also Say... |
+|---------------|------------------------|
+| "indisputable" | "has limitations" |
+| "black box" | "interpretable" |
+| "revolutionary" | "incremental improvement" |
+| "proves" | "suggests" (about same claim) |
+| "always" | "in some cases" |
+| "the best" | "comparable to alternatives" |
+
+### 8. Resolution Requirement
+
+When contradiction found, DON'T just flag it. RESOLVE it with nuanced language:
+
+```
+❌ CONTRADICTORY:
+"Deep learning offers superior interpretability" (Section 2)
+"Deep learning's black-box nature is a limitation" (Section 5)
+
+✅ RESOLVED:
+"While deep learning models achieve superior predictive accuracy,
+their reduced interpretability compared to linear models remains
+a challenge for clinical adoption. Recent work on explainability
+methods (SHAP, LIME) partially addresses this limitation."
+```
+
+### Contradiction Audit Process
+
+1. **List all major claims** made in the paper
+2. **Check each claim** for contradicting statements elsewhere
+3. **Flag contradictions** with exact locations
+4. **Propose resolution** that maintains nuance
+5. **Verify consistency** across abstract, intro, body, conclusion
+
+### Output for Contradictions
+
+```
+🔴 INTERNAL CONTRADICTIONS DETECTED
+
+**Contradiction 1:** Interpretability Claims
+- **Location A:** Section 2.3, paragraph 2
+  "Deep learning enhances model interpretability through attention mechanisms"
+- **Location B:** Section 5.1, paragraph 4
+  "The black-box nature of deep learning limits clinical trust"
+- **Resolution:** Rewrite both to acknowledge trade-off:
+  "While attention mechanisms provide some interpretability, deep learning
+   models remain less transparent than traditional regression approaches"
+
+**Contradiction 2:** Confidence Level
+- **Location A:** Abstract
+  "Epigenetic clocks show indisputable predictive power"
+- **Location B:** Section 6.2
+  "Significant limitations include population bias and tissue specificity"
+- **Resolution:** Soften abstract claim:
+  "Epigenetic clocks show strong predictive associations, though
+   generalizability varies across populations and tissue types"
+
+**Total contradictions found:** 2
+**Status:** Must resolve before submission
+```
+
+---
+
 ## Output Format
 
 ```markdown

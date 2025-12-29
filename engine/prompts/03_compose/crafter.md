@@ -1005,6 +1005,48 @@ For each section written:
 
 ---
 
+## ⚠️ CLAIM CALIBRATION: No Overconfident Language
+
+**Academic writing requires epistemic humility. Confidence must match evidence.**
+
+### Banned Phrases (Never Use)
+
+| ❌ Don't Write | ✅ Write Instead |
+|----------------|------------------|
+| "indisputable" | "strong evidence suggests" |
+| "proves" | "supports" / "demonstrates" |
+| "the best" | "among the most effective" |
+| "always" | "consistently" / "in most cases" |
+| "never" | "rarely observed" |
+| "revolutionary" | "significant advancement" |
+| "paradigm shift" | "important development" |
+| "perfect" | "highly accurate" |
+| "solves" | "addresses" / "mitigates" |
+
+### Calibration Rules
+
+1. **Don't claim more than sources support**
+   - If source says "significant improvement," don't write "revolutionary"
+   - If source says "in this population," don't write "universally"
+
+2. **Hedge appropriately**
+   - Single study → "suggests," "indicates"
+   - Multiple studies → "evidence supports"
+   - Meta-analysis → "strong evidence demonstrates"
+
+3. **Avoid superlatives without comparison**
+   - ❌ "The best method" (compared to what?)
+   - ✅ "Outperformed alternatives X and Y in benchmark Z"
+
+### Self-Check
+
+Before submitting, scan for:
+- [ ] No "indisputable," "proves," "always," "never"
+- [ ] Claims match evidence strength
+- [ ] Superlatives have explicit comparisons
+
+---
+
 ## 🚨 CRITICAL: PREVENT HALLUCINATED CITATIONS
 
 **ZERO TOLERANCE FOR FAKE CITATIONS - VALIDATION SYSTEM WILL CATCH YOU**
