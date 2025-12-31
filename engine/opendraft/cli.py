@@ -319,6 +319,18 @@ def run_interactive():
     if level is None:
         return 0
 
+    # Select output type
+    output_type = select_option(
+        "Output type",
+        [
+            ("Full draft (complete paper)", "full"),
+            ("Research exposé (outline + sources, faster)", "expose"),
+        ],
+        default=0
+    )
+    if output_type is None:
+        return 0
+
     # Select citation style
     style = select_option(
         "Citation style",
@@ -402,10 +414,12 @@ def run_interactive():
     print()
     level_display = level.replace("_", " ").title()
     lang_display = lang_names.get(language, language.upper())
+    output_display = "Research Exposé" if output_type == 'expose' else "Full Draft"
     print(f"  {c.GRAY}Topic{c.RESET}     {topic}")
     if blurb:
         print(f"  {c.GRAY}Focus{c.RESET}     {blurb[:50]}{'...' if len(blurb) > 50 else ''}")
     print(f"  {c.GRAY}Level{c.RESET}     {level_display}")
+    print(f"  {c.GRAY}Mode{c.RESET}      {output_display}")
     print(f"  {c.GRAY}Style{c.RESET}     {style.upper()}")
     print(f"  {c.GRAY}Language{c.RESET}  {lang_display}")
     if author_name:
@@ -416,8 +430,9 @@ def run_interactive():
     print_divider()
     print()
 
+    confirm_prompt = "Generate exposé?" if output_type == 'expose' else "Generate paper?"
     try:
-        confirm = input(f"  {c.PURPLE}›{c.RESET} Generate paper? {c.GRAY}[Y/n]{c.RESET} ").strip().lower()
+        confirm = input(f"  {c.PURPLE}›{c.RESET} {confirm_prompt} {c.GRAY}[Y/n]{c.RESET} ").strip().lower()
     except (KeyboardInterrupt, EOFError):
         print(f"\n\n  {c.GRAY}Cancelled.{c.RESET}\n")
         return 0
@@ -430,7 +445,10 @@ def run_interactive():
     print()
     print_divider()
     print()
-    print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting paper generation...{c.RESET}")
+    if output_type == 'expose':
+        print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting research exposé...{c.RESET}")
+    else:
+        print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting paper generation...{c.RESET}")
     print(f"  {c.GRAY}Loading AI modules...{c.RESET}", end='', flush=True)
 
     try:
@@ -447,7 +465,10 @@ def run_interactive():
         print(f"  {c.BOLD}🚀 Starting research on:{c.RESET} {topic[:50]}{'...' if len(topic) > 50 else ''}")
         print(f"  {c.CYAN}{'━' * 50}{c.RESET}")
         print()
-        print(f"  {c.GRAY}This typically takes 10-15 minutes.{c.RESET}")
+        if output_type == 'expose':
+            print(f"  {c.GRAY}Generating research exposé (2-5 minutes)...{c.RESET}")
+        else:
+            print(f"  {c.GRAY}This typically takes 10-15 minutes.{c.RESET}")
         print(f"  {c.GRAY}You'll see progress updates below.{c.RESET}")
         print()
 
@@ -461,6 +482,7 @@ def run_interactive():
             skip_validation=True,
             verbose=True,
             blurb=blurb if blurb else None,
+            output_type=output_type,
             author_name=author_name,
             institution=institution,
             department=department,
@@ -471,7 +493,10 @@ def run_interactive():
         print_divider()
         print()
         print(f"  {c.GREEN}{'━' * 40}{c.RESET}")
-        print(f"  {c.GREEN}✓{c.RESET} {c.BOLD}Your paper is ready!{c.RESET}")
+        if output_type == 'expose':
+            print(f"  {c.GREEN}✓{c.RESET} {c.BOLD}Your research exposé is ready!{c.RESET}")
+        else:
+            print(f"  {c.GREEN}✓{c.RESET} {c.BOLD}Your paper is ready!{c.RESET}")
         print(f"  {c.GREEN}{'━' * 40}{c.RESET}")
         print()
 
@@ -534,6 +559,7 @@ def main():
   opendraft "Impact of AI on Education"
   opendraft "Climate Change" --level phd --lang de
   opendraft "Machine Learning" --author "John Smith" --institution "MIT"
+  opendraft "Neural Networks" --expose              Quick research overview
 
 {Colors.BOLD}Languages:{Colors.RESET}
   en, de, es, fr, it, pt, nl, zh, ja, ko, ru, ar
@@ -612,6 +638,12 @@ def main():
         help="Advisor/supervisor name"
     )
 
+    parser.add_argument(
+        "--expose",
+        action="store_true",
+        help="Generate research exposé only (faster, no full draft)"
+    )
+
     args = parser.parse_args()
     c = Colors
 
@@ -658,6 +690,8 @@ def main():
     print(f"  {c.GRAY}Level{c.RESET}  {args.level}")
     print(f"  {c.GRAY}Style{c.RESET}  {args.style.upper()}")
     print(f"  {c.GRAY}Language{c.RESET}  {quick_lang_names.get(args.lang, args.lang)}")
+    if args.expose:
+        print(f"  {c.GRAY}Mode{c.RESET}   {c.GREEN}Research Exposé{c.RESET} (faster)")
     if args.author:
         print(f"  {c.GRAY}Author{c.RESET}  {args.author}")
     if args.institution:
@@ -665,7 +699,10 @@ def main():
     print()
     print_divider()
     print()
-    print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting paper generation...{c.RESET}")
+    if args.expose:
+        print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting research exposé...{c.RESET}")
+    else:
+        print(f"  {c.PURPLE}⣾{c.RESET} {c.BOLD}Starting paper generation...{c.RESET}")
     print(f"  {c.GRAY}Loading AI modules...{c.RESET}", end='', flush=True)
 
     try:
@@ -682,11 +719,15 @@ def main():
         print(f"  {c.BOLD}🚀 Starting research on:{c.RESET} {args.topic[:50]}{'...' if len(args.topic) > 50 else ''}")
         print(f"  {c.CYAN}{'━' * 50}{c.RESET}")
         print()
-        print(f"  {c.GRAY}This typically takes 10-15 minutes.{c.RESET}")
+        if args.expose:
+            print(f"  {c.GRAY}Generating research exposé (2-5 minutes)...{c.RESET}")
+        else:
+            print(f"  {c.GRAY}This typically takes 10-15 minutes.{c.RESET}")
         print(f"  {c.GRAY}You'll see progress updates below.{c.RESET}")
         print()
 
         output_dir = args.output or Path.cwd() / 'opendraft_output'
+        output_type = 'expose' if args.expose else 'full'
 
         pdf_path, docx_path = generate_draft(
             topic=args.topic,
@@ -696,6 +737,7 @@ def main():
             skip_validation=True,
             verbose=True,
             blurb=args.blurb if args.blurb else None,
+            output_type=output_type,
             author_name=args.author,
             institution=args.institution,
             department=args.department,

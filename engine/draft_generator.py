@@ -704,6 +704,7 @@ def generate_draft(
     tracker=None,  # Progress tracker for real-time updates
     streamer=None,  # Milestone streamer for partial results
     blurb: Optional[str] = None,  # Additional context/focus for the thesis
+    output_type: str = "full",  # 'full' for complete draft, 'expose' for research overview only
     # Academic metadata for professional cover page
     author_name: Optional[str] = None,
     institution: Optional[str] = None,
@@ -727,6 +728,7 @@ def generate_draft(
         output_dir: Custom output directory (default: config.paths.output_dir / "generated_draft")
         skip_validation: Skip strict quality gates (recommended for automated runs)
         verbose: Print progress messages
+        output_type: 'full' for complete draft, 'expose' for research overview only
         author_name: Student's full name (for cover page)
         institution: University/institution name
         department: Department name
@@ -764,6 +766,7 @@ def generate_draft(
     logger.info(f"Topic: {topic}")
     logger.info(f"Language: {language}")
     logger.info(f"Academic Level: {academic_level}")
+    logger.info(f"Output Type: {output_type}")
     logger.info(f"Validation: {'Skipped' if skip_validation else 'Enabled'}")
     logger.info(f"Tracker: {'Enabled' if tracker else 'Disabled'}")
     logger.info(f"Streamer: {'Enabled' if streamer else 'Disabled'}")
@@ -1129,6 +1132,147 @@ def generate_draft(
         citation_summary += f"{'='*80}\n"
 
         rate_limit_delay()
+
+        # ====================================================================
+        # EXPOSÉ MODE: Early exit with research overview + outline only
+        # ====================================================================
+        if output_type == 'expose':
+            logger.info("="*80)
+            logger.info("EXPOSÉ MODE: Generating research overview (skipping full draft)")
+            logger.info("="*80)
+
+            if tracker:
+                tracker.log_activity("📋 Creating Research Exposé...", event_type="milestone", phase="exporting")
+                tracker.update_phase("exporting", progress_percent=70, details={"stage": "creating_expose"})
+
+            # Get language name for document
+            language_name = get_language_name(language)
+
+            if verbose:
+                print("\n📋 EXPOSÉ MODE: Creating research overview...")
+
+            # Compile the exposé document
+            expose_content = f"""# Research Exposé: {topic}
+
+**Generated:** {datetime.now().strftime('%Y-%m-%d')}
+**Academic Level:** {academic_level.title()}
+**Language:** {language_name}
+
+---
+
+## Executive Summary
+
+This research exposé provides a preliminary overview of the topic "{topic}" based on an analysis of {len(citation_database.citations)} academic sources. It includes a structured outline for a potential full research paper and a comprehensive bibliography.
+
+---
+
+## Research Outline
+
+{formatter_output}
+
+---
+
+## Key Research Findings
+
+{scribe_output[:4000] if len(scribe_output) > 4000 else scribe_output}
+
+---
+
+## Identified Research Gaps
+
+{signal_output[:2000] if len(signal_output) > 2000 else signal_output}
+
+---
+
+## Bibliography
+
+"""
+            # Add all citations in proper format
+            for citation in citation_database.citations:
+                authors_str = ", ".join(citation.authors[:3])
+                if len(citation.authors) > 3:
+                    authors_str += " et al."
+                expose_content += f"- {authors_str} ({citation.year}). {citation.title}"
+                if citation.journal:
+                    expose_content += f". *{citation.journal}*"
+                if citation.doi:
+                    expose_content += f". https://doi.org/{citation.doi}"
+                expose_content += "\n\n"
+
+            expose_content += f"""
+---
+
+## Next Steps
+
+This research exposé serves as a starting point for a comprehensive {academic_level}-level paper. To develop this into a full draft:
+
+1. **Expand the outline** into detailed chapter content
+2. **Conduct deeper analysis** of the identified sources
+3. **Address the research gaps** highlighted above
+4. **Develop original arguments** based on the literature review
+
+---
+
+*This exposé was generated as a research overview. It is intended as a planning tool and starting point for further development.*
+"""
+
+            # Save exposé markdown
+            expose_md_path = folders['drafts'] / "00_expose.md"
+            expose_md_path.write_text(expose_content, encoding='utf-8')
+            logger.info(f"Exposé markdown saved: {expose_md_path}")
+
+            if tracker:
+                tracker.log_activity("📄 Exporting Research Exposé...", event_type="info", phase="exporting")
+                tracker.update_phase("exporting", progress_percent=85, details={"stage": "exporting_expose"})
+
+            # Export as PDF and DOCX
+            topic_slug = slugify(topic, max_length=50)
+            if not topic_slug:
+                topic_slug = "research_expose"
+
+            if verbose:
+                print("📄 Exporting PDF...")
+
+            pdf_path = folders['exports'] / f"{topic_slug}_expose.pdf"
+            pdf_success = export_pdf(
+                md_file=expose_md_path,
+                output_pdf=pdf_path,
+                engine='pandoc'
+            )
+
+            if not pdf_success or not pdf_path.exists():
+                raise RuntimeError(f"PDF export failed for exposé: {pdf_path}")
+
+            if verbose:
+                print("📝 Exporting Word document...")
+
+            docx_path = folders['exports'] / f"{topic_slug}_expose.docx"
+            docx_success = export_docx(
+                md_file=expose_md_path,
+                output_docx=docx_path
+            )
+
+            if not docx_success or not docx_path.exists():
+                raise RuntimeError(f"DOCX export failed for exposé: {docx_path}")
+
+            if tracker:
+                tracker.log_activity("🎉 Research Exposé complete!", event_type="milestone", phase="completed")
+                tracker.update_phase("exporting", progress_percent=100,
+                                    sources_count=len(citation_database.citations),
+                                    chapters_count=1,
+                                    details={"stage": "expose_complete", "milestone": "expose_complete"})
+
+            total_time = time.time() - draft_start_time
+            logger.info(f"✅ Exposé generation complete in {total_time:.1f}s:")
+            logger.info(f"   PDF: {pdf_path}")
+            logger.info(f"   DOCX: {docx_path}")
+
+            if verbose:
+                print(f"\n✅ Research Exposé complete!")
+                print(f"   PDF: {pdf_path}")
+                print(f"   DOCX: {docx_path}")
+
+            return pdf_path, docx_path
 
         # ====================================================================
         # PHASE 3: COMPOSE (Simplified - 3 sections instead of 6)
