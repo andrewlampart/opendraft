@@ -1294,6 +1294,10 @@ This research exposé serves as a starting point for a comprehensive {academic_l
         # Get word count targets for this academic level
         word_targets = get_word_count_targets(academic_level)
 
+        # Create language instruction for all chapter agents
+        language_name = get_language_name(language)
+        language_instruction = f"\n\n**LANGUAGE REQUIREMENT:** Write the ENTIRE output in {language_name}. All text, headings, and content must be in {language_name}."
+
         # ===== CHAPTER 1: Introduction =====
         try:
             intro_target = word_targets['introduction']
@@ -1320,7 +1324,7 @@ Outline:
 1. Write {intro_target} words minimum
 2. Include at least 1-2 tables (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
-4. Put table details in prose paragraphs AFTER tables, not inside cells""",
+4. Put table details in prose paragraphs AFTER tables, not inside cells{language_instruction}""",
                 save_to=folders['drafts'] / "01_introduction.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1415,7 +1419,7 @@ Outline context:
 - Evolution of the field
 - Research gaps that your draft will address
 
-**Use the abstracts provided to write evidence-based literature review with specific findings, NOT generic statements.**""",
+**Use the abstracts provided to write evidence-based literature review with specific findings, NOT generic statements.**{language_instruction}""",
                 save_to=folders['drafts'] / "02_1_literature_review.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1505,7 +1509,7 @@ Outline:
 - Tools and technologies used - from literature, not "we used"
 - Study limitations and considerations - theoretical discussion
 
-**Connect to Literature Review:** "To address the gap identified in section 2.1 regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."**""",
+**Connect to Literature Review:** "To address the gap identified in section 2.1 regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."**{language_instruction}""",
                 save_to=folders['drafts'] / "02_2_methodology.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1596,7 +1600,7 @@ Research data:
 - Visual data presentation (tables summarizing findings from cited sources)
 - Comparison with baseline/benchmarks FROM CITED RESEARCH
 
-**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."**""",
+**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."**{language_instruction}""",
                 save_to=folders['drafts'] / "02_3_analysis_results.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1697,7 +1701,7 @@ You MUST include these explicit phrases to connect back to previous sections:
 
 **Example opening:** "The findings FROM LITERATURE synthesized in section 2.3 reveal significant insights that both align with and extend the theoretical frameworks discussed in section 2.1. As noted in the literature review (section 2.1), previous studies by [Author] {{cite_001}} demonstrated [X]; research findings {{cite_002}}{{cite_003}} confirm this relationship while also revealing [new insight]."
 
-**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.**""",
+**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.**{language_instruction}""",
                 save_to=folders['drafts'] / "02_4_discussion.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1815,7 +1819,7 @@ Main findings:
 2. Include at least 1 summary table (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells
-5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format""",
+5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{language_instruction}""",
                 save_to=folders['drafts'] / "03_conclusion.md",
                 skip_validation=skip_validation,
                 verbose=verbose
@@ -1900,7 +1904,7 @@ Main findings:
     2. Use markdown tables where appropriate
     3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
     4. Put table details in prose paragraphs AFTER tables, not inside cells
-    5. Each appendix should be standalone and informative""",
+    5. Each appendix should be standalone and informative{language_instruction}""",
                 save_to=folders['drafts'] / "04_appendices.md",
                 skip_validation=skip_validation,
                 verbose=verbose

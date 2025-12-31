@@ -44,3 +44,4 @@ test_results/
 
 # Generated outputs (keep examples/)
 THESIS_OUTPUT.*
+.venv-modal/
