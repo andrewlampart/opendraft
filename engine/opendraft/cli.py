@@ -90,6 +90,143 @@ class Colors:
     UNDERLINE = '\033[4m'
 
 
+def get_friendly_error(e: Exception) -> tuple:
+    """
+    Convert technical exceptions to user-friendly messages.
+
+    Returns:
+        Tuple of (friendly_message, hint) or (None, None) if no friendly version
+    """
+    error_str = str(e).lower()
+    error_type = type(e).__name__
+
+    c = Colors
+
+    # API Key errors
+    if 'api key not valid' in error_str or 'invalid api key' in error_str:
+        return (
+            "Your API key is invalid or expired.",
+            f"Run {c.CYAN}opendraft setup{c.RESET} to enter a new key."
+        )
+
+    if 'api_key_invalid' in error_str or 'permission_denied' in error_str:
+        return (
+            "API key doesn't have permission for this operation.",
+            f"Check your key at {c.CYAN}https://aistudio.google.com/apikey{c.RESET}"
+        )
+
+    # Rate limiting
+    if '429' in error_str or 'rate limit' in error_str or 'resource exhausted' in error_str or 'quota' in error_str:
+        return (
+            "Rate limited by the API.",
+            "Wait a minute and try again. Free tier has usage limits."
+        )
+
+    # Network errors
+    if 'connection' in error_str and ('error' in error_str or 'failed' in error_str):
+        return (
+            "Network connection failed.",
+            "Check your internet connection and try again."
+        )
+
+    if 'timeout' in error_str:
+        return (
+            "Request timed out.",
+            "The server took too long to respond. Try again."
+        )
+
+    if 'ssl' in error_str or 'certificate' in error_str:
+        return (
+            "Secure connection failed.",
+            "Check your network/VPN settings and try again."
+        )
+
+    # DNS/hostname errors
+    if 'name or service not known' in error_str or 'getaddrinfo failed' in error_str:
+        return (
+            "Can't reach the server.",
+            "Check your internet connection."
+        )
+
+    # Content/safety filters
+    if 'safety' in error_str or 'blocked' in error_str or 'harmful' in error_str:
+        return (
+            "Content was blocked by safety filters.",
+            "Try rephrasing your topic or using different keywords."
+        )
+
+    # Model errors
+    if 'model not found' in error_str or 'model' in error_str and 'not available' in error_str:
+        return (
+            "AI model is temporarily unavailable.",
+            "Try again in a few minutes."
+        )
+
+    # Insufficient citations (common during research)
+    if 'insufficient citations' in error_str:
+        return (
+            "Couldn't find enough sources for this topic.",
+            "Try a more specific or different research topic."
+        )
+
+    # PDF/export errors
+    if 'pdf' in error_str and ('failed' in error_str or 'error' in error_str):
+        return (
+            "PDF generation failed.",
+            f"The Word document (.docx) should still be available."
+        )
+
+    if 'weasyprint' in error_str or 'cairo' in error_str or 'pango' in error_str:
+        return (
+            "PDF library not properly installed.",
+            f"Run {c.CYAN}opendraft verify{c.RESET} to check dependencies."
+        )
+
+    # File/permission errors
+    if 'permission denied' in error_str or 'errno 13' in error_str:
+        return (
+            "Permission denied when writing files.",
+            "Try a different output directory or check folder permissions."
+        )
+
+    if 'no space' in error_str or 'disk full' in error_str:
+        return (
+            "Disk is full.",
+            "Free up some space and try again."
+        )
+
+    # No friendly version found
+    return (None, None)
+
+
+def print_friendly_error(e: Exception):
+    """Print a user-friendly error message for common exceptions."""
+    c = Colors
+
+    friendly_msg, hint = get_friendly_error(e)
+
+    if friendly_msg:
+        print()
+        print(f"  {c.RED}✗{c.RESET} {friendly_msg}")
+        if hint:
+            print(f"    {c.GRAY}{hint}{c.RESET}")
+        print()
+    else:
+        # Fallback: show original error but clean it up a bit
+        error_str = str(e)
+        # Remove common technical prefixes
+        for prefix in ['google.api_core.exceptions.', 'requests.exceptions.',
+                       'urllib3.exceptions.', 'httpx.']:
+            error_str = error_str.replace(prefix, '')
+
+        print()
+        print(f"  {c.RED}✗{c.RESET} {error_str}")
+        print()
+        print(f"  {c.GRAY}If this keeps happening, report at:{c.RESET}")
+        print(f"  {c.CYAN}https://github.com/federicodeponte/opendraft/issues{c.RESET}")
+        print()
+
+
 def get_saved_config():
     """Load saved configuration."""
     if CONFIG_FILE.exists():
@@ -542,9 +679,7 @@ def run_interactive():
         print(f"\n\n  {c.YELLOW}!{c.RESET} Generation interrupted.\n")
         return 1
     except Exception as e:
-        print()
-        print(f"  {c.RED}✗{c.RESET} {e}")
-        print()
+        print_friendly_error(e)
         return 1
 
 
@@ -763,7 +898,7 @@ def main():
         print(f"\n\n  {c.YELLOW}!{c.RESET} Interrupted.\n")
         return 1
     except Exception as e:
-        print(f"  {c.RED}✗{c.RESET} {e}")
+        print_friendly_error(e)
         return 1
 
 
