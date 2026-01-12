@@ -101,6 +101,8 @@ function checkPython() {
     '/usr/bin/python3',
   ];
 
+  let oldestFound = null; // Track if we find an old Python version
+
   for (const cmd of pythonCommands) {
     try {
       const version = execSync(`${cmd} --version 2>&1`, { encoding: 'utf8' }).trim();
@@ -110,13 +112,25 @@ function checkPython() {
         const minor = parseInt(match[2]);
         // Require Python 3.10-3.13
         if (major === 3 && minor >= 10 && minor <= 13) {
-          return { cmd, version: `${major}.${minor}` };
+          return { cmd, version: `${major}.${minor}`, status: 'ok' };
+        }
+        // Track old Python versions (3.7, 3.8, 3.9)
+        if (major === 3 && minor >= 7 && minor < 10) {
+          if (!oldestFound || minor > oldestFound.minor) {
+            oldestFound = { cmd, major, minor, version: `${major}.${minor}` };
+          }
         }
       }
     } catch (e) {
       // Command not found, try next
     }
   }
+
+  // Return info about old Python if found
+  if (oldestFound) {
+    return { cmd: oldestFound.cmd, version: oldestFound.version, status: 'too_old' };
+  }
+
   return null;
 }
 
@@ -191,6 +205,10 @@ function installOpendraft(pythonCmd) {
     if (errorMsg.includes('no space') || errorMsg.includes('disk full') || errorMsg.includes('errno 28')) {
       return { success: false, error: 'disk_full' };
     }
+    if (errorMsg.includes('no module named pip') || errorMsg.includes('pip not found') ||
+        errorMsg.includes('no such file') && errorMsg.includes('pip')) {
+      return { success: false, error: 'no_pip' };
+    }
 
     return {
       success: false,
@@ -263,6 +281,38 @@ function showFriendlyError(errorType, details = {}) {
         print(`  ${CYAN}sudo dnf install python3 python3-pip${RESET}  (Fedora)`);
         print(`  ${CYAN}sudo pacman -S python python-pip${RESET}      (Arch)`);
       }
+      break;
+
+    case 'python_too_old':
+      printBox([
+        `${RED}${BOLD}Python Version Too Old${RESET}`,
+        ``,
+        `You have Python ${details.version}, but OpenDraft needs 3.10+`,
+      ], RED);
+
+      const platOld = os.platform();
+      print(`${BOLD}You need to install a newer Python version:${RESET}`);
+      console.log();
+
+      if (platOld === 'darwin') {
+        print(`${BOLD}Option 1: Homebrew (recommended)${RESET}`);
+        print(`  ${CYAN}brew install python@3.11${RESET}`);
+        console.log();
+        print(`${BOLD}Option 2: Download from python.org${RESET}`);
+        print(`  ${CYAN}https://python.org/downloads${RESET}`);
+      } else if (platOld === 'win32') {
+        print(`1. Go to ${CYAN}https://python.org/downloads${RESET}`);
+        print(`2. Download Python 3.11 or newer`);
+        print(`3. ${YELLOW}Check "Add Python to PATH"${RESET} during install`);
+        print(`4. ${BOLD}Restart your terminal${RESET}`);
+      } else {
+        print(`${CYAN}sudo apt install python3.11${RESET}  (Ubuntu/Debian)`);
+        print(`${CYAN}sudo dnf install python3.11${RESET}  (Fedora)`);
+      }
+      console.log();
+      print(`Then try again: ${CYAN}npx opendraft${RESET}`);
+      console.log();
+      print(`${GRAY}Your current Python ${details.version} will not be affected.${RESET}`)
       break;
 
     case 'install_failed':
@@ -340,6 +390,33 @@ function showFriendlyError(errorType, details = {}) {
       print(`1. Empty your Trash/Recycle Bin`);
       print(`2. Delete old downloads or unused apps`);
       print(`3. Clear pip cache: ${CYAN}pip cache purge${RESET}`);
+      console.log();
+      print(`Then try again: ${CYAN}npx opendraft${RESET}`);
+      break;
+
+    case 'no_pip':
+      printBox([
+        `${RED}${BOLD}pip Not Found${RESET}`,
+        ``,
+        `Python is installed but pip (package manager) is missing.`,
+      ], RED);
+
+      const platPip = os.platform();
+      print(`${BOLD}Install pip:${RESET}`);
+      console.log();
+
+      if (platPip === 'darwin') {
+        print(`${CYAN}python3 -m ensurepip --upgrade${RESET}`);
+        console.log();
+        print(`Or reinstall Python from ${CYAN}https://python.org${RESET}`);
+      } else if (platPip === 'win32') {
+        print(`${CYAN}python -m ensurepip --upgrade${RESET}`);
+        console.log();
+        print(`Or reinstall Python and check "pip" during install`);
+      } else {
+        print(`${CYAN}sudo apt install python3-pip${RESET}  (Ubuntu/Debian)`);
+        print(`${CYAN}sudo dnf install python3-pip${RESET}  (Fedora)`);
+      }
       console.log();
       print(`Then try again: ${CYAN}npx opendraft${RESET}`);
       break;
@@ -538,11 +615,17 @@ async function main() {
 
     // Re-check Python after installation
     const pythonAfter = checkPython();
-    if (!pythonAfter) {
+    if (!pythonAfter || pythonAfter.status === 'too_old') {
       print(`${RED}Python still not found.${RESET} Please restart your terminal and try again.`);
       process.exit(1);
     }
     return;
+  }
+
+  // Check if Python version is too old
+  if (python.status === 'too_old') {
+    showFriendlyError('python_too_old', { version: python.version });
+    process.exit(1);
   }
 
   print(`${GREEN}✓${RESET} Python ${python.version} found`);
@@ -558,7 +641,7 @@ async function main() {
       console.log();
     } else {
       // Show specific error message based on error type
-      const errorType = ['permission_denied', 'network_error', 'disk_full'].includes(result.error)
+      const errorType = ['permission_denied', 'network_error', 'disk_full', 'no_pip'].includes(result.error)
         ? result.error : 'install_failed';
       showFriendlyError(errorType, { error: result.error });
       process.exit(1);
@@ -578,7 +661,7 @@ async function main() {
 
       if (!result.success) {
         // Show specific error message based on error type
-        const errorType = ['permission_denied', 'network_error', 'disk_full'].includes(result.error)
+        const errorType = ['permission_denied', 'network_error', 'disk_full', 'no_pip'].includes(result.error)
           ? result.error : 'install_failed';
         showFriendlyError(errorType, { error: result.error });
         process.exit(1);
