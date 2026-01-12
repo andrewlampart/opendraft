@@ -177,6 +177,21 @@ function installOpendraft(pythonCmd) {
     });
     return { success: true };
   } catch (e) {
+    const errorMsg = (e.stderr || e.message || '').toLowerCase();
+
+    // Detect specific error types for better messages
+    if (errorMsg.includes('permission denied') || errorMsg.includes('errno 13') || errorMsg.includes('access denied')) {
+      return { success: false, error: 'permission_denied' };
+    }
+    if (errorMsg.includes('network') || errorMsg.includes('connection') || errorMsg.includes('timeout') ||
+        errorMsg.includes('could not find') || errorMsg.includes('no matching distribution') ||
+        errorMsg.includes('retrying') || errorMsg.includes('ssl')) {
+      return { success: false, error: 'network_error' };
+    }
+    if (errorMsg.includes('no space') || errorMsg.includes('disk full') || errorMsg.includes('errno 28')) {
+      return { success: false, error: 'disk_full' };
+    }
+
     return {
       success: false,
       error: e.stderr || e.message || 'Unknown installation error'
@@ -269,9 +284,64 @@ function showFriendlyError(errorType, details = {}) {
       print(`   ${CYAN}brew install pipx && pipx install opendraft${RESET}`);
       console.log();
 
-      if (details.error) {
+      if (details.error && typeof details.error === 'string' && !['permission_denied', 'network_error', 'disk_full'].includes(details.error)) {
         print(`${GRAY}Technical details: ${details.error.substring(0, 200)}${RESET}`);
       }
+      break;
+
+    case 'permission_denied':
+      printBox([
+        `${RED}${BOLD}Permission Denied${RESET}`,
+        ``,
+        `Can't install packages - you don't have permission.`,
+      ], RED);
+
+      print(`${BOLD}Try one of these:${RESET}`);
+      console.log();
+      print(`${BOLD}Option 1: Install for your user only (recommended)${RESET}`);
+      print(`  ${CYAN}pip install --user opendraft${RESET}`);
+      console.log();
+      print(`${BOLD}Option 2: Use sudo (if Option 1 doesn't work)${RESET}`);
+      print(`  ${CYAN}sudo pip install opendraft${RESET}`);
+      console.log();
+      print(`${BOLD}Option 3: Use pipx (cleanest)${RESET}`);
+      print(`  ${CYAN}pipx install opendraft${RESET}`);
+      break;
+
+    case 'network_error':
+      printBox([
+        `${RED}${BOLD}Network Error${RESET}`,
+        ``,
+        `Can't download the package. Check your internet.`,
+      ], RED);
+
+      print(`${BOLD}Things to try:${RESET}`);
+      console.log();
+      print(`1. Check your internet connection`);
+      print(`2. If on VPN, try disconnecting temporarily`);
+      print(`3. If on corporate network, you may need proxy settings`);
+      console.log();
+      print(`${BOLD}Then try again:${RESET}`);
+      print(`  ${CYAN}npx opendraft${RESET}`);
+      console.log();
+      print(`${GRAY}Still not working? Try downloading manually:${RESET}`);
+      print(`  ${CYAN}pip install opendraft --timeout 120${RESET}`);
+      break;
+
+    case 'disk_full':
+      printBox([
+        `${RED}${BOLD}Disk Full${RESET}`,
+        ``,
+        `Not enough disk space to install the package.`,
+      ], RED);
+
+      print(`${BOLD}Free up some space:${RESET}`);
+      console.log();
+      print(`1. Empty your Trash/Recycle Bin`);
+      print(`2. Delete old downloads or unused apps`);
+      print(`3. Clear pip cache: ${CYAN}pip cache purge${RESET}`);
+      console.log();
+      print(`Then try again: ${CYAN}npx opendraft${RESET}`);
       break;
 
     case 'module_not_found':
@@ -487,7 +557,10 @@ async function main() {
       print(`Run: ${CYAN}npx opendraft${RESET}`);
       console.log();
     } else {
-      showFriendlyError('install_failed', { error: result.error });
+      // Show specific error message based on error type
+      const errorType = ['permission_denied', 'network_error', 'disk_full'].includes(result.error)
+        ? result.error : 'install_failed';
+      showFriendlyError(errorType, { error: result.error });
       process.exit(1);
     }
     return;
@@ -504,7 +577,10 @@ async function main() {
       const result = installOpendraft(python.cmd);
 
       if (!result.success) {
-        showFriendlyError('install_failed', { error: result.error });
+        // Show specific error message based on error type
+        const errorType = ['permission_denied', 'network_error', 'disk_full'].includes(result.error)
+          ? result.error : 'install_failed';
+        showFriendlyError(errorType, { error: result.error });
         process.exit(1);
       }
 

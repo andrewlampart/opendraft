@@ -1,6 +1,6 @@
 {
   "name": "opendraft",
-  "version": "1.6.17",
+  "version": "1.6.18",
   "description": "AI-powered research paper generator with verified citations",
   "bin": {
     "opendraft": "bin/opendraft.js"
