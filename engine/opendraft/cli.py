@@ -195,6 +195,41 @@ def get_friendly_error(e: Exception) -> tuple:
             "Free up some space and try again."
         )
 
+    # Memory errors
+    if 'memory' in error_str or isinstance(e, MemoryError):
+        return (
+            "Ran out of memory.",
+            "Close other apps and try again, or try a shorter topic."
+        )
+
+    # Recursion (rare but possible)
+    if 'recursion' in error_str or 'maximum recursion' in error_str:
+        return (
+            "Something went wrong (recursion limit).",
+            "Please report this at github.com/federicodeponte/opendraft/issues"
+        )
+
+    # JSON parsing errors (malformed API response)
+    if 'json' in error_str and ('decode' in error_str or 'parse' in error_str):
+        return (
+            "Received invalid response from server.",
+            "Try again in a few minutes."
+        )
+
+    # Encoding errors
+    if 'encode' in error_str or 'decode' in error_str or 'codec' in error_str:
+        return (
+            "Text encoding error.",
+            "Try using a simpler topic without special characters."
+        )
+
+    # File not found (missing dependency files)
+    if 'no such file' in error_str or 'file not found' in error_str:
+        return (
+            "A required file is missing.",
+            f"Try reinstalling: {c.CYAN}pip install --force-reinstall opendraft{c.RESET}"
+        )
+
     # No friendly version found
     return (None, None)
 
