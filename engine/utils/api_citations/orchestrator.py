@@ -63,6 +63,9 @@ from utils.citation_database import Citation
 
 logger = logging.getLogger(__name__)
 
+# Global verbose flag for CLI mode control
+_verbose_research = True
+
 
 class CitationResearcher:
     """
