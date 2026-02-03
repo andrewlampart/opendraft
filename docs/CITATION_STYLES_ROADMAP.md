@@ -1,8 +1,8 @@
 # OpenDraft Citation Styles - Technical Roadmap
 
-> **Date**: 2026-02-02
-> **Status**: Planning
-> **Priority**: High (broken styles) + Feature Request (NALT)
+> **Date**: 2026-02-02 (updated 2026-02-03)
+> **Status**: Phases 0–2.5 complete. Phase 3 pending.
+> **Priority**: Feature Request (NALT — Phase 3)
 
 ---
 
@@ -426,56 +426,55 @@ plan = ResearchPlan.model_validate_json(response.text)  # Validates structure
 
 ## Implementation Plan
 
-### Phase 0: Stabilize & Test (Priority: Critical)
+### Phase 0: Stabilize & Test (Priority: Critical) ✅ DONE
 
 > *"Add tests before any refactor"* - Prevents breaking existing functionality
 
-1. **Add integration tests for citation styles**
-   - Test APA formatting (currently working)
-   - Test IEEE formatting (currently working)
-   - Test that Chicago/MLA either work OR raise clear errors
+1. ~~**Add integration tests for citation styles**~~ ✅
+   - `tests/test_citation_styles.py` (665 lines) covers APA, IEEE, and verifies Chicago/MLA raise `NotImplementedError`
 
-2. **Add Pydantic models for LLM outputs**
-   - `ResearchPlan` model for deep_research.py
-   - `CitationResponse` model for orchestrator.py
-   - Validate structure before processing
+2. ~~**Add Pydantic models for LLM outputs**~~ ✅
+   - `engine/utils/models.py`: `ResearchPlan`, `LLMCitationResponse`, `CitationDatabaseSchema`, `FactCheckJudgeVerdict`, `FactCheckClaim`
 
-3. **Document the 19-agent pipeline**
-   - Create visual flow diagram (see above)
-   - Add docstrings to each agent function
-   - Document input/output contracts
+3. ~~**Document the 19-agent pipeline**~~ ✅
+   - `docs/ARCHITECTURE.md` + `docs/PIPELINE.md` — full agent listing, data flow, input/output contracts
 
-### Phase 1: Fix Broken Styles (Priority: High)
+### Phase 1: Fix Broken Styles (Priority: High) ✅ DONE (Option A)
 
-**Option A - Quick Fix** (Recommended for now)
-1. Remove Chicago/MLA from CLI options
-2. Update `CitationStyle` type to only include implemented styles
-3. Add user-facing note that more styles coming soon
+~~**Option A - Quick Fix**~~ ✅ Implemented
+1. ~~Remove Chicago/MLA from CLI options~~ ✅ `cli.py` only offers APA/IEEE
+2. ~~Update `CitationStyle` type to only include implemented styles~~ ✅ `Literal["APA 7th", "IEEE"]`
+3. ~~Add user-facing note that more styles coming soon~~ ✅ `NotImplementedError` with roadmap reference
 
-**Option B - Full Implementation**
+**Option B - Full Implementation** (deferred)
 1. Implement `_format_chicago_in_text()` and `_format_chicago_reference()`
 2. Implement `_format_mla_in_text()` and `_format_mla_reference()`
 3. Add tests for each style
 
-### Phase 2: Technical Improvements
+### Phase 2: Technical Improvements ✅ DONE
 
-1. Add Tenacity to `requirements.txt`
-2. Replace custom retry logic
-3. Port OpenPaper improvements (API key handling, citation_count)
+1. ~~Add Tenacity to `requirements.txt`~~ ✅
+2. ~~Replace custom retry logic with Tenacity internals~~ ✅
+3. ~~Port OpenPaper improvements (multi-key API rotation, citation_count persistence)~~ ✅
 
-### Phase 2.5: Code Organization (Optional but Recommended)
+### Phase 2.5: Code Organization ✅ Complete
 
-1. **Split `draft_generator.py`** into phase modules
+1. ~~**Split `draft_generator.py`** into phase modules~~ ✅
    - `phases/research.py` - Scout, Scribe, Signal
    - `phases/structure.py` - Architect, Formatter
-   - `phases/compose.py` - Section writers
-   - `phases/validate.py` - Thread, Narrator
+   - `phases/citations.py` - Citation management pipeline
+   - `phases/compose.py` - Section writers (7 Crafter agents)
+   - `phases/validate.py` - Thread, Narrator, FactCheck
+   - `phases/compile.py` - Assembly, abstract, export
 
-2. **Reduce `draft_generator.py`** to orchestrator role (~500 lines)
+2. ~~**Reduce `draft_generator.py`** to orchestrator role (~700 lines)~~ ✅
 
-3. **Add token tracking** (port from OpenPaper)
-   - Track usage per phase
-   - Generate cost reports
+3. ~~**Add token tracking** (port from OpenPaper)~~ ✅
+   - `utils/model_config.py` - Pricing data
+   - `utils/token_counter.py` - Token counting
+   - `utils/token_tracker.py` - Sync TokenTracker
+   - Integrated into `agent_runner.py`
+   - Generates `token_usage.json` per run
 
 ### Phase 3: NALT Implementation
 
@@ -612,23 +611,23 @@ md_file = Path(md_file)  # Accept both str and Path
 
 **Action**: Port this TO OpenDraft.
 
-##### 5. `config.py` - OpenPaper has better API key handling
+##### 5. `config.py` - OpenPaper has better API key handling ✅ DONE
 
 ```python
 # OpenPaper - supports both env var names
 google_api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
 ```
 
-**Action**: Port this TO OpenDraft.
+**Action**: ~~Port this TO OpenDraft.~~ Already present in OpenDraft. Also added multi-key fallback fields (`GOOGLE_API_KEY_FALLBACK`, `_2`, `_3`) in Phase 2.
 
-##### 6. `citation_database.py` - OpenPaper has citation_count
+##### 6. `citation_database.py` - OpenPaper has citation_count ✅ DONE
 
 ```python
 # OpenPaper addition
 citation_count: Optional[int] = None
 ```
 
-**Action**: Port this TO OpenDraft.
+**Action**: ~~Port this TO OpenDraft.~~ Ported in Phase 2. Field added to Citation model, wired through Semantic Scholar and orchestrator.
 
 ##### 7. `progress_tracker.py` - Different Supabase env vars
 
@@ -654,14 +653,16 @@ These are style-only and don't need porting.
 
 #### Port TO OpenDraft (from OpenPaper)
 
-| Change | Priority | Effort |
-|--------|----------|--------|
-| API key handling (GEMINI_API_KEY) | High | 10 min |
-| Tier-adaptive concurrency | High | 30 min |
-| Quiet mode in agent_runner | Medium | 15 min |
-| Path/str flexibility in export | Low | 5 min |
-| `citation_count` field | Low | 5 min |
-| Token tracking system (3 files) | Medium | 30 min |
+| Change | Priority | Effort | Status |
+|--------|----------|--------|--------|
+| API key handling (GEMINI_API_KEY) | High | 10 min | ✅ Already present |
+| Tier-adaptive concurrency | High | 30 min | Pending |
+| Quiet mode in agent_runner | Medium | 15 min | Pending |
+| Path/str flexibility in export | Low | 5 min | Pending |
+| `citation_count` field | Low | 5 min | ✅ Phase 2 |
+| Token tracking system (3 files) | Medium | 30 min | Pending |
+| Multi-key API rotation (Gemini) | High | — | ✅ Phase 2 |
+| Tenacity retry library | Medium | — | ✅ Phase 2 |
 
 #### Port TO OpenPaper (from OpenDraft)
 

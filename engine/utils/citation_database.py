@@ -456,7 +456,7 @@ def has_more_metadata(citation_a: Citation, citation_b: Citation) -> bool:
         bool: True if citation_a has more complete metadata than citation_b
     """
     # Count non-None optional fields for each citation
-    optional_fields = ['journal', 'publisher', 'volume', 'issue', 'pages', 'doi', 'url', 'access_date', 'abstract']
+    optional_fields = ['journal', 'publisher', 'volume', 'issue', 'pages', 'doi', 'url', 'access_date', 'abstract', 'citation_count']
 
     score_a = sum(1 for field in optional_fields if getattr(citation_a, field) is not None)
     score_b = sum(1 for field in optional_fields if getattr(citation_b, field) is not None)

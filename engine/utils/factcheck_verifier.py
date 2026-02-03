@@ -6,60 +6,15 @@ ABOUTME: Verifies factual claims in generated text using web-grounded evidence a
 
 import sys
 import json
-import time
 import logging
-import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Any, List, Optional
-from collections import OrderedDict
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    import requests
-except ImportError:
-    requests = None
-
-
-# =========================================================================
-# FIFO Cache with TTL (ported from hallucination-detector-v2)
-# =========================================================================
-
-class FIFOCache:
-    """Simple FIFO cache with TTL expiry for verification results."""
-
-    def __init__(self, max_size: int = 100, ttl_seconds: int = 3600):
-        self._cache: OrderedDict = OrderedDict()
-        self._timestamps: Dict[str, float] = {}
-        self._lock = threading.Lock()
-        self.max_size = max_size
-        self.ttl_seconds = ttl_seconds
-
-    def get(self, key: str) -> Optional[Any]:
-        """Get a value from cache if it exists and hasn't expired."""
-        with self._lock:
-            if key not in self._cache:
-                return None
-            if time.time() - self._timestamps[key] > self.ttl_seconds:
-                del self._cache[key]
-                del self._timestamps[key]
-                return None
-            return self._cache[key]
-
-    def put(self, key: str, value: Any) -> None:
-        """Add a value to cache, evicting oldest if full."""
-        with self._lock:
-            if key in self._cache:
-                del self._cache[key]
-            elif len(self._cache) >= self.max_size:
-                oldest_key, _ = self._cache.popitem(last=False)
-                self._timestamps.pop(oldest_key, None)
-            self._cache[key] = value
-            self._timestamps[key] = time.time()
 
 
 # =========================================================================
@@ -69,7 +24,6 @@ class FIFOCache:
 VERDICT_SUPPORTED = "SUPPORTED"
 VERDICT_CONTRADICTED = "CONTRADICTED"
 VERDICT_INSUFFICIENT = "INSUFFICIENT"
-VALID_VERDICTS = {VERDICT_SUPPORTED, VERDICT_CONTRADICTED, VERDICT_INSUFFICIENT}
 
 
 def strip_json_fences(text: str) -> str:
@@ -87,6 +41,24 @@ def strip_json_fences(text: str) -> str:
     return text
 
 
+def _make_verdict(claim_obj: Dict[str, str], verdict: str = VERDICT_INSUFFICIENT,
+                  confidence: float = 0.0, wrong_part: Optional[str] = None,
+                  correct_value: Optional[str] = None, source_url: Optional[str] = None,
+                  evidence_snippet: str = "") -> Dict[str, Any]:
+    """Build a standardised verdict dict from a claim object."""
+    return {
+        "claim": claim_obj.get("claim", ""),
+        "section": claim_obj.get("section", ""),
+        "line": claim_obj.get("line", ""),
+        "verdict": verdict,
+        "confidence": confidence,
+        "wrong_part": wrong_part,
+        "correct_value": correct_value,
+        "source_url": source_url,
+        "evidence_snippet": evidence_snippet,
+    }
+
+
 # =========================================================================
 # FactCheck Verifier
 # =========================================================================
@@ -95,30 +67,24 @@ class FactCheckVerifier:
     """
     Verifies factual claims using web-grounded evidence.
 
-    Uses GeminiGroundedClient for web search and Gemini LLM for
+    Uses GeminiGroundedClient for web search and run_agent for
     claim-vs-evidence comparison. Produces a markdown report with
     find/replace corrections for false claims.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, model: Any = None):
         """
         Initialize the FactCheck verifier.
 
         Args:
             api_key: Google API key for Gemini and grounded search
+            model: Configured model instance for judge LLM calls via run_agent
         """
         from utils.api_citations.gemini_grounded import GeminiGroundedClient
 
         self.api_key = api_key
+        self.model = model
         self.grounded_client = GeminiGroundedClient(api_key=api_key)
-        self._cache = FIFOCache(max_size=100, ttl_seconds=3600)
-
-        # REST API config for judge step
-        self._base_url = 'https://generativelanguage.googleapis.com/v1beta/models'
-        self._judge_model = 'gemini-2.5-flash'
-
-        # Session for REST API calls
-        self._session = requests.Session() if requests else None
 
     def _verify_single_claim(self, i: int, total: int, claim_obj: Dict[str, str]) -> Optional[Dict[str, Any]]:
         """
@@ -130,12 +96,6 @@ class FactCheckVerifier:
         if not claim_text:
             return None
 
-        # Check cache
-        cached = self._cache.get(claim_text)
-        if cached is not None:
-            logger.debug(f"Cache hit for claim: {claim_text[:60]}...")
-            return cached
-
         logger.info(f"[FactCheck] Verifying claim {i+1}/{total}: {claim_text[:80]}...")
 
         try:
@@ -144,24 +104,11 @@ class FactCheckVerifier:
 
             # Step 2: Judge claim against evidence
             verdict = self._judge(claim_obj, evidence)
-
-            # Cache result
-            self._cache.put(claim_text, verdict)
             return verdict
 
         except Exception as e:
             logger.warning(f"[FactCheck] Failed to verify claim: {e}")
-            return {
-                "claim": claim_text,
-                "section": claim_obj.get("section", ""),
-                "line": claim_obj.get("line", ""),
-                "verdict": VERDICT_INSUFFICIENT,
-                "confidence": 0.0,
-                "wrong_part": None,
-                "correct_value": None,
-                "source_url": None,
-                "evidence_snippet": f"Verification failed: {e}",
-            }
+            return _make_verdict(claim_obj, evidence_snippet=f"Verification failed: {e}")
 
     def verify_claims(self, claims: List[Dict[str, str]], max_workers: int = 10) -> List[Dict[str, Any]]:
         """
@@ -176,8 +123,6 @@ class FactCheckVerifier:
         """
         total = len(claims)
 
-        # Use ThreadPoolExecutor for parallel I/O-bound verification
-        # Each thread gets its own requests via the shared session (thread-safe)
         results: List[Optional[Dict[str, Any]]] = [None] * total
 
         with ThreadPoolExecutor(max_workers=min(max_workers, total or 1)) as executor:
@@ -192,18 +137,9 @@ class FactCheckVerifier:
                     results[idx] = future.result()
                 except Exception as e:
                     logger.warning(f"[FactCheck] Unexpected error in worker: {e}")
-                    claim_obj = claims[idx]
-                    results[idx] = {
-                        "claim": claim_obj.get("claim", ""),
-                        "section": claim_obj.get("section", ""),
-                        "line": claim_obj.get("line", ""),
-                        "verdict": VERDICT_INSUFFICIENT,
-                        "confidence": 0.0,
-                        "wrong_part": None,
-                        "correct_value": None,
-                        "source_url": None,
-                        "evidence_snippet": f"Verification failed: {e}",
-                    }
+                    results[idx] = _make_verdict(
+                        claims[idx], evidence_snippet=f"Verification failed: {e}"
+                    )
 
         # Filter out None results (empty claims)
         return [r for r in results if r is not None]
@@ -211,10 +147,6 @@ class FactCheckVerifier:
     def _search_evidence(self, claim: str) -> List[Dict[str, str]]:
         """
         Use GeminiGroundedClient to find evidence for/against a claim.
-
-        Sends the claim as a search query via the grounded client's
-        REST API with Google Search grounding enabled. Returns evidence
-        snippets with source URLs.
 
         Args:
             claim: The factual claim to search for
@@ -225,7 +157,6 @@ class FactCheckVerifier:
         evidence = []
 
         try:
-            # Use the grounded client's internal REST API with search grounding
             prompt = (
                 f"Is this claim true or false? Find evidence:\n\n"
                 f"Claim: \"{claim}\"\n\n"
@@ -237,7 +168,6 @@ class FactCheckVerifier:
             response_data = self.grounded_client._generate_content_with_grounding(prompt)
 
             if response_data:
-                # Extract text content from response
                 candidates = response_data.get('candidates', [])
                 if candidates:
                     candidate = candidates[0]
@@ -252,7 +182,6 @@ class FactCheckVerifier:
                             'title': 'Gemini Grounded Search',
                         })
 
-                    # Extract grounding citations for source URLs
                     grounding_metadata = candidate.get('groundingMetadata', {})
                     grounding_chunks = grounding_metadata.get('groundingChunks', [])
 
@@ -287,9 +216,9 @@ class FactCheckVerifier:
         """
         LLM call: compare claim against evidence, return verdict.
 
-        Uses Gemini 2.5 Flash via REST API to compare the claim text
-        against the collected evidence and classify as SUPPORTED,
-        CONTRADICTED, or INSUFFICIENT.
+        Uses run_agent with the factcheck_judge prompt to compare the
+        claim text against the collected evidence and classify as
+        SUPPORTED, CONTRADICTED, or INSUFFICIENT.
 
         Args:
             claim_obj: Dict with claim, section, line
@@ -300,8 +229,6 @@ class FactCheckVerifier:
             correct_value, source_url, evidence_snippet
         """
         claim_text = claim_obj.get("claim", "")
-        section = claim_obj.get("section", "")
-        line = claim_obj.get("line", "")
 
         # Format evidence for the judge prompt
         evidence_text = ""
@@ -315,159 +242,61 @@ class FactCheckVerifier:
             evidence_text += f"Content: {ev.get('snippet', 'No content')}\n"
 
         if not evidence_text.strip():
-            return {
-                "claim": claim_text,
-                "section": section,
-                "line": line,
-                "verdict": VERDICT_INSUFFICIENT,
-                "confidence": 0.0,
-                "wrong_part": None,
-                "correct_value": None,
-                "source_url": None,
-                "evidence_snippet": "No evidence found",
-            }
+            return _make_verdict(claim_obj, evidence_snippet="No evidence found")
 
-        judge_prompt = f"""You are a fact-checking judge. Compare this claim against the evidence and determine if the claim is accurate.
-
-CLAIM: "{claim_text}"
-
-EVIDENCE:
-{evidence_text}
-
-Respond with ONLY a valid JSON object (no markdown fences, no explanation):
-
-{{
-  "verdict": "SUPPORTED" or "CONTRADICTED" or "INSUFFICIENT",
-  "confidence": 0.0 to 1.0,
-  "wrong_part": "the specific substring in the claim that is wrong (or null if SUPPORTED/INSUFFICIENT)",
-  "correct_value": "what the evidence says instead (or null if SUPPORTED/INSUFFICIENT)",
-  "evidence_snippet": "brief quote from evidence supporting your verdict"
-}}
-
-Rules:
-- SUPPORTED: Evidence confirms the claim is accurate (or very close, e.g. rounding)
-- CONTRADICTED: Evidence clearly shows the claim is wrong — you MUST specify wrong_part and correct_value
-- INSUFFICIENT: Not enough evidence to confirm or deny
-- wrong_part MUST be an exact substring that appears in the CLAIM text above
-- confidence should reflect how strong the evidence is (1.0 = certain, 0.5 = ambiguous)
-- If the claim is approximately correct (within reasonable rounding), verdict is SUPPORTED"""
+        user_input = f'CLAIM: "{claim_text}"\n\nEVIDENCE:\n{evidence_text}'
 
         try:
-            result = self._call_judge_llm(judge_prompt)
-            if result:
-                # Validate verdict is one of the known values
-                verdict = result.get("verdict", VERDICT_INSUFFICIENT)
-                if verdict not in VALID_VERDICTS:
-                    logger.warning(f"[FactCheck] Unknown verdict '{verdict}', defaulting to INSUFFICIENT")
+            from utils.agent_runner import run_agent
+            from utils.models import FactCheckJudgeVerdict
+
+            raw_output = run_agent(
+                model=self.model,
+                name="FactCheck - Judge",
+                prompt_path="prompts/04_validate/factcheck_judge.md",
+                user_input=user_input,
+                skip_validation=True,
+                verbose=False,
+            )
+
+            result = json.loads(strip_json_fences(raw_output))
+            parsed = FactCheckJudgeVerdict.model_validate(result)
+            verdict = parsed.verdict
+            confidence = parsed.confidence
+            wrong_part = parsed.wrong_part
+            correct_value = parsed.correct_value
+
+            # Business logic: wrong_part must actually appear in the claim
+            if wrong_part and wrong_part not in claim_text:
+                logger.warning(
+                    f"[FactCheck] wrong_part '{wrong_part}' not found in claim, clearing"
+                )
+                wrong_part = None
+                correct_value = None
+                if verdict == VERDICT_CONTRADICTED:
                     verdict = VERDICT_INSUFFICIENT
 
-                # Validate confidence is a float in [0.0, 1.0]
-                try:
-                    confidence = float(result.get("confidence", 0.0))
-                    confidence = max(0.0, min(1.0, confidence))
-                except (TypeError, ValueError):
-                    confidence = 0.0
-
-                # Validate wrong_part is actually in the claim text
-                wrong_part = result.get("wrong_part")
-                if wrong_part and wrong_part not in claim_text:
-                    logger.warning(
-                        f"[FactCheck] wrong_part '{wrong_part}' not found in claim, clearing"
-                    )
-                    wrong_part = None
-                    result["correct_value"] = None
-                    # Downgrade to INSUFFICIENT if we can't locate the error
-                    if verdict == VERDICT_CONTRADICTED:
-                        verdict = VERDICT_INSUFFICIENT
-
-                return {
-                    "claim": claim_text,
-                    "section": section,
-                    "line": line,
-                    "verdict": verdict,
-                    "confidence": confidence,
-                    "wrong_part": wrong_part,
-                    "correct_value": result.get("correct_value"),
-                    "source_url": source_urls[0] if source_urls else None,
-                    "evidence_snippet": result.get("evidence_snippet", ""),
-                }
+            return _make_verdict(
+                claim_obj,
+                verdict=verdict,
+                confidence=confidence,
+                wrong_part=wrong_part,
+                correct_value=correct_value,
+                source_url=source_urls[0] if source_urls else None,
+                evidence_snippet=parsed.evidence_snippet,
+            )
         except Exception as e:
             logger.warning(f"[FactCheck] Judge LLM failed: {e}")
 
-        return {
-            "claim": claim_text,
-            "section": section,
-            "line": line,
-            "verdict": VERDICT_INSUFFICIENT,
-            "confidence": 0.0,
-            "wrong_part": None,
-            "correct_value": None,
-            "source_url": source_urls[0] if source_urls else None,
-            "evidence_snippet": "Judge evaluation failed",
-        }
-
-    def _call_judge_llm(self, prompt: str) -> Optional[Dict[str, Any]]:
-        """
-        Call Gemini 2.5 Flash via REST API for the judge step.
-
-        Args:
-            prompt: Judge prompt with claim and evidence
-
-        Returns:
-            Parsed JSON dict from LLM response, or None
-        """
-        if not self._session:
-            raise RuntimeError("requests library not available")
-
-        body = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": prompt}]
-                }
-            ],
-            "generationConfig": {
-                "temperature": 0.1,
-                "maxOutputTokens": 1024,
-            },
-        }
-
-        url = f"{self._base_url}/{self._judge_model}:generateContent?key={self.api_key}"
-
-        response = self._session.post(
-            url,
-            json=body,
-            headers={"Content-Type": "application/json"},
-            timeout=30,
+        return _make_verdict(
+            claim_obj,
+            source_url=source_urls[0] if source_urls else None,
+            evidence_snippet="Judge evaluation failed",
         )
-
-        if not response.ok:
-            logger.warning(f"[FactCheck] Judge API error {response.status_code}: {response.text[:200]}")
-            return None
-
-        data = response.json()
-        candidates = data.get('candidates', [])
-        if not candidates:
-            return None
-
-        text = ''
-        parts = candidates[0].get('content', {}).get('parts', [])
-        if parts:
-            text = parts[0].get('text', '')
-
-        if not text:
-            return None
-
-        # Parse JSON from response (handle markdown fences)
-        return json.loads(strip_json_fences(text))
 
     def format_report(self, results: List[Dict[str, Any]]) -> str:
         """
         Format verification results as a markdown report.
-
-        Matches OpenDraft's existing QA report style with summary
-        statistics and detailed issue descriptions including
-        find/replace corrections.
 
         Args:
             results: List of verdict dicts from verify_claims()

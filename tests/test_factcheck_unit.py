@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
 ABOUTME: Unit tests for factcheck pipeline — no API calls required
-ABOUTME: Tests FIFOCache, format_report, and markdown fence stripping logic
+ABOUTME: Tests format_report, markdown fence stripping, and _make_verdict logic
 """
 
 import json
-import time
 import sys
 from pathlib import Path
 
@@ -15,65 +14,13 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from utils.factcheck_verifier import (
-    FIFOCache,
     FactCheckVerifier,
     VERDICT_SUPPORTED,
     VERDICT_CONTRADICTED,
     VERDICT_INSUFFICIENT,
     strip_json_fences,
+    _make_verdict,
 )
-
-
-# =========================================================================
-# TestFIFOCache
-# =========================================================================
-
-class TestFIFOCache:
-    """Tests for FIFOCache put/get, eviction, TTL, and overwrite behaviour."""
-
-    def test_put_and_get(self):
-        cache = FIFOCache(max_size=10, ttl_seconds=60)
-        cache.put("key1", {"verdict": "SUPPORTED"})
-        assert cache.get("key1") == {"verdict": "SUPPORTED"}
-
-    def test_get_missing_key_returns_none(self):
-        cache = FIFOCache(max_size=10, ttl_seconds=60)
-        assert cache.get("nonexistent") is None
-
-    def test_eviction_at_max_size(self):
-        cache = FIFOCache(max_size=3, ttl_seconds=60)
-        cache.put("a", 1)
-        cache.put("b", 2)
-        cache.put("c", 3)
-        # Cache is full — adding a 4th should evict "a" (oldest)
-        cache.put("d", 4)
-        assert cache.get("a") is None
-        assert cache.get("b") == 2
-        assert cache.get("c") == 3
-        assert cache.get("d") == 4
-
-    def test_ttl_expiry(self):
-        cache = FIFOCache(max_size=10, ttl_seconds=1)
-        cache.put("key", "value")
-        assert cache.get("key") == "value"
-        # Wait for TTL to expire
-        time.sleep(1.1)
-        assert cache.get("key") is None
-
-    def test_overwrite_existing_key(self):
-        cache = FIFOCache(max_size=10, ttl_seconds=60)
-        cache.put("key", "old")
-        cache.put("key", "new")
-        assert cache.get("key") == "new"
-
-    def test_overwrite_does_not_increase_size(self):
-        cache = FIFOCache(max_size=2, ttl_seconds=60)
-        cache.put("a", 1)
-        cache.put("b", 2)
-        # Overwrite "a" — should not evict "b"
-        cache.put("a", 10)
-        assert cache.get("a") == 10
-        assert cache.get("b") == 2
 
 
 # =========================================================================
@@ -89,7 +36,7 @@ class TestFormatReport:
         # Patch __init__ to avoid importing GeminiGroundedClient
         obj = object.__new__(FactCheckVerifier)
         obj.api_key = "dummy"
-        obj._cache = FIFOCache()
+        obj.model = None
         return obj
 
     def _make_result(self, verdict, claim="Test claim", **kwargs):
@@ -215,7 +162,7 @@ class TestFormatReport:
 class TestMarkdownFenceStripping:
     """
     Tests the JSON parsing logic that strips ```json fences from LLM output.
-    This mirrors the parsing in FactCheckVerifier._call_judge_llm and the
+    This mirrors the parsing in FactCheckVerifier._judge and the
     claim extraction parsing that will be used in draft_generator integration.
     """
 
@@ -275,10 +222,7 @@ class TestVerifyClaims:
         """Create a FactCheckVerifier bypassing __init__ (no API calls)."""
         obj = object.__new__(FactCheckVerifier)
         obj.api_key = "dummy"
-        obj._cache = FIFOCache()
-        obj._session = None
-        obj._base_url = ""
-        obj._judge_model = ""
+        obj.model = None
         return obj
 
     def test_empty_claims_list(self, verifier):
@@ -288,3 +232,48 @@ class TestVerifyClaims:
     def test_claims_with_empty_text_filtered(self, verifier):
         results = verifier.verify_claims([{"claim": "", "section": "1", "line": "x"}])
         assert results == []
+
+
+# =========================================================================
+# TestMakeVerdict
+# =========================================================================
+
+class TestMakeVerdict:
+    """Tests for the _make_verdict helper function."""
+
+    def test_defaults(self):
+        claim_obj = {"claim": "test claim", "section": "1.0", "line": "some line"}
+        result = _make_verdict(claim_obj)
+        assert result["claim"] == "test claim"
+        assert result["section"] == "1.0"
+        assert result["line"] == "some line"
+        assert result["verdict"] == VERDICT_INSUFFICIENT
+        assert result["confidence"] == 0.0
+        assert result["wrong_part"] is None
+        assert result["correct_value"] is None
+        assert result["source_url"] is None
+        assert result["evidence_snippet"] == ""
+
+    def test_custom_values(self):
+        claim_obj = {"claim": "GPT-4 released 2022", "section": "2.1", "line": "ctx"}
+        result = _make_verdict(
+            claim_obj,
+            verdict=VERDICT_CONTRADICTED,
+            confidence=0.95,
+            wrong_part="2022",
+            correct_value="2023",
+            source_url="https://example.com",
+            evidence_snippet="Released March 2023",
+        )
+        assert result["verdict"] == VERDICT_CONTRADICTED
+        assert result["confidence"] == 0.95
+        assert result["wrong_part"] == "2022"
+        assert result["correct_value"] == "2023"
+        assert result["source_url"] == "https://example.com"
+        assert result["evidence_snippet"] == "Released March 2023"
+
+    def test_missing_keys_default_to_empty_string(self):
+        result = _make_verdict({})
+        assert result["claim"] == ""
+        assert result["section"] == ""
+        assert result["line"] == ""

@@ -121,7 +121,9 @@ def run_agent(
     verbose: bool = True,
     validators: Optional[List[Callable[[str], ValidationResult]]] = None,
     max_retries: int = 3,
-    skip_validation: bool = False
+    skip_validation: bool = False,
+    token_tracker: Optional[Any] = None,
+    token_stage: Optional[str] = None,
 ) -> str:
     """
     Run an AI agent with given prompt and input, with optional validation.
@@ -262,7 +264,23 @@ def run_agent(
             
             output = str(output)
 
+            # Defense-in-depth: scrub planning preambles, metadata, and cite_MISSING markers
+            from utils.text_utils import clean_agent_output
+            output = clean_agent_output(output)
+
             logger.debug(f"Agent '{name}': Generated {len(output)} chars in {time.time() - start_time:.1f}s")
+
+            # Track token usage if tracker is provided
+            if token_tracker and hasattr(response, 'usage_metadata'):
+                try:
+                    meta = response.usage_metadata
+                    token_tracker.add_call(
+                        stage=token_stage or name,
+                        input_tokens=getattr(meta, 'prompt_token_count', 0) or 0,
+                        output_tokens=getattr(meta, 'candidates_token_count', 0) or 0,
+                    )
+                except Exception:
+                    pass  # Never break generation for tracking failures
 
             # Validate output if validators provided (and not skipped)
             if validators and not skip_validation:

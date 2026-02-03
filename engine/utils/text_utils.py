@@ -458,6 +458,130 @@ def estimate_tokens(text: str, chars_per_token: float = 4.0) -> int:
     return int(len(text) / chars_per_token)
 
 
+def clean_agent_output(text: str) -> str:
+    """
+    Defense-in-depth scrubbing of raw LLM agent output.
+
+    Applies three passes to remove artifacts that should never appear
+    in downstream content:
+
+    Pass A - Strip planning preambles (Ticket 017):
+        Removes conversational/planning text before actual content begins.
+    Pass B - Strip metadata sections (Ticket 018):
+        Removes meta-commentary lines and sections (word counts, status, etc.).
+    Pass C - Strip cite_MISSING markers (Ticket 019):
+        Removes {cite_MISSING: ...} placeholders before they reach citation compile.
+
+    Args:
+        text: Raw LLM output string
+
+    Returns:
+        Cleaned text with all three artifact types removed
+    """
+    if not text or not text.strip():
+        return text
+
+    text = _strip_planning_preamble(text)
+    text = _strip_metadata_sections(text)
+    text = _strip_cite_missing(text)
+
+    return text
+
+
+def _strip_planning_preamble(text: str) -> str:
+    """
+    Pass A: Remove planning/conversational preamble before actual content.
+
+    Catches patterns like:
+    - "Okay, I understand..."
+    - "Here's my plan..."
+    - "I will write..."
+    - "Let me first..."
+    - Numbered planning steps (1. First I'll..., 2. Then I'll...)
+    """
+    # Look for the first markdown heading
+    heading_match = re.search(r'^#{1,6}\s+\S', text, re.MULTILINE)
+
+    if heading_match:
+        before_heading = text[:heading_match.start()]
+        # Check if the text before the heading looks like planning preamble
+        preamble_patterns = [
+            r'(?i)^okay[,.]?\s+I\s+(?:understand|will|\'ll)',
+            r'(?i)^here\'?s?\s+(?:my|the)\s+(?:plan|approach|draft|outline)',
+            r'(?i)^I\s+will\s+(?:write|draft|compose|create|start|begin)',
+            r'(?i)^let\s+me\s+(?:first|start|begin|think|plan|outline)',
+            r'(?i)^I\'?ll\s+(?:start|begin|write|draft|first)',
+            r'(?i)^(?:sure|certainly|of course)[,!.]',
+            r'(?i)^\d+\.\s+(?:first|then|next|finally)\b',
+        ]
+        for pattern in preamble_patterns:
+            if re.search(pattern, before_heading.strip(), re.MULTILINE):
+                text = text[heading_match.start():]
+                break
+
+    return text
+
+
+def _strip_metadata_sections(text: str) -> str:
+    """
+    Pass B: Remove metadata lines and entire metadata sections.
+
+    Removes single-line metadata:
+    - **Section:** ...
+    - **Word Count:** ...
+    - **Status:** ...
+
+    Removes entire sections (heading + body until next heading or EOF):
+    - ## Citations Used
+    - ## Notes for Revision
+    - ## Word Count Breakdown
+    """
+    # Single-line metadata patterns (bold-formatted)
+    line_patterns = [
+        r'^\*{2}Section:\*{2}\s*[^\n]*$',
+        r'^\*{2}Word\s*Count:\*{2}\s*[^\n]*$',
+        r'^\*{2}Status:\*{2}\s*[^\n]*$',
+    ]
+    for pattern in line_patterns:
+        text = re.sub(pattern, '', text, flags=re.MULTILINE | re.IGNORECASE)
+
+    # Entire metadata sections: heading + content until next heading or EOF
+    section_headings = [
+        r'Citations?\s+Used',
+        r'Notes?\s+for\s+Revision',
+        r'Word\s+Count\s+Breakdown',
+    ]
+    for heading in section_headings:
+        # Match ## heading + everything until next ## heading or end of string
+        # Uses DOTALL-free approach: match the heading line, then greedily consume
+        # all subsequent lines that don't start with a markdown heading
+        # Note: pattern built via concatenation to avoid rf-string escaping issues
+        pattern = r'^#{1,6}\s+' + heading + r'[^\n]*(?:\n(?!#{1,6}\s).*)*'
+        text = re.sub(pattern, '', text, flags=re.MULTILINE | re.IGNORECASE)
+
+    # Clean up multiple consecutive blank lines
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    return text.strip()
+
+
+def _strip_cite_missing(text: str) -> str:
+    """
+    Pass C: Remove {cite_MISSING: ...} and {cite_MISSING:...} placeholders.
+
+    These markers indicate the LLM couldn't find a real citation.
+    They must be removed before reaching compile_citations().
+    """
+    text = re.sub(r'\{cite_MISSING\s*:\s*[^}]*\}', '', text)
+
+    # Clean up any double spaces left behind
+    text = re.sub(r'  +', ' ', text)
+    # Clean up space before punctuation (e.g. "to , cities" → "to, cities")
+    text = re.sub(r' +([.,;:!?])', r'\1', text)
+
+    return text
+
+
 def clean_ai_language(text: str) -> str:
     """
     Clean AI-typical language patterns from text.

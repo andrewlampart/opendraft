@@ -9,6 +9,10 @@ import json
 import logging
 from typing import Tuple
 
+from pydantic import ValidationError
+
+from .models import strip_markdown_json, ResearchPlan
+
 # Gemini finish_reason codes
 # 1 = STOP (normal), 2 = SAFETY, 3 = MAX_TOKENS, 4 = RECITATION
 SAFETY_BLOCKED = 2
@@ -268,14 +272,14 @@ class DeepResearchPlanner:
             if not plan_text:
                 raise ValueError(f"Unable to generate research plan after {max_retries} attempts (safety filter)")
 
-            # Remove markdown code blocks if present
-            if plan_text.startswith("```"):
-                plan_text = plan_text.split("```")[1]
-                if plan_text.startswith("json"):
-                    plan_text = plan_text[4:]
-                plan_text = plan_text.strip()
+            # Remove markdown code blocks if present and validate
+            plan_text = strip_markdown_json(plan_text)
 
-            plan = json.loads(plan_text)
+            try:
+                validated = ResearchPlan.model_validate(json.loads(plan_text))
+                plan = validated.model_dump()
+            except (json.JSONDecodeError, ValidationError) as e:
+                raise ValueError(f"Invalid research plan JSON from Gemini: {e}")
 
             if self.verbose:
                 print(f"   ✓ Plan created: {len(plan.get('queries', []))} research queries")
@@ -534,14 +538,14 @@ Return ONLY valid JSON, no markdown blocks.
                 )
             )
 
-            plan_text = response.text.strip()
-            if plan_text.startswith("```"):
-                plan_text = plan_text.split("```")[1]
-                if plan_text.startswith("json"):
-                    plan_text = plan_text[4:]
-                plan_text = plan_text.strip()
+            plan_text = strip_markdown_json(response.text.strip())
 
-            refined_plan = json.loads(plan_text)
+            try:
+                validated = ResearchPlan.model_validate(json.loads(plan_text))
+                refined_plan = validated.model_dump()
+            except (json.JSONDecodeError, ValidationError) as e:
+                logger.warning(f"Invalid refined plan JSON: {e}")
+                return plan  # Return original on validation failure
 
             if self.verbose:
                 print(f"   ✓ Plan refined: {len(refined_plan.get('queries', []))} queries")

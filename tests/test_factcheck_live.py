@@ -15,7 +15,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from utils.factcheck_verifier import (
-    FIFOCache,
     FactCheckVerifier,
     VERDICT_SUPPORTED,
     VERDICT_CONTRADICTED,
@@ -138,7 +137,11 @@ def test_evidence_search():
     Test that _search_evidence returns useful evidence for known claims.
     """
     api_key = require_api_key()
-    verifier = FactCheckVerifier(api_key=api_key)
+
+    from utils.agent_runner import setup_model
+    model = setup_model()
+
+    verifier = FactCheckVerifier(api_key=api_key, model=model)
 
     # Test with a well-known false claim
     evidence_false = verifier._search_evidence("GPT-4 was released in 2022")
@@ -161,7 +164,11 @@ def test_judge():
     Test that _judge returns correct verdicts given claim + evidence pairs.
     """
     api_key = require_api_key()
-    verifier = FactCheckVerifier(api_key=api_key)
+
+    from utils.agent_runner import setup_model
+    model = setup_model()
+
+    verifier = FactCheckVerifier(api_key=api_key, model=model)
 
     # --- Case 1: False claim with contradicting evidence ---
     false_claim = {
@@ -243,7 +250,7 @@ def test_end_to_end():
     assert len(claims) >= 2, f"Expected at least 2 claims, got {len(claims)}"
 
     # Step 2: Verify claims
-    verifier = FactCheckVerifier(api_key=api_key)
+    verifier = FactCheckVerifier(api_key=api_key, model=model)
     results = verifier.verify_claims(claims)
     assert len(results) >= 2, f"Expected at least 2 results, got {len(results)}"
 

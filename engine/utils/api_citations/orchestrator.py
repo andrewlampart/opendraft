@@ -12,6 +12,8 @@ from typing import Optional, Dict, Any, Tuple, List, Callable
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
 
+from pydantic import ValidationError
+
 # Safe print function that handles broken pipes (worker runs with stdio: 'ignore')
 def safe_print(*args, **kwargs):
     """Print wrapper that catches BrokenPipeError when stdout is closed."""
@@ -33,6 +35,8 @@ from .gemini_grounded import GeminiGroundedClient
 from .serper_client import SerperClient
 from .query_router import QueryRouter, QueryClassification
 from .base import validate_publication_year, validate_author_name
+
+from ..models import strip_markdown_json, LLMCitationResponse
 
 # =========================================================================
 # Preprint Detection (Fix 3 from devil's advocate analysis)
@@ -701,6 +705,7 @@ class CitationResearcher:
                 url=metadata.get("url", ""),
                 api_source=source,  # Track which API found this citation
                 abstract=abstract,  # Include abstract from API responses
+                citation_count=metadata.get("citation_count"),
             )
 
             return citation
@@ -900,44 +905,43 @@ Return a JSON object with this structure:
                 return None
 
             # Remove markdown code blocks if present
-            if response_text.startswith("```"):
-                response_text = response_text.split("```")[1]
-                if response_text.startswith("json"):
-                    response_text = response_text[4:]
-                response_text = response_text.strip()
+            response_text = strip_markdown_json(response_text)
 
-            # Parse JSON with robust error handling
+            # Parse JSON first (error responses lack required fields for Pydantic)
             try:
-                data = json.loads(response_text)
+                raw_data = json.loads(response_text)
             except json.JSONDecodeError as e:
                 logger.warning(f"LLM returned invalid JSON for topic '{topic[:50]}...': {e}")
                 logger.debug(f"Raw response: {response_text[:200]}...")
                 return None
 
-            # Check for error
-            if "error" in data:
-                logger.debug(f"LLM returned error response for topic '{topic[:50]}...': {data['error']}")
+            # Check for error before validation
+            if "error" in raw_data:
+                logger.debug(f"LLM returned error response for topic '{topic[:50]}...': {raw_data['error']}")
                 return None
 
-            # Validate and return
-            if data.get("title") and data.get("authors") and data.get("year"):
-                return {
-                    "title": data["title"],
-                    "authors": data["authors"],
-                    "year": int(data["year"]),
-                    "doi": data.get("doi", ""),
-                    "url": data.get("url", ""),
-                    "journal": data.get("journal", "") or data.get("conference", ""),
-                    "publisher": data.get("publisher", ""),
-                    "volume": data.get("volume", ""),
-                    "issue": data.get("issue", ""),
-                    "pages": data.get("pages", ""),
-                    "source_type": data.get("source_type", "journal"),
-                    "confidence": 0.5,  # Lower confidence for LLM results
-                }
-            else:
-                logger.debug(f"LLM returned incomplete metadata for topic '{topic[:50]}...'")
+            # Validate with Pydantic
+            try:
+                data = LLMCitationResponse.model_validate(raw_data)
+            except ValidationError as e:
+                logger.warning(f"LLM returned invalid citation for topic '{topic[:50]}...': {e}")
                 return None
+
+            # Convert validated model to dict for existing pipeline
+            return {
+                "title": data.title,
+                "authors": data.authors,
+                "year": data.year,
+                "doi": data.doi,
+                "url": data.url,
+                "journal": data.journal or data.conference,
+                "publisher": data.publisher,
+                "volume": data.volume,
+                "issue": data.issue,
+                "pages": data.pages,
+                "source_type": data.source_type,
+                "confidence": 0.5,  # Lower confidence for LLM results
+            }
 
         except Exception as e:
             logger.error(f"LLM research failed for topic '{topic[:50]}...': {e}")

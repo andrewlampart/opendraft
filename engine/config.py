@@ -100,6 +100,9 @@ class AppConfig:
     google_api_key: str = field(
         default_factory=lambda: os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY', '')
     )
+    google_api_key_fallback: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK', ''))
+    google_api_key_fallback_2: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK_2', ''))
+    google_api_key_fallback_3: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK_3', ''))
     anthropic_api_key: str = field(default_factory=lambda: os.getenv('ANTHROPIC_API_KEY', ''))
     openai_api_key: str = field(default_factory=lambda: os.getenv('OPENAI_API_KEY', ''))
 

@@ -65,6 +65,78 @@ def sample_citation_multiple_authors():
 
 
 @pytest.fixture
+def sample_citation_conference():
+    """Conference paper citation for testing."""
+    return Citation(
+        citation_id="cite_004",
+        authors=["Lee", "Park"],
+        year=2022,
+        title="Neural Architecture Search",
+        source_type="conference",
+        publisher="Proceedings of ICML 2022",
+        pages="100-115",
+        doi="10.5555/icml.2022.004"
+    )
+
+
+@pytest.fixture
+def sample_citation_report():
+    """Report/website citation for testing."""
+    return Citation(
+        citation_id="cite_005",
+        authors=["World Health Organization"],
+        year=2023,
+        title="Global Health Statistics",
+        source_type="report",
+        publisher="WHO Press",
+        url="https://www.who.int/reports/2023"
+    )
+
+
+@pytest.fixture
+def sample_citation_many_authors():
+    """Citation with 8+ authors for truncation testing."""
+    return Citation(
+        citation_id="cite_006",
+        authors=["Adams", "Baker", "Clark", "Davis", "Evans", "Foster", "Garcia", "Harris"],
+        year=2020,
+        title="Large-Scale Collaboration Study",
+        source_type="journal",
+        journal="Collaborative Research",
+        volume=12,
+        pages="1-30",
+        doi="10.9999/collab.2020.006"
+    )
+
+
+@pytest.fixture
+def sample_citation_three_authors():
+    """Citation with exactly 3 authors (IEEE boundary case)."""
+    return Citation(
+        citation_id="cite_007",
+        authors=["Kim", "Lee", "Park"],
+        year=2023,
+        title="Distributed Systems",
+        source_type="journal",
+        journal="IEEE Transactions",
+        volume=8,
+        pages="200-220"
+    )
+
+
+@pytest.fixture
+def sample_citation_minimal():
+    """Citation with minimal fields (no DOI, no URL, no volume)."""
+    return Citation(
+        citation_id="cite_008",
+        authors=["Tanaka"],
+        year=2024,
+        title="Minimal Reference Test",
+        source_type="journal"
+    )
+
+
+@pytest.fixture
 def apa_database():
     """Database configured for APA style."""
     return CitationDatabase(citations=[], citation_style="APA 7th")
@@ -225,6 +297,363 @@ class TestReferenceListGeneration:
         zebra_pos = result.find("Zebra")
 
         assert alpha_pos < middle_pos < zebra_pos
+
+
+# =============================================================================
+# IEEE REFERENCE FORMATTING TESTS
+# =============================================================================
+
+class TestIEEEReferenceFormatting:
+    """Test IEEE reference list formatting."""
+
+    def test_ieee_journal_article(self, ieee_database, sample_citation_single_author):
+        """Journal with volume + pages: [N] Author., "Title," *Journal*, vol. X, pp. Y, Year."""
+        compiler = CitationCompiler(ieee_database)
+        result = compiler._format_ieee_reference(sample_citation_single_author)
+
+        assert result.startswith("[001]")
+        assert 'Smith.' in result
+        assert '"Machine Learning Applications,"' in result
+        assert "*Nature*" in result
+        assert "vol. 45" in result
+        assert "pp. 123-145" in result
+        assert "2023." in result
+
+    def test_ieee_journal_no_volume(self, ieee_database):
+        """Journal omits vol. and pp. when missing."""
+        citation = Citation(
+            citation_id="cite_010",
+            authors=["Wang"],
+            year=2023,
+            title="Sparse Methods",
+            source_type="journal",
+            journal="Computing Reviews"
+        )
+        compiler = CitationCompiler(ieee_database)
+        result = compiler._format_ieee_reference(citation)
+
+        assert "*Computing Reviews*" in result
+        assert "vol." not in result
+        assert "pp." not in result
+        assert "2023." in result
+
+    def test_ieee_book(self, ieee_database, sample_citation_multiple_authors):
+        """Non-journal source hits else branch."""
+        compiler = CitationCompiler(ieee_database)
+        result = compiler._format_ieee_reference(sample_citation_multiple_authors)
+
+        # Book uses the else branch: [N] Authors, "Title," Year.
+        assert result.startswith("[003]")
+        assert '"AI in Healthcare,"' in result
+        assert "2021." in result
+        # Should NOT have journal-specific fields
+        assert "vol." not in result
+        assert "pp." not in result
+
+    def test_ieee_three_authors(self, ieee_database, sample_citation_three_authors):
+        """Boundary: 3 authors all listed (<=3 check at L481)."""
+        compiler = CitationCompiler(ieee_database)
+        result = compiler._format_ieee_reference(sample_citation_three_authors)
+
+        assert "Kim." in result
+        assert "Lee." in result
+        assert "Park." in result
+        assert "et al." not in result
+
+    def test_ieee_four_plus_authors(self, ieee_database, sample_citation_multiple_authors):
+        """4 authors triggers et al. (L484)."""
+        compiler = CitationCompiler(ieee_database)
+        result = compiler._format_ieee_reference(sample_citation_multiple_authors)
+
+        assert "Smith. et al." in result
+        # Should NOT list all authors
+        assert "Johnson" not in result
+        assert "Williams" not in result
+        assert "Brown" not in result
+
+
+# =============================================================================
+# APA REFERENCE FORMATTING — OTHER SOURCE TYPES
+# =============================================================================
+
+class TestAPAReferenceOtherTypes:
+    """Test APA reference formatting for non-journal, non-book source types."""
+
+    def test_apa_conference_paper(self, apa_database, sample_citation_conference):
+        """Conference branch: publisher + (pp. X)."""
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(sample_citation_conference)
+
+        assert "Lee" in result
+        assert "Park" in result
+        assert "(2022)" in result
+        assert "Neural Architecture Search" in result
+        assert "Proceedings of ICML 2022" in result
+        assert "(pp. 100-115)" in result
+        assert "https://doi.org/10.5555/icml.2022.004" in result
+
+    def test_apa_report_with_url(self, apa_database, sample_citation_report):
+        """Report/website branch: publisher + URL."""
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(sample_citation_report)
+
+        assert "World Health Organization." in result
+        assert "(2023)" in result
+        assert "*Global Health Statistics*" in result
+        assert "WHO Press" in result
+        assert "https://www.who.int/reports/2023" in result
+
+    def test_apa_journal_url_no_doi(self, apa_database):
+        """URL fallback when DOI absent."""
+        citation = Citation(
+            citation_id="cite_020",
+            authors=["Martinez"],
+            year=2023,
+            title="Open Access Review",
+            source_type="journal",
+            journal="Open Science",
+            volume=5,
+            url="https://openscience.org/article/123"
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "https://openscience.org/article/123" in result
+        assert "doi.org" not in result
+
+    def test_apa_book_with_doi(self, apa_database):
+        """Book appends DOI."""
+        citation = Citation(
+            citation_id="cite_021",
+            authors=["Thompson"],
+            year=2022,
+            title="Advanced Algorithms",
+            source_type="book",
+            publisher="MIT Press",
+            doi="10.7777/mitpress.2022.021"
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "*Advanced Algorithms*" in result
+        assert "MIT Press" in result
+        assert "https://doi.org/10.7777/mitpress.2022.021" in result
+
+
+# =============================================================================
+# EDGE CASE TESTS
+# =============================================================================
+
+class TestEdgeCases:
+    """Test edge cases and data quality regressions."""
+
+    def test_apa_8_plus_authors_truncation(self, apa_database, sample_citation_many_authors):
+        """8 authors triggers 'first 6 ... & last' (L388-389)."""
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(sample_citation_many_authors)
+
+        # First 6 authors listed
+        assert "Adams" in result
+        assert "Baker" in result
+        assert "Clark" in result
+        assert "Davis" in result
+        assert "Evans" in result
+        assert "Foster" in result
+        # Last author after ellipsis
+        assert "... & Harris." in result
+        # 7th author (Garcia) should NOT appear
+        assert "Garcia" not in result
+
+    def test_apa_missing_journal(self, apa_database):
+        """journal=None doesn't crash (L395: journal or '')."""
+        citation = Citation(
+            citation_id="cite_030",
+            authors=["NoJournal"],
+            year=2023,
+            title="Missing Journal Field",
+            source_type="journal",
+            journal=None
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "NoJournal." in result
+        assert "(2023)" in result
+        # Should produce ** (empty italics) but not crash
+        assert "Missing Journal Field" in result
+
+    def test_apa_missing_publisher_book(self, apa_database):
+        """publisher=None doesn't crash (L420-422)."""
+        citation = Citation(
+            citation_id="cite_031",
+            authors=["NoPub"],
+            year=2022,
+            title="No Publisher Book",
+            source_type="book",
+            publisher=None
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "NoPub." in result
+        assert "(2022)" in result
+        assert "*No Publisher Book*" in result
+
+    def test_apa_no_doi_no_url(self, apa_database):
+        """No DOI + no URL produces valid ref without trailing link."""
+        citation = Citation(
+            citation_id="cite_032",
+            authors=["Plain"],
+            year=2021,
+            title="No Links Paper",
+            source_type="journal",
+            journal="Local Journal",
+            volume=1,
+            pages="10-20"
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "doi.org" not in result
+        assert "http" not in result
+        assert result.endswith(".")
+
+    def test_apa_unknown_source_type(self, apa_database):
+        """'preprint' hits fallback branch (L461-470)."""
+        citation = Citation(
+            citation_id="cite_033",
+            authors=["Preprint"],
+            year=2024,
+            title="Arxiv Preprint Paper",
+            source_type="preprint",
+            doi="10.48550/arxiv.2024.033"
+        )
+        compiler = CitationCompiler(apa_database)
+        result = compiler._format_apa_reference(citation)
+
+        assert "Preprint." in result
+        assert "(2024)" in result
+        assert "Arxiv Preprint Paper" in result
+        assert "https://doi.org/10.48550/arxiv.2024.033" in result
+
+    def test_ieee_number_extraction(self, ieee_database):
+        """cite_001 -> [1], cite_099 -> [99] (L212-213)."""
+        cite_1 = Citation(
+            citation_id="cite_001",
+            authors=["A"],
+            year=2023,
+            title="First",
+            source_type="journal"
+        )
+        cite_99 = Citation(
+            citation_id="cite_099",
+            authors=["Z"],
+            year=2023,
+            title="Last",
+            source_type="journal"
+        )
+        compiler = CitationCompiler(ieee_database)
+
+        assert compiler.format_in_text_citation(cite_1) == "[1]"
+        assert compiler.format_in_text_citation(cite_99) == "[99]"
+
+
+# =============================================================================
+# CITATION COMPILATION TESTS
+# =============================================================================
+
+class TestCitationCompilation:
+    """Test compile_citations() pipeline method."""
+
+    def _make_compiler(self, citations, style="APA 7th"):
+        """Helper to build a CitationDatabase + CitationCompiler with model=None."""
+        db = CitationDatabase(citations=citations, citation_style=style)
+        return CitationCompiler(db, model=None)
+
+    def test_compile_replaces_single_citation(self):
+        """{cite_001} -> (Smith, 2023) in APA."""
+        citations = [
+            Citation(citation_id="cite_001", authors=["Smith"], year=2023,
+                     title="Test", source_type="journal")
+        ]
+        compiler = self._make_compiler(citations)
+        text = "As shown {cite_001} this works."
+        result, missing, researched = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert "(Smith, 2023)" in result
+        assert "{cite_001}" not in result
+        assert missing == []
+
+    def test_compile_replaces_multiple_citations(self):
+        """Two {cite_XXX} both replaced."""
+        citations = [
+            Citation(citation_id="cite_001", authors=["Smith"], year=2023,
+                     title="Test A", source_type="journal"),
+            Citation(citation_id="cite_002", authors=["Jones"], year=2022,
+                     title="Test B", source_type="journal"),
+        ]
+        compiler = self._make_compiler(citations)
+        text = "First {cite_001} and second {cite_002} here."
+        result, missing, _ = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert "(Smith, 2023)" in result
+        assert "(Jones, 2022)" in result
+        assert "{cite_" not in result
+        assert missing == []
+
+    def test_compile_missing_id_becomes_marker(self):
+        """Unknown {cite_099} -> [MISSING: cite_099]."""
+        compiler = self._make_compiler([])
+        text = "Reference {cite_099} not found."
+        result, missing, _ = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert "[MISSING: cite_099]" in result
+        assert "{cite_099}" not in result
+
+    def test_compile_returns_missing_ids(self):
+        """Return tuple's second element lists missing IDs."""
+        compiler = self._make_compiler([])
+        text = "Missing {cite_099} and {cite_088}."
+        _, missing, _ = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert "cite_099" in missing
+        assert "cite_088" in missing
+        assert len(missing) == 2
+
+    def test_compile_remaining_missing_topic(self):
+        """{cite_MISSING:topic} with research_missing=False -> [MISSING: topic]."""
+        compiler = self._make_compiler([])
+        text = "Need citation {cite_MISSING:quantum computing} here."
+        result, missing, _ = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert "[MISSING: quantum computing]" in result
+        assert "{cite_MISSING:" not in result
+
+    def test_compile_preserves_plain_text(self):
+        """Text without cite patterns passes through unchanged."""
+        compiler = self._make_compiler([])
+        text = "This is plain text with no citations at all."
+        result, missing, _ = compiler.compile_citations(text, research_missing=False, verbose=False)
+
+        assert result == text
+        assert missing == []
+
+    def test_validate_clean_compilation(self):
+        """validate_compilation() returns success: True when no markers remain."""
+        citations = [
+            Citation(citation_id="cite_001", authors=["Smith"], year=2023,
+                     title="Test", source_type="journal")
+        ]
+        compiler = self._make_compiler(citations)
+        original = "As shown {cite_001} this works."
+        compiled, _, _ = compiler.compile_citations(original, research_missing=False, verbose=False)
+
+        validation = compiler.validate_compilation(original, compiled)
+        assert validation['success'] is True
+        assert validation['issues'] == []
+        assert validation['total_citations'] == 1
+        assert validation['successfully_compiled'] == 1
+        assert validation['missing_citations'] == 0
 
 
 # =============================================================================
