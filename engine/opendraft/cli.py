@@ -516,9 +516,8 @@ def run_interactive():
         "Citation style",
         [
             ("APA 7th Edition", "apa"),
-            ("MLA 9th Edition", "mla"),
-            ("Chicago", "chicago"),
             ("IEEE", "ieee"),
+            # Note: MLA and Chicago coming soon - see docs/CITATION_STYLES_ROADMAP.md
         ],
         default=0
     )
@@ -666,7 +665,8 @@ def run_interactive():
             author_name=author_name,
             institution=institution,
             department=department,
-            advisor=advisor
+            advisor=advisor,
+            citation_style=style,
         )
 
         print()
@@ -767,9 +767,9 @@ def main():
 
     parser.add_argument(
         "--style", "-s",
-        choices=["apa", "mla", "chicago", "ieee"],
+        choices=["apa", "ieee"],
         default="apa",
-        help="Citation style"
+        help="Citation style (APA or IEEE)"
     )
 
     parser.add_argument(
@@ -919,7 +919,8 @@ def main():
             author_name=args.author,
             institution=args.institution,
             department=args.department,
-            advisor=args.advisor
+            advisor=args.advisor,
+            citation_style=args.style,
         )
 
         print()

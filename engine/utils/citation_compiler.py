@@ -186,8 +186,11 @@ class CitationCompiler:
         elif self.style == "IEEE":
             return self._format_ieee_in_text(citation)
         else:
-            # Default to APA
-            return self._format_apa_in_text(citation)
+            raise NotImplementedError(
+                f"Citation style '{self.style}' is not yet implemented. "
+                f"Supported styles: 'APA 7th', 'IEEE'. "
+                f"See docs/CITATION_STYLES_ROADMAP.md for planned styles."
+            )
 
     def _format_apa_in_text(self, citation: Citation) -> str:
         """Format in-text citation in APA 7th style."""
@@ -254,7 +257,11 @@ class CitationCompiler:
             elif self.style == "IEEE":
                 ref = self._format_ieee_reference(citation)
             else:
-                ref = self._format_apa_reference(citation)
+                raise NotImplementedError(
+                    f"Citation style '{self.style}' is not yet implemented. "
+                    f"Supported styles: 'APA 7th', 'IEEE'. "
+                    f"See docs/CITATION_STYLES_ROADMAP.md for planned styles."
+                )
 
             references.append(ref)
 

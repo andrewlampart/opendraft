@@ -48,10 +48,10 @@ class ModelConfig:
     def __post_init__(self):
         """Validate model configuration."""
         valid_models = [
-            'gemini-3-pro-preview',  # Default - highest quality
-            'gemini-3-flash',        # Fast, cost-effective
-            'gemini-2.5-flash',      # Legacy
-            'gemini-2.5-pro',        # Legacy
+            'gemini-3-pro-preview',    # Highest quality
+            'gemini-3-flash-preview',  # Fast, near-pro quality (3x faster)
+            'gemini-2.5-flash',        # Legacy fast
+            'gemini-2.5-pro',          # Legacy pro
         ]
         if self.provider == 'gemini' and self.model_name not in valid_models:
             raise ValueError(
@@ -93,8 +93,10 @@ class AppConfig:
     Single source of truth for all settings across the application.
     Follows SOLID principles and provides type-safe access to configuration.
     """
-    # API Keys
-    google_api_key: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY', ''))
+    # API Keys (GEMINI_API_KEY is alias for GOOGLE_API_KEY)
+    google_api_key: str = field(
+        default_factory=lambda: os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY', '')
+    )
     anthropic_api_key: str = field(default_factory=lambda: os.getenv('ANTHROPIC_API_KEY', ''))
     openai_api_key: str = field(default_factory=lambda: os.getenv('OPENAI_API_KEY', ''))
 

@@ -30,6 +30,7 @@ def safe_print(*args, **kwargs):
 from .crossref import CrossrefClient
 from .semantic_scholar import SemanticScholarClient
 from .gemini_grounded import GeminiGroundedClient
+from .serper_client import SerperClient
 from .query_router import QueryRouter, QueryClassification
 from .base import validate_publication_year, validate_author_name
 
@@ -98,6 +99,7 @@ class CitationResearcher:
         enable_gemini_grounded: bool = True,
         enable_llm_fallback: bool = True,
         enable_smart_routing: bool = True,
+        use_serper: bool = None,  # None = auto-detect from env
         verbose: bool = True,
         progress_callback: Optional[Callable[[str, str], None]] = None,
     ):
@@ -111,6 +113,7 @@ class CitationResearcher:
             enable_gemini_grounded: Whether to use Gemini with Google Search grounding (includes DataForSEO fallback)
             enable_llm_fallback: Whether to fall back to LLM if all else fails
             enable_smart_routing: Whether to use smart query routing (default: True)
+            use_serper: Whether to use Serper.dev instead of Gemini Grounded for web search
             verbose: Whether to print progress
             progress_callback: Optional callback(message, event_type) for progress reporting
         """
@@ -121,6 +124,11 @@ class CitationResearcher:
         self.enable_gemini_grounded = enable_gemini_grounded
         self.enable_llm_fallback = enable_llm_fallback and gemini_model is not None
         self.enable_smart_routing = enable_smart_routing
+        # Auto-detect Serper from env if not explicitly set
+        if use_serper is None:
+            self.use_serper = os.getenv('USE_SERPER', 'false').lower() == 'true'
+        else:
+            self.use_serper = use_serper
         self.verbose = verbose
 
         # Initialize API clients
@@ -128,15 +136,22 @@ class CitationResearcher:
             self.crossref = CrossrefClient()
         if self.enable_semantic_scholar:
             self.semantic_scholar = SemanticScholarClient()
+
+        # Web search client: Serper (preferred) or Gemini Grounded (fallback)
         if self.enable_gemini_grounded:
-            try:
-                self.gemini_grounded = GeminiGroundedClient(
-                    validate_urls=False,  # Disable URL validation to prevent timeouts
-                    timeout=30  # Reduced timeout for fast gemini-2.5-flash
-                )
-            except Exception as e:
-                logger.warning(f"Gemini Grounded client unavailable: {e}")
-                self.enable_gemini_grounded = False
+            if self.use_serper:
+                try:
+                    self.gemini_grounded = SerperClient(
+                        validate_urls=False,  # Disable URL validation for speed
+                        timeout=15,
+                    )
+                    logger.info("Using Serper.dev for web search (replaces Gemini Grounded)")
+                except Exception as e:
+                    logger.warning(f"Serper client unavailable: {e}, falling back to Gemini Grounded")
+                    self.use_serper = False
+                    self._init_gemini_grounded()
+            else:
+                self._init_gemini_grounded()
 
         # Initialize smart query router
         if self.enable_smart_routing:
@@ -150,7 +165,19 @@ class CitationResearcher:
             "Semantic Scholar": 0,
             "Crossref": 0,
             "Gemini Grounded": 0,
+            "Serper": 0,
         }
+
+    def _init_gemini_grounded(self):
+        """Initialize Gemini Grounded client."""
+        try:
+            self.gemini_grounded = GeminiGroundedClient(
+                validate_urls=False,  # Disable URL validation to prevent timeouts
+                timeout=30  # Reduced timeout for fast gemini-2.5-flash
+            )
+        except Exception as e:
+            logger.warning(f"Gemini Grounded client unavailable: {e}")
+            self.enable_gemini_grounded = False
 
     def _report_progress(self, message: str, event_type: str = "search") -> None:
         """Report progress to callback if available."""
@@ -416,12 +443,14 @@ class CitationResearcher:
                 elif api_name == 'gemini_grounded' and self.enable_gemini_grounded:
                     self._report_progress("AI-powered academic search...", "search")
                     if self.verbose:
-                        safe_print(f"    → Trying Gemini Grounded (Google Search)...", end=" ", flush=True)
+                        search_name = "Serper" if self.use_serper else "Gemini Grounded (Google Search)"
+                        safe_print(f"    → Trying {search_name}...", end=" ", flush=True)
                     try:
                         metadata = self.gemini_grounded.search_paper(topic)
                         if metadata and (metadata.get('doi') or metadata.get('url')):
-                            valid_results.append((metadata, "Gemini Grounded"))
-                            self.source_usage_count["Gemini Grounded"] = self.source_usage_count.get("Gemini Grounded", 0) + 1
+                            source_name = "Serper" if self.use_serper else "Gemini Grounded"
+                            valid_results.append((metadata, source_name))
+                            self.source_usage_count[source_name] = self.source_usage_count.get(source_name, 0) + 1
                             if self.verbose:
                                 safe_print(f"✓")
                         else:
@@ -702,7 +731,8 @@ class CitationResearcher:
             elif api_name == 'gemini_grounded' and self.enable_gemini_grounded:
                 metadata = self.gemini_grounded.search_paper(topic)
                 if metadata:
-                    return (metadata, "Gemini Grounded")
+                    source_name = "Serper" if self.use_serper else "Gemini Grounded"
+                    return (metadata, source_name)
         except Exception as e:
             logger.debug(f"{api_name} error: {e}")
         return (None, api_name)

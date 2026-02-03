@@ -106,8 +106,8 @@ class DeepResearchPlanner:
                 )
 
             genai.configure(api_key=api_key)
-            # Use Gemini 2.5 Flash for fast research planning (matches gtm-backend)
-            self.model = genai.GenerativeModel('gemini-2.5-flash', tools=None)
+            # Use Gemini 3 Flash Preview for fast research planning
+            self.model = genai.GenerativeModel('gemini-3-flash-preview', tools=None)
 
     def create_research_plan(
         self,

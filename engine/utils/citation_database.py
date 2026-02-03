@@ -123,7 +123,10 @@ def normalize_title(title: str) -> str:
 
 # Type definitions for citations
 CitationSourceType = Literal["journal", "book", "report", "website", "conference"]
-CitationStyle = Literal["APA 7th", "IEEE", "Chicago", "MLA"]
+# Supported citation styles
+# Note: Chicago and MLA are planned but not yet implemented
+# See: docs/CITATION_STYLES_ROADMAP.md
+CitationStyle = Literal["APA 7th", "IEEE"]
 Language = Literal["english", "german", "spanish", "french"]
 
 
@@ -148,6 +151,7 @@ class Citation:
         access_date: Optional[str] = None,
         api_source: Optional[str] = None,
         abstract: Optional[str] = None,
+        citation_count: Optional[int] = None,
     ):
         self.id = citation_id
         self.authors = authors
@@ -165,6 +169,7 @@ class Citation:
         self.access_date = access_date
         self.api_source = api_source
         self.abstract = abstract
+        self.citation_count = citation_count
 
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization."""
@@ -198,6 +203,8 @@ class Citation:
             data["api_source"] = self.api_source
         if self.abstract:
             data["abstract"] = self.abstract
+        if self.citation_count is not None:
+            data["citation_count"] = self.citation_count
 
         return data
 
@@ -221,6 +228,7 @@ class Citation:
             access_date=data.get("access_date"),
             abstract=data.get("abstract"),
             api_source=data.get("api_source"),
+            citation_count=data.get("citation_count"),
         )
 
 

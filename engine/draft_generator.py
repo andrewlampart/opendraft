@@ -714,6 +714,7 @@ def generate_draft(
     second_examiner: Optional[str] = None,
     location: Optional[str] = None,
     student_id: Optional[str] = None,
+    citation_style: str = "apa",
 ) -> Tuple[Path, Path]:
     """
     Generate a complete academic draft using 19 specialized AI agents.
@@ -737,6 +738,7 @@ def generate_draft(
         second_examiner: Second examiner name
         location: City/location for date line
         student_id: Student matriculation number
+        citation_style: Citation format - 'apa' or 'ieee' (default: 'apa')
 
     Returns:
         Tuple[Path, Path]: (pdf_path, docx_path) - Paths to generated draft files
@@ -1047,9 +1049,13 @@ def generate_draft(
         for i, citation in enumerate(scout_citations, start=1):
             citation.id = f"cite_{i:03d}"
 
+        # Map CLI-style values to internal CitationStyle format
+        style_map = {"apa": "APA 7th", "ieee": "IEEE"}
+        resolved_style = style_map.get(citation_style, "APA 7th")
+
         citation_database = CitationDatabase(
             citations=scout_citations,
-            citation_style="APA 7th",
+            citation_style=resolved_style,
             draft_language=get_language_name(language).lower()
         )
 
