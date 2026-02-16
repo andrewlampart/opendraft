@@ -5,7 +5,7 @@ Scope: `/Users/federicodeponte/opendraft`
 
 ## Verification Snapshot
 - `python3 -W error::SyntaxWarning -m compileall -q engine tests` -> pass
-- `python3 -m pytest tests/test_output_cleanliness.py -q` -> `38 passed`
+- `python3 -m pytest tests -q` -> `286 passed, 4 deselected`
 - Legacy SDK scan -> no `google.generativeai` imports and no `google-generativeai` dependency pins
 
 ## Resolved in This Pass
@@ -35,7 +35,7 @@ Scope: `/Users/federicodeponte/opendraft`
   - Python compile gate (`compileall`, syntax warnings as errors)
   - Guard against deprecated Gemini imports
   - Guard against deprecated dependency pin
-  - Output-cleanliness regression test run
+  - Full default pytest suite run (`python -m pytest tests -q`)
 
 ### 4) Output cleaning edge case fixed
 - `clean_agent_output()` no longer strips real `## References` sections by metadata pass.
