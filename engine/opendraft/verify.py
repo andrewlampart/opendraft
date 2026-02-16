@@ -26,7 +26,7 @@ def check_dependencies():
     required_packages = [
         "anthropic",
         "openai",
-        "google.generativeai",
+        "google.genai",
         "pybtex",
         "citeproc",
         "yaml",

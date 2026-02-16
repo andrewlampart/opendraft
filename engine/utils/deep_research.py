@@ -51,9 +51,11 @@ from typing import List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 try:
-    import google.generativeai as genai
+    from google import genai
+    from .gemini_client import GeminiModelWrapper
 except ImportError:
     genai = None
+    GeminiModelWrapper = None
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +103,8 @@ class DeepResearchPlanner:
         else:
             if not genai:
                 raise ImportError(
-                    "google-generativeai not installed. "
-                    "Run: pip install google-generativeai>=0.8.0"
+                    "google-genai not installed. "
+                    "Run: pip install google-genai>=1.0.0"
                 )
 
             api_key = api_key or os.getenv('GOOGLE_API_KEY')
@@ -111,9 +113,9 @@ class DeepResearchPlanner:
                     "GOOGLE_API_KEY not found. Set via environment variable or constructor."
                 )
 
-            genai.configure(api_key=api_key)
+            client = genai.Client(api_key=api_key)
             # Use Gemini 3 Flash Preview for fast research planning
-            self.model = genai.GenerativeModel('gemini-3-flash-preview', tools=None)
+            self.model = GeminiModelWrapper(client, 'gemini-3-flash-preview')
 
     def create_research_plan(
         self,
@@ -180,13 +182,13 @@ class DeepResearchPlanner:
                     # Wrap API call in timeout to prevent 504 Deadline Exceeded
                     def _generate_with_timeout():
                         return self.model.generate_content(
-                    self._build_planning_prompt(current_topic, scope, seed_references),
-                    generation_config=genai.GenerationConfig(
-                        temperature=0.3,  # Lower temperature for systematic planning
-                        max_output_tokens=8192,
-                        response_mime_type="application/json"  # Structured JSON output
-                    )
-                )
+                            self._build_planning_prompt(current_topic, scope, seed_references),
+                            generation_config={
+                                "temperature": 0.3,  # Lower temperature for systematic planning
+                                "max_output_tokens": 8192,
+                                "response_mime_type": "application/json",  # Structured JSON output
+                            },
+                        )
                 
                     # Execute with timeout wrapper
                     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -679,11 +681,11 @@ Return ONLY valid JSON, no markdown blocks.
         try:
             response = self.model.generate_content(
                 prompt,
-                generation_config=genai.GenerationConfig(
-                    temperature=0.3,
-                    max_output_tokens=8192,
-                    response_mime_type="application/json"  # Structured JSON output
-                )
+                generation_config={
+                    "temperature": 0.3,
+                    "max_output_tokens": 8192,
+                    "response_mime_type": "application/json",  # Structured JSON output
+                },
             )
 
             plan_text = response.text.strip()

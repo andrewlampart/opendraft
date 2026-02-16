@@ -9,8 +9,6 @@ import logging
 from typing import Any, Dict, List, Tuple, Set, Optional
 from pathlib import Path
 
-import google.generativeai as genai
-
 from utils.citation_database import Citation, CitationDatabase, CitationStyle
 from utils.api_citations import CitationResearcher
 
@@ -20,7 +18,7 @@ logger = logging.getLogger(__name__)
 class CitationCompiler:
     """Deterministic citation compiler with automatic missing citation research."""
 
-    def __init__(self, database: CitationDatabase, model: Optional[genai.GenerativeModel] = None, complexity_threshold: float = 0.7):
+    def __init__(self, database: CitationDatabase, model: Optional[Any] = None, complexity_threshold: float = 0.7):
         """
         Initialize compiler with citation database.
 

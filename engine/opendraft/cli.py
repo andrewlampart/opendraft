@@ -34,7 +34,7 @@ if sys.version_info < (3, 10):
     print()
     sys.exit(1)
 
-# Suppress deprecation warnings from dependencies (google-generativeai, weasyprint)
+# Suppress deprecation warnings from dependencies (Gemini SDK, weasyprint)
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)

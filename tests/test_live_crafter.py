@@ -20,7 +20,8 @@ from dotenv import load_dotenv
 load_dotenv(PROJECT_ROOT / ".env", override=True)
 load_dotenv(PROJECT_ROOT / ".env.local", override=True)
 
-import google.generativeai as genai
+from google import genai
+from engine.utils.gemini_client import GeminiModelWrapper
 
 
 def load_prompt(prompt_path: str) -> str:
@@ -35,9 +36,9 @@ def setup_model():
     api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("No API key found")
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
     model_name = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
-    return genai.GenerativeModel(model_name)
+    return GeminiModelWrapper(client, model_name)
 
 # TICKET-001: Forbidden methodology phrases
 FORBIDDEN_METHODOLOGY = [

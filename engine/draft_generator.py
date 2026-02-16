@@ -43,7 +43,6 @@ os.environ['WEASYPRINT_QUIET'] = '1'
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import google.generativeai as genai
 from config import get_config
 from utils.structured_logger import StructuredLogger
 from utils.agent_runner import setup_model

@@ -932,24 +932,11 @@ Return a JSON object with this structure:
 - If you cannot find a paper, return: {{"error": "No paper found"}}
 """
 
-            # Call Gemini with relaxed safety settings for academic research
-            import google.generativeai as genai
-
-            # Safety settings: Allow academic research content
-            # Default filters are too aggressive for legitimate academic queries
-            safety_settings = {
-                genai.types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: genai.types.HarmBlockThreshold.BLOCK_NONE,
-                genai.types.HarmCategory.HARM_CATEGORY_HARASSMENT: genai.types.HarmBlockThreshold.BLOCK_NONE,
-                genai.types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: genai.types.HarmBlockThreshold.BLOCK_NONE,
-                genai.types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: genai.types.HarmBlockThreshold.BLOCK_NONE,
-            }
-
+            # Call Gemini for LLM fallback
+            # Note: Safety settings are handled by model/provider configuration.
             response = self.gemini_model.generate_content(
                 [scout_prompt, user_input],
-                generation_config=genai.GenerationConfig(
-                    temperature=0.2, max_output_tokens=2048  # Low temperature for factual research
-                ),
-                safety_settings=safety_settings,
+                generation_config={"temperature": 0.2, "max_output_tokens": 2048},
             )
 
             # Parse JSON response with error handling for safety blocks

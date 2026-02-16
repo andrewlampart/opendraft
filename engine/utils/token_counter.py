@@ -75,13 +75,17 @@ def _count_gemini_tokens(text: str, model_name: str) -> int:
         Token count
     """
     try:
-        import google.generativeai as genai
+        import os
+        from google import genai
 
-        # Use the provided model name
-        model = genai.GenerativeModel(model_name)
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            return _count_fallback_tokens(text)
 
-        # Count tokens
-        response = model.count_tokens(text)
+        client = genai.Client(api_key=api_key)
+
+        # Count tokens using new API
+        response = client.models.count_tokens(model=model_name, contents=text)
         token_count = response.total_tokens
 
         logger.debug(f"Gemini token count for {len(text)} chars: {token_count} tokens")

@@ -22,7 +22,8 @@ from dotenv import load_dotenv
 # Load environment
 load_dotenv(Path(__file__).parent.parent / ".env.local", override=True)
 
-import google.generativeai as genai
+from google import genai
+from engine.utils.gemini_client import GeminiModelWrapper
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -32,8 +33,8 @@ def setup_model():
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("No API key found")
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-2.0-flash-exp")
+    client = genai.Client(api_key=api_key)
+    return GeminiModelWrapper(client, "gemini-2.0-flash-exp")
 
 
 def load_prompt(prompt_path: str) -> str:

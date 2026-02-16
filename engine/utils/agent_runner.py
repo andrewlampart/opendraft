@@ -42,12 +42,13 @@ def safe_print(*args, **kwargs):
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import google.generativeai as genai
+from google import genai
 from config import get_config
 from concurrency.concurrency_config import get_concurrency_config
 from utils.output_validators import ValidationResult
 from utils.api_citations.orchestrator import CitationResearcher
 from utils.citation_database import Citation
+from utils.gemini_client import GeminiModelWrapper
 from utils.deep_research import DeepResearchPlanner
 from utils.token_tracker import CallStatus
 
@@ -57,13 +58,13 @@ logger = logging.getLogger(__name__)
 
 def setup_model(model_override: Optional[str] = None) -> Any:
     """
-    Initialize and return configured Gemini model.
+    Initialize and return configured Gemini model wrapper.
 
     Args:
         model_override: Optional model name to override config default
 
     Returns:
-        genai.GenerativeModel: Configured Gemini model instance
+        GeminiModelWrapper: Configured model wrapper with generate_content() method
 
     Raises:
         ValueError: If API key is missing or model name is invalid
@@ -75,22 +76,13 @@ def setup_model(model_override: Optional[str] = None) -> Any:
             "GOOGLE_API_KEY not found. Set it in .env file or environment variables."
         )
 
-    genai.configure(api_key=config.google_api_key)  # type: ignore[attr-defined]
-
+    client = genai.Client(api_key=config.google_api_key)
     model_name = model_override or config.model.model_name
 
-    # Disable SDK tools - we use fallback services (DataForSEO/OpenPull) instead
-    # The googleSearch tool in SDK is causing errors: "Unknown field for FunctionDeclaration: googleSearch"
-    # Instead, we rely on:
-    # - Backend REST APIs for citation research (CrossRef, Semantic Scholar, Gemini Grounded REST)
-    # - Fallback services (DataForSEO for web search, OpenPull for URL scraping)
-    
-    return genai.GenerativeModel(  # type: ignore[attr-defined]
-        model_name,
-        generation_config={
-            'temperature': config.model.temperature,
-        },
-        tools=None  # Explicitly disable tools to avoid "Unknown field" errors
+    return GeminiModelWrapper(
+        client=client,
+        model_name=model_name,
+        temperature=config.model.temperature,
     )
 
 
