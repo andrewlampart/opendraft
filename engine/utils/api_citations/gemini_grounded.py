@@ -8,7 +8,9 @@ import os
 import re
 import json
 import logging
+import random
 import sys
+import time
 from typing import Optional, Dict, Any, List
 from urllib.parse import urlparse
 
@@ -342,55 +344,67 @@ class GeminiGroundedClient(BaseAPIClient):
         """
         Generate content using Gemini REST API with Google Search grounding.
 
+        Includes robust retry with exponential backoff for rate limits.
+        Works reliably for both free tier (10 RPM) and paid tier (2000 RPM).
+
         Args:
             prompt: User prompt for generation
 
         Returns:
             API response data dict, or None if error
         """
-        try:
-            # Build request body (matching gtm-os-v2 pattern)
-            body = {
-                "contents": [
-                    {
-                        "role": "user",
-                        "parts": [{"text": prompt}]
-                    }
-                ],
-                "generationConfig": {
-                    "temperature": 0.2,  # Low temp for factual accuracy
-                    "maxOutputTokens": 8192,  # High limit for deep research
-                },
-                "tools": [
-                    {"googleSearch": {}},  # Enable Google Search grounding
-                    {"urlContext": {}},    # Enable URL context for scraping
-                ]
-            }
+        # Robust retry config - works for free tier (10 RPM)
+        # Max wait: 8 + 16 + 32 + 64 + 128 + 256 = ~8.5 min total
+        max_retries = 6
+        base_delay = 8  # 8 seconds base (safe for 10 RPM free tier)
 
-            # Make REST API call
-            url = f"{self.base_url}/{self.model_name}:generateContent?key={self.api_key}"
+        # Build request body (matching gtm-os-v2 pattern)
+        body = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": prompt}]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,  # Low temp for factual accuracy
+                "maxOutputTokens": 8192,  # High limit for deep research
+            },
+            "tools": [
+                {"googleSearch": {}},  # Enable Google Search grounding
+                {"urlContext": {}},    # Enable URL context for scraping
+            ]
+        }
 
-            response = self.session.post(
-                url,
-                json=body,
-                headers={"Content-Type": "application/json"},
-                timeout=self.timeout
-            )
+        url = f"{self.base_url}/{self.model_name}:generateContent?key={self.api_key}"
 
-            if not response.ok:
-                error_text = response.text[:500]
+        for attempt in range(max_retries + 1):
+            try:
+                response = self.session.post(
+                    url,
+                    json=body,
+                    headers={"Content-Type": "application/json"},
+                    timeout=self.timeout
+                )
 
-                # Handle 429 rate limit with multi-key rotation
+                if response.ok:
+                    data = response.json()
+                    if data.get('candidates'):
+                        return data
+                    safe_print(f"No candidates in response: {data}")
+                    return None
+
+                # Handle 429 rate limit: try key rotation first, then backoff
                 if response.status_code == 429:
+                    # Step 1: Try key rotation (existing OD logic)
+                    rotated = False
                     try:
                         from utils.backpressure import BackpressureManager, APIType
                         bp = BackpressureManager()
                         bp.signal_429(APIType.GEMINI_PRIMARY)
 
-                        # Only attempt key rotation if at least one fallback key is configured
                         available_fallbacks = [k for k in self._fallback_keys.values() if k]
                         if available_fallbacks:
-                            # Use backpressure manager to pick the least-throttled key
                             best_key, best_type = bp.get_best_gemini_key(
                                 primary=self.api_key,
                                 fallback=available_fallbacks[0],
@@ -398,44 +412,85 @@ class GeminiGroundedClient(BaseAPIClient):
                                 fallback_3=available_fallbacks[2] if len(available_fallbacks) > 2 else None,
                             )
 
-                            # Only retry if we got a different, non-empty key
                             if best_key and best_key != self.api_key:
                                 safe_print(f"Gemini API rate limit (429) - switching to {best_type.value}")
                                 retry_url = f"{self.base_url}/{self.model_name}:generateContent?key={best_key}"
-                                response = self.session.post(
+                                retry_response = self.session.post(
                                     retry_url,
                                     json=body,
                                     headers={"Content-Type": "application/json"},
                                     timeout=self.timeout
                                 )
-                                if response.ok:
-                                    data = response.json()
+                                if retry_response.ok:
+                                    data = retry_response.json()
                                     if data.get('candidates'):
                                         return data
-                                # Signal 429 for the fallback key too
-                                if response.status_code == 429:
+                                if retry_response.status_code == 429:
                                     bp.signal_429(best_type)
-                                safe_print(f"Fallback key ({best_type.value}) also failed: {response.status_code}")
+                                safe_print(f"Fallback key ({best_type.value}) also failed: {retry_response.status_code}")
+                                rotated = True  # We tried rotation, it didn't help
                     except Exception as bp_err:
                         logger.debug(f"Backpressure key rotation error: {bp_err}")
 
+                    # Step 2: Key rotation failed or unavailable - use exponential backoff
+                    if attempt < max_retries:
+                        delay = base_delay * (2 ** attempt) + random.uniform(0, 4)
+                        if attempt == 0:
+                            logger.warning(
+                                f"Gemini Grounded: Rate limited (429) - Retrying in {delay:.0f}s (attempt {attempt + 1}/{max_retries})"
+                            )
+                            safe_print(
+                                f"\n    Rate limited{' (all keys exhausted)' if rotated else ''} - waiting {delay:.0f}s..."
+                            )
+                        else:
+                            logger.warning(
+                                f"Gemini Grounded: Still rate limited (429) - retry attempt {attempt + 1}/{max_retries}, waiting {delay:.0f}s"
+                            )
+                            safe_print(
+                                f"    Still rate limited - waiting {delay:.0f}s (attempt {attempt + 1}/{max_retries})..."
+                            )
+                        time.sleep(delay)
+                        continue
+                    else:
+                        logger.error(
+                            f"Gemini Grounded: Max retries ({max_retries}) exceeded for rate limit. Skipping source."
+                        )
+                        safe_print(
+                            f"\n    Rate limit persists after {max_retries} retries - skipping this source"
+                        )
+                        return None
+
+                # Handle 503 service unavailable (transient)
+                if response.status_code == 503:
+                    if attempt < max_retries:
+                        delay = base_delay + random.uniform(0, 4)
+                        safe_print(f"\n    Service busy - waiting {delay:.0f}s...")
+                        time.sleep(delay)
+                        continue
+
+                # Other errors - don't retry
+                error_text = response.text[:500]
                 safe_print(f"Gemini API error {response.status_code}: {error_text}")
                 return None
 
-            data = response.json()
-
-            # Check for valid response
-            if not data.get('candidates'):
-                safe_print(f"No candidates in response: {data}")
+            except Exception as e:
+                error_msg = str(e).lower()
+                # Retry on timeout, connection errors, and other transient issues
+                is_transient = any(
+                    err in error_msg
+                    for err in ['timeout', 'connection', 'temporarily', 'reset', 'refused']
+                )
+                if attempt < max_retries and is_transient:
+                    delay = base_delay * (2 ** min(attempt, 3)) + random.uniform(0, 4)
+                    safe_print(f"\n    Connection issue - waiting {delay:.0f}s...")
+                    time.sleep(delay)
+                    continue
+                safe_print(f"Error calling Gemini API: {e}")
+                import traceback
+                traceback.print_exc()
                 return None
 
-            return data
-
-        except Exception as e:
-            safe_print(f"Error calling Gemini API: {e}")
-            import traceback
-            traceback.print_exc()
-            return None
+        return None
 
     def _build_search_prompt(self, query: str) -> str:
         """Build search prompt for Gemini."""

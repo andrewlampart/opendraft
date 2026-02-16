@@ -9,6 +9,7 @@ import logging
 import traceback
 
 from .context import DraftContext
+from utils.agent_runner import run_agent, rate_limit_delay
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +22,6 @@ def run_compose_phase(ctx: DraftContext) -> None:
                  results_output, discussion_output, body_output,
                  conclusion_output, appendix_output
     """
-    from utils.agent_runner import run_agent, rate_limit_delay
-
     logger.info("=" * 80)
     logger.info("PHASE 3: COMPOSE - Writing chapters")
     logger.info("=" * 80)
@@ -66,8 +65,6 @@ def run_compose_phase(ctx: DraftContext) -> None:
 
 
 def _write_introduction(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     intro_target = ctx.word_targets['introduction']
     logger.info("[CHAPTER 1/4] Starting Introduction")
     chapter_start = time.time()
@@ -125,8 +122,6 @@ Outline:
 
 
 def _write_literature_review(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     lit_review_target = ctx.word_targets['literature_review']
     logger.info("[SECTION 2.1/4] Starting Literature Review")
     section_start = time.time()
@@ -201,8 +196,6 @@ Outline context:
 
 
 def _write_methodology(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     methodology_target = ctx.word_targets['methodology']
     logger.info("[SECTION 2.2/4] Starting Methodology")
     section_start = time.time()
@@ -289,8 +282,6 @@ Outline:
 
 
 def _write_results(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     results_target = ctx.word_targets['results']
     logger.info("[SECTION 2.3/4] Starting Analysis and Results")
     section_start = time.time()
@@ -378,8 +369,6 @@ Research data:
 
 
 def _write_discussion(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     discussion_target = ctx.word_targets['discussion']
     logger.info("[SECTION 2.4/4] Starting Discussion")
     section_start = time.time()
@@ -518,8 +507,6 @@ def _merge_body_sections(ctx: DraftContext) -> None:
 
 
 def _write_conclusion(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     conclusion_target = ctx.word_targets['conclusion']
     logger.info("[CHAPTER 3/4] Starting Conclusion")
     chapter_start = time.time()
@@ -577,8 +564,6 @@ Main findings:
 
 
 def _write_appendices(ctx: DraftContext) -> None:
-    from utils.agent_runner import run_agent
-
     appendices_target = ctx.word_targets['appendices']
     logger.info("[CHAPTER 4/4] Starting Appendices")
     chapter_start = time.time()

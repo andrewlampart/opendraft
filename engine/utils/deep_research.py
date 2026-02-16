@@ -51,9 +51,12 @@ from typing import List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 try:
-    import google.generativeai as genai
+    from google import genai
+    from utils.gemini_client import GeminiModelWrapper, GenerationConfig
 except ImportError:
     genai = None
+    GeminiModelWrapper = None
+    GenerationConfig = None
 
 logger = logging.getLogger(__name__)
 
@@ -101,19 +104,18 @@ class DeepResearchPlanner:
         else:
             if not genai:
                 raise ImportError(
-                    "google-generativeai not installed. "
-                    "Run: pip install google-generativeai>=0.8.0"
+                    "google-genai not installed. "
+                    "Run: pip install google-genai>=1.0.0"
                 )
 
-            api_key = api_key or os.getenv('GOOGLE_API_KEY')
+            api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if not api_key:
                 raise ValueError(
                     "GOOGLE_API_KEY not found. Set via environment variable or constructor."
                 )
 
-            genai.configure(api_key=api_key)
-            # Use Gemini 3 Flash Preview for fast research planning
-            self.model = genai.GenerativeModel('gemini-3-flash-preview', tools=None)
+            client = genai.Client(api_key=api_key)
+            self.model = GeminiModelWrapper(client, "gemini-2.0-flash")
 
     def create_research_plan(
         self,
@@ -181,7 +183,7 @@ class DeepResearchPlanner:
                     def _generate_with_timeout():
                         return self.model.generate_content(
                     self._build_planning_prompt(current_topic, scope, seed_references),
-                    generation_config=genai.GenerationConfig(
+                    generation_config=GenerationConfig(
                         temperature=0.3,  # Lower temperature for systematic planning
                         max_output_tokens=8192,
                         response_mime_type="application/json"  # Structured JSON output
@@ -679,7 +681,7 @@ Return ONLY valid JSON, no markdown blocks.
         try:
             response = self.model.generate_content(
                 prompt,
-                generation_config=genai.GenerationConfig(
+                generation_config=GenerationConfig(
                     temperature=0.3,
                     max_output_tokens=8192,
                     response_mime_type="application/json"  # Structured JSON output

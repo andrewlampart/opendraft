@@ -4,7 +4,7 @@ ABOUTME: Phase module exports for draft generation pipeline
 ABOUTME: Each phase function takes a DraftContext and mutates it in-place
 """
 
-from .context import DraftContext
+from .context import DraftContext, PhaseValidationError, validate_phase_output
 from .research import run_research_phase
 from .structure import run_structure_phase
 from .citations import run_citation_management
@@ -14,6 +14,8 @@ from .compile import run_compile_and_export, run_expose_export
 
 __all__ = [
     "DraftContext",
+    "PhaseValidationError",
+    "validate_phase_output",
     "run_research_phase",
     "run_structure_phase",
     "run_citation_management",

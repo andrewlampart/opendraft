@@ -9,6 +9,7 @@ import time
 import logging
 
 from .context import DraftContext
+from utils.agent_runner import run_agent, rate_limit_delay
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,6 @@ def run_validate_phase(ctx: DraftContext) -> None:
 
     Writes QA report files to drafts/ folder. No ctx mutations.
     """
-    from utils.agent_runner import run_agent, rate_limit_delay
-
     logger.info("=" * 80)
     logger.info("PHASE 3.5: QUALITY ASSURANCE - Narrative consistency & voice unification")
     logger.info("=" * 80)
@@ -125,8 +124,6 @@ Appendices: {ctx.appendix_output[:1000]}
 
 
 def _run_thread(ctx: DraftContext, qa_content: str) -> None:
-    from utils.agent_runner import run_agent
-
     try:
         logger.info("[QA 1/3] Running Thread agent - Narrative Consistency Check")
         qa_start = time.time()
@@ -169,8 +166,6 @@ def _run_thread(ctx: DraftContext, qa_content: str) -> None:
 
 
 def _run_narrator(ctx: DraftContext, qa_content: str) -> None:
-    from utils.agent_runner import run_agent
-
     try:
         logger.info("[QA 2/3] Running Narrator agent - Voice Unification Check")
         qa_start = time.time()
@@ -211,8 +206,6 @@ def _run_narrator(ctx: DraftContext, qa_content: str) -> None:
 
 
 def _run_factcheck(ctx: DraftContext, qa_content: str) -> None:
-    from utils.agent_runner import run_agent
-
     if not ctx.config.validation.enable_factcheck:
         logger.info("[QA 3/3] FactCheck disabled (enable_factcheck=False) \u2014 skipping")
         if ctx.tracker:

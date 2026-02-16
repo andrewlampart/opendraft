@@ -9,6 +9,73 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 
+class PhaseValidationError(Exception):
+    """
+    Raised when inter-phase validation fails.
+
+    Contains phase name and specific validation failures to enable
+    fail-fast behavior and clear error messages.
+    """
+
+    def __init__(self, phase: str, message: str, missing_fields: Optional[List[str]] = None):
+        self.phase = phase
+        self.missing_fields = missing_fields or []
+        super().__init__(f"[{phase}] {message}")
+
+
+def validate_phase_output(
+    ctx: "DraftContext",
+    phase_name: str,
+    required_fields: List[str],
+    min_chars: Optional[Dict[str, int]] = None,
+) -> None:
+    """
+    Validate that a phase has produced required outputs before proceeding.
+
+    Args:
+        ctx: The DraftContext to validate
+        phase_name: Name of the phase being validated (for error messages)
+        required_fields: List of ctx attribute names that must be non-empty
+        min_chars: Optional dict mapping field names to minimum character counts
+
+    Raises:
+        PhaseValidationError: If any required field is missing or too short
+    """
+    min_chars = min_chars or {}
+    missing = []
+    too_short = []
+
+    for field_name in required_fields:
+        value = getattr(ctx, field_name, None)
+
+        # Check if field exists and is non-empty
+        if value is None:
+            missing.append(field_name)
+        elif isinstance(value, str) and not value.strip():
+            missing.append(field_name)
+        elif isinstance(value, (list, dict)) and len(value) == 0:
+            missing.append(field_name)
+
+        # Check minimum character count for string fields
+        if field_name in min_chars and isinstance(value, str):
+            if len(value) < min_chars[field_name]:
+                too_short.append(f"{field_name} ({len(value)}/{min_chars[field_name]} chars)")
+
+    if missing:
+        raise PhaseValidationError(
+            phase=phase_name,
+            message=f"Missing required outputs: {', '.join(missing)}",
+            missing_fields=missing,
+        )
+
+    if too_short:
+        raise PhaseValidationError(
+            phase=phase_name,
+            message=f"Outputs below minimum size: {', '.join(too_short)}",
+            missing_fields=[],
+        )
+
+
 @dataclass
 class DraftContext:
     """

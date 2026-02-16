@@ -103,11 +103,12 @@ class PathConfig:
     """Path configuration for outputs and prompts."""
     project_root: Path = field(default_factory=lambda: Path(__file__).parent)
     output_dir: Path = field(default_factory=lambda: Path('tests/outputs'))
-    prompts_dir: Path = field(default_factory=lambda: Path('prompts'))
+    prompts_dir: Path = field(default_factory=lambda: Path('opendraft/prompts'))
 
     def __post_init__(self):
         """Ensure paths are absolute."""
         self.output_dir = self.project_root / self.output_dir
+        # Prompts are inside the opendraft package
         self.prompts_dir = self.project_root / self.prompts_dir
 
 

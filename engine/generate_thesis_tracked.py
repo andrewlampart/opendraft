@@ -32,8 +32,7 @@ TRACKING_STATS = {
     "end_time": None,
 }
 
-# Patch google.generativeai to track all calls
-import google.generativeai as genai
+from utils.gemini_client import GeminiModelWrapper
 
 _original_generate_content = None
 
@@ -75,9 +74,8 @@ def track_generate_content(self, *args, **kwargs):
 def patch_gemini():
     """Patch Gemini model to track all API calls."""
     global _original_generate_content
-    from google.generativeai.generative_models import GenerativeModel
-    _original_generate_content = GenerativeModel.generate_content
-    GenerativeModel.generate_content = track_generate_content
+    _original_generate_content = GeminiModelWrapper.generate_content
+    GeminiModelWrapper.generate_content = track_generate_content
     print("✅ Gemini API tracking enabled")
 
 # Patch citation APIs

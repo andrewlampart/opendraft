@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import List
 
 from .context import DraftContext
+from utils.agent_runner import run_agent, rate_limit_delay, research_citations_via_api
+from utils.text_utils import smart_truncate
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +22,6 @@ def run_research_phase(ctx: DraftContext) -> None:
 
     Mutates ctx: scout_result, scout_output, scribe_output, signal_output
     """
-    from utils.agent_runner import run_agent, rate_limit_delay, research_citations_via_api
-    from utils.text_utils import smart_truncate
-
     if ctx.verbose:
         print("\n📚 PHASE 1: RESEARCH")
 

@@ -125,7 +125,7 @@ def _build_citation_summary(citation_database) -> str:
                 abstract_preview += "..."
             citation_summary += f"   Abstract: {abstract_preview}\n"
 
-        citation_summary += f"   Citation format: {{{{cite_{citation.id}}}}}\n\n"
+        citation_summary += f"   Citation format: {{{citation.id}}}\n\n"
 
     citation_summary += f"\n{'='*80}\n"
     citation_summary += f"Total citations available: {len(citation_database.citations)}\n"

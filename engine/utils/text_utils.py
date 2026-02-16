@@ -592,13 +592,14 @@ def _strip_metadata_sections(text: str) -> str:
         text = re.sub(pattern, '', text, flags=re.MULTILINE | re.IGNORECASE)
 
     # Entire metadata sections: heading + content until next heading or EOF
+    # NOTE: Do NOT include "References" here - that's the actual bibliography section!
+    # This list is only for AI-generated meta-commentary sections
     section_headings = [
         r'Citations?\s+Used',
         r'Notes?\s+for\s+Revision',
         r'Word\s+Count\s+Breakdown',
         r'Key\s+Points?',
         r'Key\s+Takeaways?',
-        r'References',
         r'Draft\s+Notes?',
         r'Summary\s+of\s+(?:Changes|Edits|Revisions)',
     ]

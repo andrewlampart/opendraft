@@ -43,7 +43,6 @@ os.environ['WEASYPRINT_QUIET'] = '1'
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import google.generativeai as genai
 from config import get_config
 from utils.structured_logger import StructuredLogger
 from utils.agent_runner import setup_model
@@ -59,6 +58,7 @@ from phases import (
     run_compile_and_export,
     run_expose_export,
 )
+from phases.context import PhaseValidationError, validate_phase_output
 
 # Configure comprehensive logging
 logging.basicConfig(
@@ -539,8 +539,41 @@ def generate_draft(
         # Execute pipeline phases
         # ====================================================================
         run_research_phase(ctx)
+
+        # Validate research phase outputs before structure
+        validate_phase_output(
+            ctx,
+            phase_name="research",
+            required_fields=["scout_result", "scout_output", "scribe_output"],
+            min_chars={"scout_output": 100, "scribe_output": 100},
+        )
+        logger.info("[VALIDATION] Research phase outputs validated")
+
         run_structure_phase(ctx)
+
+        # Validate structure phase outputs before citations
+        validate_phase_output(
+            ctx,
+            phase_name="structure",
+            required_fields=["architect_output", "formatter_output"],
+            min_chars={"formatter_output": 50},
+        )
+        logger.info("[VALIDATION] Structure phase outputs validated")
+
         run_citation_management(ctx)
+
+        # Validate citation management outputs
+        validate_phase_output(
+            ctx,
+            phase_name="citation_management",
+            required_fields=["citation_database"],
+        )
+        if ctx.citation_database and len(ctx.citation_database.citations) == 0:
+            raise PhaseValidationError(
+                phase="citation_management",
+                message="No citations in database after citation management",
+            )
+        logger.info(f"[VALIDATION] Citation management validated: {len(ctx.citation_database.citations)} citations")
 
         if ctx.output_type == 'expose':
             pdf_path, docx_path = run_expose_export(ctx)
@@ -548,6 +581,15 @@ def generate_draft(
             return pdf_path, docx_path
 
         run_compose_phase(ctx)
+
+        # Validate compose phase outputs before validation
+        validate_phase_output(
+            ctx,
+            phase_name="compose",
+            required_fields=["intro_output", "body_output", "conclusion_output"],
+            min_chars={"intro_output": 200, "body_output": 500, "conclusion_output": 100},
+        )
+        logger.info("[VALIDATION] Compose phase outputs validated")
         run_validate_phase(ctx)
 
         # Copy tools and README

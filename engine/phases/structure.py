@@ -7,6 +7,7 @@ ABOUTME: Creates thesis outline and applies academic formatting
 import logging
 
 from .context import DraftContext
+from utils.agent_runner import run_agent, rate_limit_delay
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +18,6 @@ def run_structure_phase(ctx: DraftContext) -> None:
 
     Mutates ctx: architect_output, formatter_output
     """
-    from utils.agent_runner import run_agent, rate_limit_delay
-
     if ctx.verbose:
         print("\n🏗\ufe0f  PHASE 2: STRUCTURE")
 
