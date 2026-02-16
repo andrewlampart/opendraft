@@ -4,6 +4,12 @@ Date: 2026-02-16
 
 This runbook standardizes push hygiene for `federicodeponte/opendraft` and prevents account/credential drift.
 
+## 0) Commit hygiene standard
+
+- Keep each commit single-purpose (runtime, tests, docs, CI) for external reviewability.
+- Include related tests in the same commit when behavior changes.
+- Update `CHANGELOG.md` before tagging/publishing.
+
 ## 1) Confirm GitHub CLI account
 
 ```bash

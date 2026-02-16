@@ -262,6 +262,7 @@ Maintainer workflow docs:
 - 📝 **Hosted Version:** [Join Waitlist](https://opendraft.xyz/waitlist)
 - 💬 **Discussions:** [GitHub Discussions](https://github.com/federicodeponte/opendraft/discussions)
 - 🐛 **Issues:** [Report Bug](https://github.com/federicodeponte/opendraft/issues)
+- 🗒️ **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 - 📜 **License:** [MIT](LICENSE)
 
 ---
