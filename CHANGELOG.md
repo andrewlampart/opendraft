@@ -27,3 +27,4 @@ All notable changes are documented in this file.
 - Aligned CLI/npm requirement consistency (`6e74e75`).
 - Hardened live script execution paths (`python -m tests.test_live_crafter`, `python -m tests.audit_output`) with prerequisite-aware skip behavior.
 - Expanded CI quality workflow to execute `python -m pytest tests -q`.
+- Added secret-gated live-validation workflow (`.github/workflows/live-validation.yml`) for weekly/manual execution of API-backed checks.
