@@ -533,6 +533,7 @@ def run_interactive():
             ("German (Deutsch)", "de"),
             ("Spanish (Español)", "es"),
             ("French (Français)", "fr"),
+            ("Polish (Polski)", "pl"),
             ("Other...", "other"),
         ],
         default=0
@@ -552,8 +553,9 @@ def run_interactive():
     # Language display names
     lang_names = {
         'en': 'English', 'de': 'German', 'es': 'Spanish', 'fr': 'French',
-        'it': 'Italian', 'pt': 'Portuguese', 'nl': 'Dutch', 'zh': 'Chinese',
-        'ja': 'Japanese', 'ko': 'Korean', 'ru': 'Russian', 'ar': 'Arabic'
+        'pl': 'Polish', 'it': 'Italian', 'pt': 'Portuguese', 'nl': 'Dutch',
+        'zh': 'Chinese', 'ja': 'Japanese', 'ko': 'Korean', 'ru': 'Russian',
+        'ar': 'Arabic'
     }
 
     # Optional: Cover page details

@@ -1,0 +1,23 @@
+# Repurposing Audio Playback Tools to Test Human Localization with 6DoF Sound
+
+**Authors:** Rehberg, Williams, Batmaz, Ortega
+**Year:** 2025
+**DOI:** 10.1145/3746059.3747682
+**URL:** https://doi.org/10.1145/3746059.3747682
+
+## Abstract
+
+Six-degree-of-freedom audio is a growing interest in interactive software, but it does not easily conform to object-based rendering when achieved with arrays of ambisonics microphones. Prior studies rely on subjective metrics also, which do not clearly indicate how this additional audio interaction might aid a human in a localization task – an indication of enhanced spatial awareness of a sound event. In this paper, we propose an alternative recording and playback technique to achieve six-degree-of-freedom audio to minimize recording overhead, yield object-based rendering, and verify enhanced spatialization through objective testing. The approach taken in this paper utilizes existing audio playback tools in the Unity game engine, and can be redeployed quickly to allow researchers outside of audio engineering exploration in six-degree-of-freedom audio applications. Two studies were conducted within a group of participants using a Microsoft Hololens 2 – testing for interpretation of directional sound cues in a stationary position, and testing the proposed technique in a mobile task. Participants were able to discern additional information within the front-facing “blind spots” and were effectively perfect in a localization task with the proposed audio technique. Participants did not achieve the same performance level with a head-related transfer function alone – indicating meaningful cueing with six-degree-of-freedom sound.
+
+## Citation Details
+
+Repurposing Audio Playback Tools to Test Human Localization with 6DoF Sound
+**Authors**: Rehberg, Williams, Batmaz, Ortega
+**Year**: 2025
+**DOI**: 10.1145/3746059.3747682
+**URL**: https://doi.org/10.1145/3746059.3747682
+
+**Abstract**: Six-degree-of-freedom audio is a growing interest in interactive software, but it does not easily conform to object-based rendering when achieved with arrays of ambisonics microphones. Prior studies rely on subjective metrics also, which do not clearly indicate how this additional audio interaction might aid a human in a localization task – an indication of enhanced spatial awareness of a sound event. In this paper, we propose an alternative recording and playback technique to achieve six-degree-of-freedom audio to minimize recording overhead, yield object-based rendering, and verify enhanced spatialization through objective testing. The approach taken in this paper utilizes existing audio playback tools in the Unity game engine, and can be redeployed quickly to allow researchers outside of audio engineering exploration in six-degree-of-freedom audio applications. Two studies were conducted within a group of participants using a Microsoft Hololens 2 – testing for interpretation of directional sound cues in a stationary position, and testing the proposed technique in a mobile task. Participants were able to discern additional information within the front-facing “blind spots” and were effectively perfect in a localization task with the proposed audio technique. Participants did not achieve the same performance level with a head-related transfer function alone – indicating meaningful cueing with six-degree-of-freedom sound.  # Truncate if very long
+
+---
+*Extracted from citation research database - all 50 citations available*

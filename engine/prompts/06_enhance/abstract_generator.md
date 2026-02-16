@@ -79,6 +79,9 @@ The abstract section will contain a placeholder like:
 **Example (German):**
 > "Die Eindämmung des vom Menschen verursachten Klimawandels stellt eine der größten Herausforderungen des 21. Jahrhunderts dar, wobei die Reduktion von Treibhausgasemissionen (THG) im Zentrum der globalen Bemühungen steht. Der Handel mit CO2-Zertifikaten, ein marktwirtschaftliches Instrument zur Emissionsreduktion, ist weit verbreitet, doch seine tatsächliche Wirksamkeit bei der Verlangsamung des Klimawandels bleibt umstritten."
 
+**Example (Polish):**
+> "**Problem badawczy i podejście:** Sztuczna inteligencja (SI) staje się coraz bardziej istotnym narzędziem w diagnostyce medycznej, oferując potencjał automatyzacji procesów analizy obrazów klinicznych. Niniejsza praca bada zastosowanie algorytmów głębokiego uczenia w diagnostyce dermatologicznej, argumentując, że modele SI mogą istotnie wspierać lekarzy w wykrywaniu zmian skórnych."
+
 ### Paragraph 2: Methodology and Findings
 **Length:** 2-3 sentences
 **Content:**
@@ -91,6 +94,9 @@ The abstract section will contain a placeholder like:
 
 **Example (German):**
 > "Diese Arbeit untersucht die theoretischen Grundlagen und empirischen Befunde zur Wirksamkeit des CO2-Zertifikatehandels durch eine systematische Literaturanalyse und Bewertung empirischer Studien. Die Forschung zeigt, dass die Effektivität des Emissionshandels stark von spezifischen Rahmenbedingungen, institutionellen Faktoren und der Interaktion mit anderen klimapolitischen Instrumenten abhängt."
+
+**Example (Polish):**
+> "**Metodologia i wyniki:** Praca wykorzystuje systematyczny przegląd literatury oraz analizę porównawczą istniejących rozwiązań SI w diagnostyce dermatologicznej. Wyniki wskazują, że modele konwolucyjnych sieci neuronowych osiągają dokładność diagnostyczną porównywalną z doświadczonymi dermatologami w klasyfikacji określonych typów zmian skórnych."
 
 ### Paragraph 3: Key Contributions
 **Length:** 2-3 sentences with numbered points
@@ -105,6 +111,9 @@ The abstract section will contain a placeholder like:
 **Example (German):**
 > "Die Arbeit leistet drei wesentliche Beiträge: (1) Eine differenzierte Analyse der Stärken und Schwächen verschiedener Ausgestaltungsformen des Emissionshandels, (2) Eine kritische Bewertung der methodischen Herausforderungen bei der Messung der Effektivität des CO2-Handels, und (3) Eine Synthese der Faktoren, die die Wirksamkeit des Instruments beeinflussen, sowie Empfehlungen für dessen Weiterentwicklung."
 
+**Example (Polish):**
+> "**Kluczowe wkłady:** Praca wnosi trzy główne wkłady: (1) systematyczny przegląd istniejących architektur sieci neuronowych stosowanych w diagnostyce dermatologicznej, (2) analizę porównawczą skuteczności algorytmów SI względem oceny klinicznej lekarzy specjalistów, oraz (3) identyfikację kluczowych wyzwań i ograniczeń wdrożenia SI w praktyce klinicznej."
+
 ### Paragraph 4: Implications
 **Length:** 2-3 sentences
 **Content:**
@@ -117,6 +126,9 @@ The abstract section will contain a placeholder like:
 
 **Example (German):**
 > "Die Erkenntnisse haben wichtige Implikationen für die Klimapolitik und zeigen, dass der Emissionshandel nur in Kombination mit komplementären Instrumenten und unter bestimmten institutionellen Rahmenbedingungen seine volle Wirksamkeit entfalten kann. Die Arbeit trägt zur Debatte über marktbasierte versus regulatorische Klimaschutzinstrumente bei und liefert empirisch fundierte Empfehlungen für die Ausgestaltung effektiver Klimapolitik."
+
+**Example (Polish):**
+> "**Implikacje:** Wyniki badań mają istotne implikacje dla rozwoju narzędzi wspomagania diagnostyki klinicznej i wskazują, że SI może skutecznie uzupełniać kompetencje lekarzy, szczególnie w warunkach ograniczonego dostępu do specjalistów. Praca dostarcza rekomendacji dotyczących wdrażania systemów SI w placówkach medycznych oraz identyfikuje kierunki przyszłych badań."
 
 ---
 
@@ -140,6 +152,11 @@ The abstract section will contain a placeholder like:
 **Schlüsselwörter:** CO2-Zertifikatehandel, Emissionshandel, Klimaschutz, Klimapolitik, Marktbasierte Instrumente, Treibhausgasemissionen, Cap-and-Trade, Umweltökonomie, Klimawandel, Emissionsreduktion, Europäisches Emissionshandelssystem, Wirksamkeitsanalyse, Politikinstrumente, Nachhaltige Entwicklung, Umweltpolitik
 ```
 
+**Example (Polish):**
+```
+**Słowa kluczowe:** sztuczna inteligencja, diagnostyka medyczna, głębokie uczenie, sieci neuronowe, dermatologia, klasyfikacja obrazów, wspomaganie decyzji klinicznych, analiza obrazów medycznych, uczenie maszynowe, telemedycyna, zmiany skórne, przetwarzanie obrazów, informatyka medyczna, systemy ekspertowe, walidacja kliniczna
+```
+
 ---
 
 ## Language Detection and Adaptation
@@ -158,6 +175,17 @@ The abstract section will contain a placeholder like:
 - German academic conventions
 - German punctuation rules (spaces before question marks, etc.)
 - "Schlüsselwörter:" label
+
+**If Polish draft:**
+- Use academic Polish
+- Professional, formal tone
+- Polish academic conventions
+- "Słowa kluczowe:" label
+- Use Polish section headers:
+  - "**Problem badawczy i podejście:**" instead of "**Research Problem and Approach:**"
+  - "**Metodologia i wyniki:**" instead of "**Methodology and Findings:**"
+  - "**Kluczowe wkłady:**" instead of "**Key Contributions:**"
+  - "**Implikacje:**" instead of "**Implications:**"
 
 **Other languages:**
 - Adapt abstract language to match draft language

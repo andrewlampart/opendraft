@@ -123,6 +123,8 @@ CHAPTER_NAMES = {
         'conclusion': 'Conclusion',
         'references': 'References',
         'appendix': 'Appendix',
+        'abstract': 'Abstract',
+        'main_body': 'Main Body',
     },
     'de': {
         'introduction': 'Einleitung',
@@ -133,6 +135,8 @@ CHAPTER_NAMES = {
         'conclusion': 'Fazit',
         'references': 'Literaturverzeichnis',
         'appendix': 'Anhang',
+        'abstract': 'Zusammenfassung',
+        'main_body': 'Hauptteil',
     },
     'es': {
         'introduction': 'Introducción',
@@ -173,6 +177,18 @@ CHAPTER_NAMES = {
         'conclusion': 'Conclusão',
         'references': 'Referências',
         'appendix': 'Apêndice',
+    },
+    'pl': {
+        'introduction': 'Wprowadzenie',
+        'literature_review': 'Przegląd literatury',
+        'methodology': 'Metodologia',
+        'results': 'Wyniki i analiza',
+        'discussion': 'Dyskusja',
+        'conclusion': 'Podsumowanie',
+        'references': 'Bibliografia',
+        'appendix': 'Załącznik',
+        'abstract': 'Streszczenie',
+        'main_body': 'Część główna',
     },
 }
 

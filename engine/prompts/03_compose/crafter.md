@@ -490,14 +490,14 @@ If research materials and outline are in a **non-English language** (German, Spa
 ### Language Enforcement Checklist
 
 **✅ MUST match input language:**
-- ✅ Section metadata field: "Section:" → "Abschnitt:" (German) / "Sección:" (Spanish) / "Section:" (French)
-- ✅ Word count field: "Word Count:" → "Wortzahl:" (German) / "Recuento de palabras:" (Spanish) / "Nombre de mots:" (French)
-- ✅ Status field: "Draft v1" → "Entwurf v1" (German) / "Borrador v1" (Spanish) / "Brouillon v1" (French)
-- ✅ Status field: "Draft v2" → "Entwurf v2" (German) / "Borrador v2" (Spanish) / "Brouillon v2" (French)
-- ✅ Content header: "Content" → "Inhalt" (German) / "Contenido" (Spanish) / "Contenu" (French)
-- ✅ Citations header: "Citations Used" → "Verwendete Zitate" (German) / "Citas utilizadas" (Spanish) / "Citations utilisées" (French)
-- ✅ Notes header: "Notes for Revision" → "Hinweise zur Überarbeitung" (German) / "Notas para revisión" (Spanish) / "Notes pour révision" (French)
-- ✅ Word count breakdown: "Word Count Breakdown" → "Wortzahl-Aufschlüsselung" (German) / "Desglose del recuento" (Spanish) / "Répartition du nombre de mots" (French)
+- ✅ Section metadata field: "Section:" → "Abschnitt:" (German) / "Sección:" (Spanish) / "Section:" (French) / "Sekcja:" (Polish)
+- ✅ Word count field: "Word Count:" → "Wortzahl:" (German) / "Recuento de palabras:" (Spanish) / "Nombre de mots:" (French) / "Liczba słów:" (Polish)
+- ✅ Status field: "Draft v1" → "Entwurf v1" (German) / "Borrador v1" (Spanish) / "Brouillon v1" (French) / "Wersja robocza v1" (Polish)
+- ✅ Status field: "Draft v2" → "Entwurf v2" (German) / "Borrador v2" (Spanish) / "Brouillon v2" (French) / "Wersja robocza v2" (Polish)
+- ✅ Content header: "Content" → "Inhalt" (German) / "Contenido" (Spanish) / "Contenu" (French) / "Treść" (Polish)
+- ✅ Citations header: "Citations Used" → "Verwendete Zitate" (German) / "Citas utilizadas" (Spanish) / "Citations utilisées" (French) / "Wykorzystane cytaty" (Polish)
+- ✅ Notes header: "Notes for Revision" → "Hinweise zur Überarbeitung" (German) / "Notas para revisión" (Spanish) / "Notes pour révision" (French) / "Uwagi do korekty" (Polish)
+- ✅ Word count breakdown: "Word Count Breakdown" → "Wortzahl-Aufschlüsselung" (German) / "Desglose del recuento" (Spanish) / "Répartition du nombre de mots" (French) / "Podział liczby słów" (Polish)
 - ✅ ALL section content prose in target language
 
 ### Common Translation Patterns
@@ -531,6 +531,17 @@ If research materials and outline are in a **non-English language** (German, Spa
 - Citations Used → Citations utilisées
 - Notes for Revision → Notes pour révision
 
+**Polish:**
+- Section → Sekcja
+- Word Count → Liczba słów
+- Status → Status (same)
+- Draft v1 / Draft v2 → Wersja robocza v1 / Wersja robocza v2
+- Content → Treść
+- Citations Used → Wykorzystane cytaty
+- Notes for Revision → Uwagi do korekty
+- Word Count Breakdown → Podział liczby słów
+- Placeholder → Szablon
+
 ### Pre-Output Validation
 
 **BEFORE returning the section, run these language checks:**
@@ -553,13 +564,23 @@ grep "**Word Count:**" output.md   # FAIL - should be "**Recuento de palabras:**
 grep "Draft v1" output.md          # FAIL - should be "Borrador v1"
 ```
 
+**For Polish draft, these patterns MUST NOT appear:**
+```bash
+grep "**Section:**" output.md      # FAIL - should be "**Sekcja:**"
+grep "**Word Count:**" output.md   # FAIL - should be "**Liczba słów:**"
+grep "Draft v1" output.md          # FAIL - should be "Wersja robocza v1"
+grep "## Content" output.md        # FAIL - should be "## Treść"
+grep "Citations Used" output.md    # FAIL - should be "Wykorzystane cytaty"
+grep "Notes for Revision" output.md  # FAIL - should be "Uwagi do korekty"
+```
+
 ### Zero Tolerance for Language Mixing
 
 **NEVER mix English and target language in ANY part of the output:**
 - ❌ WRONG: German content with English metadata ("Draft v1")
 - ✅ CORRECT: German content with German metadata ("Entwurf v1")
 
-**If input materials are in German/Spanish/French, the ENTIRE output (prose + metadata) must be in that language.**
+**If input materials are in German/Spanish/French/Polish, the ENTIRE output (prose + metadata) must be in that language.**
 
 ---
 

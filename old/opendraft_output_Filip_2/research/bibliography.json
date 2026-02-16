@@ -1,0 +1,612 @@
+{
+  "citations": [
+    {
+      "id": "cite_002",
+      "authors": [
+        "Filip",
+        "Kucaba",
+        "Załucka",
+        "Ozga",
+        "Wojtaszek"
+      ],
+      "year": 2015,
+      "title": "Analiza występowania zatruć u pacjentów leczonych w oddziale toksykologii w Rzeszowie w latach 2011–2013",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Przegląd Medyczny Uniwersytetu Rzeszowskiego i Narodowego Instytutu Leków w Warszawie",
+      "publisher": "University of Rzeszow",
+      "volume": "13",
+      "issue": "3",
+      "pages": "244-254",
+      "doi": "10.15584/przmed.2015.3.5",
+      "url": "https://doi.org/10.15584/przmed.2015.3.5",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_004",
+      "authors": [
+        "Renk",
+        "Letkiewicz"
+      ],
+      "year": 2023,
+      "title": "Potential for the Use of Telemedicine Tools in the National Emergency Medical Service – a Forecast of a New System Organisation Model Using the Example of Pomorskie Province",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Współczesna Gospodarka",
+      "publisher": "Uniwersytet Gdanski",
+      "volume": "14",
+      "issue": "1 (40)",
+      "doi": "10.26881/wg.2023.1.04",
+      "url": "https://doi.org/10.26881/wg.2023.1.04",
+      "api_source": "Crossref",
+      "abstract": "Purpuse: The National Emergency Medical Service (NEMS) is facing financial and human resources problems and according to the Supreme Audit Office (SAO), the shortage of doctors and the financial problems will increase. The purpose of the paper is to show that the introduction of live streaming to the Emergency Medical Teams (EMTs) will mitigate the problems resulting from the shortage of medical staff and will significantly reduce the cost of maintaining the operational readiness of the EMTs.\nMethodology:The paper is based on applicable legislation and the Provincial Action Plan of the NEMS system for the Pomorskie Province. The forecast was prepared for the outlays and effects of the new organisation and operation of the NEMS system in Pomorskie Province.\nFindings: The implementation of live streaming in Pomorskie Province would help reduce the cost of operation of the NEMS system in the province by PLN 10,190,800.00 per year. In addition, this tool would allow the system to operate with only 16 physicians employed, which corresponds to 10% of the current resources and about 90% of the physicians could be employed in other parts of the healthcare system."
+    },
+    {
+      "id": "cite_007",
+      "authors": [
+        "Böbel",
+        "Verhoeven",
+        "Scholz",
+        "Penders",
+        "Doetter",
+        "Christensen",
+        "Krafft"
+      ],
+      "year": 2025,
+      "title": "Strengthening the WHO Emergency Care Systems Framework: insights from an integrated, patient-centered approach in the Copenhagen Emergency Medical Services system—a qualitative system analysis",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "BMC Health Services Research",
+      "doi": "10.1186/s12913-025-12465-7",
+      "url": "https://doi.org/10.1186/s12913-025-12465-7",
+      "api_source": "Semantic Scholar",
+      "abstract": "The World Health Organization Emergency Care Systems Framework (WHO ECSF) was designed to offer guidance in establishing and developing effective Emergency Medical Services (EMS) systems. However, evolving disease patterns, changing community needs, and a rising demand for emergency care services, highlight the need for more integrated and patient-centered EMS systems. This evolution should be mirrored in the WHO ECSF. Hence, this study explores system components of the Copenhagen (CPH) EMS that may enhance the WHO ECSF´s emphasis on integrated and patient-centered care. A qualitative case study was conducted from April through June 2021, including (i) semi-structured interviews with researchers and professionals at the CPH EMS and (ii) a scoping literature review using PubMed, Google Scholar, expert recommendations and snowballing. Thirteen expert interviews and 35 records were analyzed, revealing key integrated care components within the CPH EMS. These include education and citizen participation programs, early triaging, differentiated care pathways coordinated with primary care and out-of-hours services, and specialized mobile care units complementing “traditional” ambulance services. Technology supports integrated and patient-centered care by facilitating early differentiation of care, efficient dispatching, and communication. Data-driven approaches were fostered through technology-aided data collection, supporting research, quality improvement, and patient safety. The identified components were mapped within the WHO ECSF´s four domains: scene, transport, facility, and cross-cutting elements. Due to the prehospital focus of the CPH EMS, limited data was available for the “facility” site. The CPH EMS demonstrates an integrated, patient-centered systems approach that emphasizes seamless coordination along the patient care pathway, bridging EMS with broader health and social systems. Research-informed initiatives and intelligent technology solutions underscore the potential for enhancing the WHO ECSF. These findings highlight the importance of continued system integration and a holistic health perspective, including in emergency settings. Further research is needed to assess the transferability of these components across diverse global contexts. Not applicable.",
+      "citation_count": 7
+    },
+    {
+      "id": "cite_011",
+      "authors": [
+        "Kisiała"
+      ],
+      "year": 2012,
+      "title": "Organizacja przestrzenna systemu ratownictwa medycznego w Polsce",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/5a077d6caacc11d4f196e1d7df88130291817b58",
+      "api_source": "Semantic Scholar",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_012",
+      "authors": [
+        "Jahanian",
+        "Hosseininejad",
+        "Rostamian",
+        "Moradi",
+        "Bozorgi",
+        "Montazer",
+        "Pashaei"
+      ],
+      "year": 2019,
+      "title": "Necessity of performing routine tests in trauma patients referring to emergency departments",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Medical Studies",
+      "publisher": "Termedia Sp. z.o.o.",
+      "volume": "35",
+      "issue": "4",
+      "pages": "271-276",
+      "doi": "10.5114/ms.2019.91243",
+      "url": "https://doi.org/10.5114/ms.2019.91243",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_015",
+      "authors": [
+        "Saporito",
+        "Mrad Georgis"
+      ],
+      "year": 2025,
+      "title": "Value-Based Healthcare: A Paradigm for Efficiency and Quality in Healthcare Services",
+      "source_type": "book",
+      "language": "english",
+      "journal": "Healthcare Services Management",
+      "publisher": "Springer Nature Switzerland",
+      "pages": "113-122",
+      "doi": "10.1007/978-3-032-12602-3_12",
+      "url": "https://doi.org/10.1007/978-3-032-12602-3_12",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_016",
+      "authors": [
+        "Gordon",
+        "Musgrave"
+      ],
+      "year": 2025,
+      "title": "Realising value-based healthcare delivery through post-acute home-based care partnership",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Management in Healthcare: A Peer-Reviewed Journal",
+      "doi": "10.69554/blss6168",
+      "url": "https://doi.org/10.69554/blss6168",
+      "api_source": "Semantic Scholar",
+      "abstract": "The US healthcare system is overwhelmed with staffing shortages, rising costs of care and the overutilisation of emergency rooms and hospitals. Value-based care initiatives work to address these issues, but hospitals, health systems and payers cannot solve these problems alone. Partnerships with post-acute home-based care providers offer specialised, person-centred care aligning with patient and family preferences for receiving care at home. This paper shares details and results from a partnership between Ascension, one of the nation’s leading non-profit and Catholic health systems, and 136 hospitals serving communities in 18 states and the District of Columbia, and Compassus, a leading national provider of integrated home-based care services including home health, hospice, palliative care and infusion. This case study touches on how successful partnership can mitigate various challenges in the healthcare landscape while supporting home-based care, which is projected to experience the most robust growth in post-acute care over the next five years. Readers will learn how Ascension and Compassus designed a mutually beneficial partnership by aligning organisational goals and shared care and quality objectives. The partnership’s success is illustrated through two market examples aimed at improving patient outcomes and satisfaction. The paper also provides recommendations for future collaboration and opportunity, including predictions for how pending legislation could affect the success of similar partnerships and considerations for organisations looking to develop their own value-based care partnership solutions. This article is also included in The Business & Management Collection which can be accessed at https:// hstalks.com/business/.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_017",
+      "authors": [
+        "Kumar"
+      ],
+      "year": 2023,
+      "title": "Emerging Trends in Healthcare 4.0: An Indian Perspective",
+      "source_type": "conference",
+      "language": "english",
+      "journal": "Proceedings of the International Conference on Industrial Engineering and Operations Management",
+      "publisher": "IEOM Society International",
+      "doi": "10.46254/an13.20230195",
+      "url": "https://doi.org/10.46254/an13.20230195",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_019",
+      "authors": [
+        "Zimoch",
+        "Mulik"
+      ],
+      "year": 2017,
+      "title": "Ochrona jakości wód ujmowanych do zaopatrzenia ludności w wodę przeznaczoną do spożycia – co kontroluje NIK?",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/6ee409c5077392214f8d989d35f14b0097efa35a",
+      "api_source": "Semantic Scholar",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_021",
+      "authors": [
+        "Wang",
+        "Wang",
+        "Wang"
+      ],
+      "year": 2025,
+      "title": "Conceptualizing Resilience in Healthcare Systems Through Domain Modeling",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "IEEE Transactions on Computational Social Systems",
+      "doi": "10.1109/TCSS.2024.3451519",
+      "url": "https://doi.org/10.1109/TCSS.2024.3451519",
+      "api_source": "Semantic Scholar",
+      "abstract": "The healthcare system is a complex organization designed to provide medical services, exhibiting heterogeneity due to economic, legal, and cultural differences. To effectively manage the resilience of healthcare systems, it is essential to model their working domains. Furthermore, healthcare systems at different levels have distinct structures and substance flow characteristics. In particular, at the departmental level, the substance flow is primarily patient-centric, while at the hospital level, it includes orders, bills, and report flows. Interhospital scenarios may involve case flows and healthcare personnel movements. Therefore, this article proposes a healthcare system domain modeling framework based on the function-context-behavior-principle-state-structure (FCBPSS) tool, outlining its application in three hierarchical healthcare system levels. Unlike FCBPSS applications in other systems engineering fields, this framework not only captures the system's semantics but also encompasses ethical rules and operational standards within the healthcare system, making it an ideal tool for healthcare system domain modeling. Finally, the model's effectiveness is validated through the optimization of a case study at Sheng-Jing Hospital in Shenyang.",
+      "citation_count": 2
+    },
+    {
+      "id": "cite_022",
+      "authors": [
+        "Shresha",
+        "Weiner",
+        "Therriault"
+      ],
+      "year": 2024,
+      "title": "The Current State of Ambulances and Emergency Medical Services in the Hilly Region of Nepal.",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Kathmandu University Medical Journal",
+      "url": "https://www.semanticscholar.org/paper/c4c98cd28c8fed9dea14d165dc911ef59a53a1ef",
+      "api_source": "Semantic Scholar",
+      "citation_count": 2
+    },
+    {
+      "id": "cite_023",
+      "authors": [
+        "Nowakowska"
+      ],
+      "year": 2016,
+      "title": "Stres i wypalenie zawodowe wśród pracowników szpitalnych oddziałów ratunkowych",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Problemy Pielęgniarstwa",
+      "publisher": "Termedia Sp. z.o.o.",
+      "volume": "1",
+      "issue": "1",
+      "pages": "19-24",
+      "doi": "10.5603/pp.2016.0004",
+      "url": "https://doi.org/10.5603/pp.2016.0004",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_024",
+      "authors": [
+        "Różańska",
+        "Chmielarczyk",
+        "Tokarz",
+        "Pomorska-Wesołowska",
+        "Gniadek",
+        "Włodarczyk",
+        "Kołaszewski",
+        "Kowacz"
+      ],
+      "year": 2021,
+      "title": "Badania skuteczności dezynfekcji powietrza metodą ozonowania oraz promieniowaniem UV-C, zastosowanych w urządzeniu Sterylis®",
+      "source_type": "journal",
+      "language": "english",
+      "doi": "10.15374/FZ2021006",
+      "url": "https://doi.org/10.15374/FZ2021006",
+      "api_source": "Semantic Scholar",
+      "abstract": "Wszechobecnymi zanieczyszczeniami powietrza wewnątrz budynków są bioaerozole, stanowiące mieszaninę różnych cząstek, w tym materiałów biologicznych, takich jak: wirusy, pierwotniaki, komórki bakteryjne, zarodniki grzybów, fragmenty grzybni, a także endotoksyny, enterotoksyny, mykotoksyny. Szczególne ryzyko dla zdrowia ludzi, personelu i pacjentów może stwarzać kontaminacja drobnoustrojowa powietrza pomieszczeń w oddziałach szpitalnych. W przypadku szpitali standardy EU-WHO wskazują wartości graniczne, zróżnicowane w zależności od rodzaju pomieszczenia. Dla sal operacyjnych ortopedycznych i kardiochirurgicznych, oddziałów przeszczepiania szpiku i oparzeniowych koncentracja bakterii w powietrzu nie powinna przekraczać 10 CFU/m3, dla innych sal operacyjnych, oddziałów ratunkowych, sal przedoperacyjnych, korytarzy na bloku operacyjnym, pediatrycznych OIT, chirurgicznych oraz mieszanych OIT – 50 CFU/m3, a dla kardiologicznych OIT, oddziałów położniczych z traktem porodowym, pozostałych oddziałów, radiologii, pomieszczeń pomocniczych, sal badań, kuchni i pralni – 200 CFU/m3. Rozwiązaniem, pozwalającym minimalizować liczbę bakterii i grzybów w powietrzu np. sal operacyjnych, może być zastosowanie systemów dodatniego ciśnienia – wyższego w sali niż poza nią. Zachowaniu czystości powietrza sprzyja też instalacja drzwi przesuwnych, ponieważ w pomieszczeniach z drzwiami uchylnymi mieszanie się powietrza przy wejściu jest o wiele intensywniejsze. Częste wietrzenie pomieszczeń sal chorych i innych także sprzyja utrzymaniu liczby i składu drobnoustrojów w bezpiecznych granicach. Jednak coraz częściej w pomieszczeniach szpitalnych stosowane są bezdotykowe urządzenia do dekontaminacji, stanowiące z jednej strony uzupełnienie standardowego czyszczenia i dezynfekcji, a jednocześnie umożliwiające usuwanie drobnoustrojów z powietrza. Celem niniejszego badania była ocena skuteczności redukcji liczby bakterii i grzybów z powietrza dla dwóch różnych metod dezynfekcji, tj. ozonowania oraz promieniowania UV-C w metodzie przepływowej, w warunkach rzeczywistych. Badania prowadzono w trzech różnych pomieszczeniach. Do oznaczenia liczby bakterii i grzybów wykorzystano metodę hodowlaną na podłożach wzrostowych, na których zbierano objętość powietrza równą 200 l, z wykorzystaniem metody zderzeniowej stosowanej w urządzeniu MAS-100. W celu identyfikacji gatunkowej wyhodowanych drobnoustrojów wykorzystano metodę MALDI-TOF. Średnia liczba CFU bakterii w 200 l powietrza, przed zastosowaniem dezynfekcji metodą ozonowania lub UV-C, wyniosła 55 w pomieszczeniu nr 1, 62 w pomieszczeniu nr 2 oraz 100 w pomieszczeniu nr 3. Średnia liczba CFU grzybów (wyhodowanych na podłożu Sabourauda) przed procesem dezynfekcji w pomieszczeniach nr 1, 2 oraz 3 wyniosła odpowiednio 4, 22 oraz 7. W pomieszczeniach nr 1 oraz nr 2 do dezynfekcji powietrza zastosowano metodę ozonowania, dzięki której uzyskano odpowiednio 89% i 90% redukcję CFU bakterii oraz 100% i 73% redukcji CFU grzybów. Skuteczność dezynfekcji metodą przepływową UV-C sprawdzono dla dwóch czasów ekspozycji, tj. 3,5 godziny oraz 8 godzin (czas dezynfekcji, po którym pobierano próbki powietrza). W przypadku bakterii po 3,5 godzinie działania urządzenia stwierdzono 52% redukcję CFU, a po 8 godzinach – 95%. W przypadku grzybów stopień redukcji wyniósł dla obu czasów po 86%. Uzyskane wyniki potwierdzają skuteczność badanych metod dezynfekcji. Metoda ozonowania może być stosowana tylko w pustych pomieszczeniach, a metoda UV-C w wersji przepływowej może mieć zastosowanie także w salach, w których przebywają chorzy i personel. Rozwiązania te są warte rozważenia w praktyce ochrony zdrowia.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_025",
+      "authors": [
+        "World Bank"
+      ],
+      "year": 2026,
+      "title": "Open Knowledge Repository",
+      "source_type": "report",
+      "language": "english",
+      "url": "https://openknowledge.worldbank.org/entities/publication/3292ea06-a142-42a3-8be4-d56593b2c50f",
+      "api_source": "Gemini Grounded"
+    },
+    {
+      "id": "cite_026",
+      "authors": [
+        "Gun",
+        "Yılmaz",
+        "Şenel"
+      ],
+      "year": 2021,
+      "title": "Efficiency Analysis of Health Systems in World Bank Countries",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Archives of Health Science and Research",
+      "doi": "10.5152/archealthscires.2021.20049",
+      "url": "https://doi.org/10.5152/archealthscires.2021.20049",
+      "api_source": "Semantic Scholar",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_027",
+      "authors": [
+        "Wawoczny"
+      ],
+      "year": 2021,
+      "title": "Wpływ pandemii ­COVID-19 na zmiany w wielkości ruchu pasażerskiego transportu lotniczego w Polsce i na świecie",
+      "source_type": "book",
+      "language": "english",
+      "journal": "Turystyka w okresie pandemii",
+      "publisher": "Bogucki Wydawnictwo Naukowe",
+      "pages": "199-209",
+      "doi": "10.12657/9788379863501-19",
+      "url": "https://doi.org/10.12657/9788379863501-19",
+      "api_source": "Crossref",
+      "abstract": "Wybuch pandemii ­COVID-19 spowodował ograniczenie przemieszczania się ludności na świecie, wskutek czego popyt na usługi transportowe gwałtownie spadł. Lotnictwo cechujące się dynamicznym rozwojem dziś ponosi duże straty, czego wyrazem jest kryzys tej branży. Celem rozdziału jest rozpoznanie wpływu pandemii na zmiany wielkości popytu na usługi lotnicze w Polsce i na świecie. Analiza literatury przedmiotu oraz danych wtórnych pozwoliła na zidentyfikowanie zmian wielkości ruchu pasażerskiego spowodowanych pandemią, ze szczególnym uwzględnieniem rynku chińskiego jako benchmarkingu dla branży lotniczej."
+    },
+    {
+      "id": "cite_028",
+      "authors": [
+        "Rybacka"
+      ],
+      "year": 2023,
+      "title": "Wpływ pandemii COVID-19 na sposób korzystania z usług bankowych oraz na postrzeganie banków w Polsce – na podstawie badania empirycznego",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Finanse i Prawo Finansowe",
+      "doi": "10.18778/2391-6478.2.38.05",
+      "url": "https://doi.org/10.18778/2391-6478.2.38.05",
+      "api_source": "Semantic Scholar",
+      "abstract": "Celem głównym artykułu była identyfikacja zmiany sposobów korzystania z usług bankowych przed, jak i w trakcie pandemii COVID-19 oraz weryfikacja tego, jak konsumenci postrzegają współcześnie instytucje bankowe. W artykule sformułowano dwie hipotezy. Pierwsza odnosi się do tego, że klienci banków przeszli w znaczącej części na zdalne formy korzystania z usług bankowych w okresie koronawirusa. Z kolei druga teza odwołuje się do tego, iż wykorzystanie bankowości internetowej spowodowało, że jej użytkownicy przywiązują większą uwagę do aspektu bezpieczeństwa niż przed pandemią. \nNa potrzeby niniejszego opracowania przygotowano i przeprowadzono badanie empiryczne. Podstawowym celem badania była identyfikacja zmian w korzystaniu z usług bankowych w okresie koronawirusa oraz weryfikacja postrzegania wizerunku banków w dobie ostatnich wydarzeń ekonomiczno-społecznych. Badanie przeprowadzono metodą ankietową, w której wykorzystywany był kwestionariusz ankiety. \nNa podstawie przeprowadzonego badania można zauważyć, że głównie osoby po 50 roku życia przeniosły się na zdalna formę kontaktu z bankiem na skutek pandemii. We wskazanej grupie wiekowej w początkowej fazie koronawirusa popularność zyskała bankowość mobilna. Przed pandemią 26% ankietowanych deklarowało, że odbywało wizyty w banku w celu wpłaty lub wypłaty środków z rachunku bankowego. W trakcie pandemii tylko już 1% badanych deklarował, że odbywał bezpośrednie spotkanie z doradcą bankowym w celu skorzystania z usług bankowych. 33% respondentów stwierdziło, że zmiana sposobu korzystania z oferty banku pozwoliła oszczędzić im czas, a 12% wskazało, że powodem zmiany była obawa o zdrowie i życie. Na uwagę zasługuje fakt, że aż 42% ankietowanych wskazało, że po pandemii COVID-19 zwróciło większą uwagę na bezpieczeństwo w sieci. Wzrost cyfryzacji wśród społeczeństwa przełożył się na wzrost świadomości w kwestii przestępstw finansowych popełnianych w Internecie.",
+      "citation_count": 5
+    },
+    {
+      "id": "cite_029",
+      "authors": [
+        "Zimmermann"
+      ],
+      "year": 2024,
+      "title": "Kształcenie kadr medycznych – dokąd zmierzamy?",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Horyzonty Edukacji Akademickiej",
+      "publisher": "Uniwersytet Gdanski",
+      "issue": "2",
+      "pages": "177-186",
+      "doi": "10.26881/head.2024.2.09",
+      "url": "https://doi.org/10.26881/head.2024.2.09",
+      "api_source": "Crossref",
+      "abstract": "Artykuł opisuje Rekomendacje Konferencji Rektorów Akademickich Uczelni Medycznych (KRAUM) dotyczące kształcenia na kierunkach medycznych. Powstały one w 2023 roku jako wynik pracy zespołu, w skład którego weszli przedstawiciele wszystkich uczelni medycznych zrzeszonych w KRAUM. Ich podstawowy trzon został zaprezentowany oficjalnie po raz pierwszy podczas konferencji uczelni medycznych poświęconej dydaktyce „Nowoczesna edukacja medyczna odpowiedzią na potrzeby zdrowotne społeczeństwa”. Po ożywionej i owocnej dyskusji zostały one ostatecznie zebrane i zaaprobowane przez Rektorów poszczególnych uczelni. Zaprezentowano je przedstawicielom Ministerstwa Zdrowia podczas konferencji prasowej, która odbyła się w czerwcu 2023 r. Rekomendacje stanowią wskazówki, które z założenia mają pomóc w realizacji efektywnego kształcenia w zawodach medycznych w sposób nowoczesny i pokrywający potrzeby zdrowotne społeczeństwa. Ich zadaniem jest także podpowiadanie, jak przygotować przyszłych pracowników ochrony zdrowia do pracy w nieprzewidywalnym i nieustannie zmieniającym się otoczeniu."
+    },
+    {
+      "id": "cite_030",
+      "authors": [
+        "Cira",
+        "Mikos"
+      ],
+      "year": 2017,
+      "title": "Zdarzenia niepożądane w ratownictwie medycznym",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Państwo i Społeczeństwo: Medycyna i zdrowie publiczne",
+      "publisher": "Andrzej Frycz Modrzewski Krakow University",
+      "volume": "2017",
+      "issue": "4",
+      "pages": "55-68",
+      "doi": "10.31749/pismzp2017/19185",
+      "url": "https://doi.org/10.31749/pismzp2017/19185",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_032",
+      "authors": [
+        "Jeziorska"
+      ],
+      "year": 2017,
+      "title": "Wpływ starzenia się społeczeństwa na organizację systemu ochrony zdrowia w Polsce",
+      "source_type": "book",
+      "language": "english",
+      "journal": "Ubezpieczenia i finanse. Rozwój i perspektywy",
+      "publisher": "Wydawnictwo UŁ",
+      "doi": "10.18778/8088-628-5.04",
+      "url": "https://doi.org/10.18778/8088-628-5.04",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_034",
+      "authors": [
+        "Owens"
+      ],
+      "year": 2017,
+      "title": "EMS 2020: A multi-year SWOT and Financial Analysis of Georgia's Emergency Medical Services System",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Journal of the Georgia Public Health Association",
+      "publisher": "Georgia Southern University",
+      "volume": "7",
+      "issue": "1",
+      "doi": "10.21633/jgpha.7.151",
+      "url": "https://doi.org/10.21633/jgpha.7.151",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_037",
+      "authors": [
+        "Stańczak"
+      ],
+      "year": 2015,
+      "title": "Sposób Współpracy Systemu Insigma Z Krajowym Systemem Powiadamiania Ratunkowego",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "PRZEGLĄD TELEKOMUNIKACYJNY - WIADOMOŚCI TELEKOMUNIKACYJNE",
+      "publisher": "Wydawnictwo SIGMA-NOT, sp. z.o.o.",
+      "volume": "1",
+      "issue": "4",
+      "pages": "59-62",
+      "doi": "10.15199/59.2015.4.13",
+      "url": "https://doi.org/10.15199/59.2015.4.13",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_038",
+      "authors": [
+        "Krawczyk"
+      ],
+      "year": 2021,
+      "title": "Diagnosis and Evaluation of Rescue Information System",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "National Security Studies",
+      "doi": "10.37055/sbn/146052",
+      "url": "https://doi.org/10.37055/sbn/146052",
+      "api_source": "Semantic Scholar",
+      "abstract": "Publikacja przedstawia system informacyjny ratownictwa i ukazuje jego kluczowe elementy, istotne z punktu widzenia obiegu informacji w organizacji. Mowa o Platformie Lokalizacyjno-Informacyjnej z Centralną Bazą Danych, systemie e-Call oraz możliwym do zaimplementowania w Polsce systemie zwanym Advanced Mobile Location. Niniejszy artykuł określa istotę powiadamiania ratunkowego i rolę informacji w obiegu systemowym – informacji pozyskiwanej i przetwarzanej celem ratowania ludzkiego życia i zdrowia. Celem pracy jest wskazanie komponentów systemu informacyjnego ratownictwa oraz przedstawienie holistycznej oceny w odniesieniu do przeprowadzonych badań empirycznych. Badania te zostały przygotowane z wykorzystaniem techniki sądów i opinii. Przeprowadzono je wśród operatorów numeru alarmowego z czterech ośrodków ogólnopolskich., wykorzystano przy tym opracowane narzędzie - kwestionariusz ankiety. Próba badawcza wyniosła 46 osób – operatorów 112. Wyniki badań, odpowiedzi uzyskane od praktyków rzuciły nowe światło na funkcjonowanie systemu ratownictwa, ukazały bolączki współpracy pomiędzy służbami oraz przyczyniły się do zaprezentowania utylitarnych rozwiązań na rzecz stwierdzonych problemów przez samych respondentów.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_039",
+      "authors": [
+        "Parafian"
+      ],
+      "year": 2015,
+      "title": "Rola systemu PPM (Project Portfolio Management) w organizacji",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/46a4206b8e21767139d5460a843262f57481272e",
+      "api_source": "Semantic Scholar",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_040",
+      "authors": [
+        "Wójcik"
+      ],
+      "year": 2014,
+      "title": "Rola systemu ekozarządzania i audytu (EMAS) w działalności organizacji",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Prace Naukowe Uniwersytetu Ekonomicznego we Wrocławiu",
+      "publisher": "Wroclaw University of Economics and Business",
+      "issue": "377",
+      "doi": "10.15611/pn.2015.377.07",
+      "url": "https://doi.org/10.15611/pn.2015.377.07",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_041",
+      "authors": [
+        "Grabowski",
+        "Flis",
+        "Gaworska-Krzemińska",
+        "Grabowska"
+      ],
+      "year": 2018,
+      "title": "New prescribing powers for Polish nurses and midwives in relation to ICNP®",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zdrowie Publiczne i Zarządzanie",
+      "publisher": "Uniwersytet Jagiellonski - Wydawnictwo Uniwersytetu Jagiellonskiego",
+      "volume": "16",
+      "issue": "2",
+      "pages": "86-92",
+      "doi": "10.4467/20842627oz.18.010.9080",
+      "url": "https://doi.org/10.4467/20842627oz.18.010.9080",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_042",
+      "authors": [
+        "Kubiak",
+        "Gdański",
+        "przemian",
+        "wiekiem"
+      ],
+      "year": 2018,
+      "title": "The consequences of demographic changes in the labor market – towards age management",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/82bd89e5eb6e073a9f9221fb6219073b7dcbebec",
+      "api_source": "Semantic Scholar",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_043",
+      "authors": [
+        "Mitek"
+      ],
+      "year": 2016,
+      "title": "Public Funding of Health Services in Relation to the Needs and Benefits for the Elderly",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zeszyty Naukowe Uniwersytetu Szczecińskiego Finanse Rynki Finansowe Ubezpieczenia",
+      "publisher": "University of Szczecin",
+      "volume": "82",
+      "pages": "791-802",
+      "doi": "10.18276/frfu.2016.4.82/2-68",
+      "url": "https://doi.org/10.18276/frfu.2016.4.82/2-68",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_044",
+      "authors": [
+        "Paszkowska"
+      ],
+      "year": 2006,
+      "title": "Finansowanie prawa pacjenta do świadczeń zdrowotnych w państwach UE",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/ff0dbdbd387221de4c232e1d54904b550be9129a",
+      "api_source": "Semantic Scholar",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_045",
+      "authors": [
+        "Wrześniewska-Wal",
+        "Hajdukiewicz"
+      ],
+      "year": 2020,
+      "title": "Telemedycyna w Polsce – aspekty prawne, medyczne i etyczne",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Studia Prawnoustrojowe",
+      "publisher": "Uniwersytet Warminsko-Mazurski",
+      "issue": "50",
+      "doi": "10.31648/sp.6061",
+      "url": "https://doi.org/10.31648/sp.6061",
+      "api_source": "Crossref",
+      "abstract": "Telemedycyna jako forma udzielania świadczeń zdrowotnych niewątpliwie stanowi ułatwienie kontaktu pomiędzy lekarzem a pacjentem, ale niesie również ze sobą pewne zagrożenia, wynikające z braku osobistego badania fizykalnego. Celem artykułu jest przedstawienie od dawna już istniejących norm prawnych i etycznych obowiązujących lekarza udzielającego świadczeń telemedycznych oraz obecnie trwających prac legislacyjnych m.in. w ramach podstawowej opieki zdrowotnej (POZ). Autorzy wskazują również, że szybki rozwój technologii dający możliwości na lepszą diagnostykę i leczenie pozwala również na wykorzystanie pozostałych zawodów medycznych, które powinny zostać objęte regulacjami w zakresie udzielania świadczeń telemedycznych. Nie zmienia to jednak faktu, że telemedycyna jest formą uzupełniającą medycynę tradycyjną, która obecnie bez wytycznych i standardów organizacyjnych nie może się rozwijać."
+    },
+    {
+      "id": "cite_046",
+      "authors": [
+        "Nodżak"
+      ],
+      "year": 2015,
+      "title": "Glosa do wyroku NSA z dnia 21 sierpnia 2013 r. (sygn. I OSK 1666/12)",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/daca0d066bcb6bd55e3b3df16c36111d743c01f0",
+      "api_source": "Semantic Scholar",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_047",
+      "authors": [
+        "Rosh"
+      ],
+      "year": 2007,
+      "title": "Goodbye, From Poland",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Annals of Emergency Medicine",
+      "publisher": "Elsevier BV",
+      "volume": "50",
+      "issue": "5",
+      "pages": "617",
+      "doi": "10.1016/j.annemergmed.2007.05.014",
+      "url": "https://doi.org/10.1016/j.annemergmed.2007.05.014",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_048",
+      "authors": [
+        "Domżał-Drzewicka",
+        "Saracen",
+        "Rząca",
+        "Węgorowski",
+        "Stanisławek",
+        "Michalak"
+      ],
+      "year": 2016,
+      "title": "Retrospective study of injury rates among children and adults in the Lublin Region of Poland.",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Annals of Agricultural and Environmental Medicine",
+      "doi": "10.5604/12321966.1203894",
+      "url": "https://doi.org/10.5604/12321966.1203894",
+      "api_source": "Semantic Scholar",
+      "abstract": "INTRODUCTION AND OBJECTIVE\nIn Poland and worldwide, injury rates, as well as accident rates among children and adolescents still remain a social, health and economic problem, despite an attempt to inhibit the growing tendency of this phenomenon.\n\n\nOBJECTIVE\nAn attempt to evaluate current trends in injury rates among children and adolescents based on the example of two provinces in the Lublin Region of Poland during the period 2006-2010.\n\n\nMATERIALS AND METHOD\nThe retrospective study was conducted by the method of examination of documents, using the technique of content analysis. The research material was data from the Emergency Procedures Charts and Medical Emergency Team Response Charts, while the study group were children and adolescents aged from 6 weeks - 19 years, from the counties of Kraśnik and Świdnik in the Lublin Region.\n\n\nRESULTS\nAnalysis of the research material showed that during the period examined the number of injuries and accidents in the study group remained on a constant level, with a slight decrease in the number of events at home, accompanied by an increase in the number of road accidents and events which occurred in the school environment and in a public place. It was also found that the spring-autumn season, and in particular the summer months, the age group 7-13 and male gender exerted an effect on the number of injuries and accidents. The analysis did not confirm that injuries related with employment of children and adolescents in agriculture and deaths due to external causes constituted a considerable percentage of the events registered.\n\n\nCONCLUSION\nAnalysis of trends should be a basis for the planning of prophylactic actions and the promotion of safety in all environments in which the study population functions.",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_049",
+      "authors": [
+        "Golinowska"
+      ],
+      "year": 2025,
+      "title": "O trudnej historii czasopisma naukowego o zdrowiu publicznym w kontekście reformy organizacji nauki w Polsce. Podsumowanie działalności wydawniczej „Zeszytów Ochrony Zdrowia. Zdrowie Publiczne i Zarządzanie” w latach 2003–2024",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zdrowie Publiczne i Zarządzanie",
+      "doi": "10.4467/20842627oz.24.011.21315",
+      "url": "https://doi.org/10.4467/20842627oz.24.011.21315",
+      "api_source": "Semantic Scholar",
+      "abstract": "This article describes the history of the first journal in the field of public health in Poland in the last quarter of a century. With the political and economic transformation of the country in the 1990s, the organisation and funding of science were changed. In the social sciences, new journals were being created and the conduct of the old ones was changed. In the context of public health, it basically meant starting from scratch, although the more general issues of disease prevention and the organisation of healthcare were not only covered in medical courses, but also by a certain amount of writing in medical journals.\nThe journal (hereafter “Zeszyty Naukowe”) included two areas of interest in its title. One was knowledge and concern for population health (rather than disease treatment). The other, institutional change in health sector governance. Due to the wide range of topics declared for publication in the “Zeszyty Naukowe”, the publishing policy was geared towards creating monothematic issues, inviting specialists in the field to lead them. In this way, mini handbooks of important healthcare topics were created. They were of great interest and enjoyed recognition not only in the scientific community, but also in the practice of health sector policy makers. The reform of the organisation of science and the introduction of the new public management (NPM) to academic institutions; also concerned scientific journals. They were classified on the grounds of the Impact Factor score, which became the basis for evaluating the achievements of authors and the funding of journals from public funds. An important criterion was the so-called internationalisation of journals. In subsequent years, the so-called ministerial criteria, formulated by the political authorities of the Ministry of Science and Higher Education, were added. Under these conditions, “Zeszyty Naukowe” were losing points, authors’ offers and a source of funding. At the same time, the range of public health and health sector management problems was increasing dramatically (not only the COVID-19 pandemic) and the urgency of their presentation and debate was rising as well. In 2025, with subsequent political changes, efforts were made to save the “Zeszyty Naukowe” as a journal addressed to the scientific community and, at the same time, to health care practitioners.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_050",
+      "authors": [
+        "Rakhmanov"
+      ],
+      "year": 2017,
+      "title": "Billionaires and Millionaires of the Baltic Sea Region: A Comparative Analysis of National Business Elites",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Baltic Region",
+      "publisher": "Immanuel Kant Baltic Federal University",
+      "volume": "9",
+      "issue": "4",
+      "pages": "53-71",
+      "doi": "10.5922/2079-8555-2017-4-4",
+      "url": "https://doi.org/10.5922/2079-8555-2017-4-4",
+      "api_source": "Crossref"
+    }
+  ],
+  "metadata": {
+    "total_citations": 35,
+    "citation_style": "APA 7th",
+    "draft_language": "polish",
+    "extracted_date": "2026-02-16T18:43:06.637348"
+  }
+}

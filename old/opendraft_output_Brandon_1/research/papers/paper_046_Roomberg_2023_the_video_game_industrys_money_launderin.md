@@ -1,0 +1,23 @@
+# The video game industry’s money laundering problem: when do game publishers become money transmitters?
+
+**Authors:** Roomberg
+**Year:** 2023
+**DOI:** 10.21202/2782-2923.2023.3.630-644
+**URL:** https://doi.org/10.21202/2782-2923.2023.3.630-644
+
+## Abstract
+
+Objective: to study the problem of money laundering in video game industry and to develop measures to minimize this illegal behavior.Methods: dialectical approach to cognition of social phenomena, allowing to analyze them in historical development and functioning in the context of the totality of objective and subjective factors, which predetermined the following research methods: formal-logical and sociological.Results: as enthusiasm for immersive multiplayer video games continues to grow, players are placing a high degree of value on virtual items like in-game currency, weapons, vehicles, and “skins”. The value of these items, paired with features that allow players to buy and sell them, has opened the door to criminals who can exploit these features to launder money. The United States maintains a robust legal framework to prevent and punish money laundering. One key piece of that framework is imposing certain reporting and recordkeeping duties on “financial institutions”, including money transmitters. If a company is subject to these duties, it must abide by complex and expensive anti-money laundering compliance requirements.Scientific novelty: the article, for the first time, considers the issue whether a game publisher is a criminal money transmitter. The paper takes up that question detailing the specific game features and publisher policies that, under current rules and guidance, lead to or rebuff the conclusion that a game publisher is a money transmitter.Practical significance: the main provisions and conclusions of the article can be used in scientific, pedagogical and law enforcement activities when considering the issues related to the qualification of actions of video games publishers in case of their participation in money laundering.The article was first published in English language by Fordham Law Review Online. For more information please contact the editorial office.For original publication: Roomberg, M. (2023). The video game industry’s money laundering problem: when do game publishers become money transmitters?, Fordham Law Review Online, 91, 161–177.Publication URL: https://fordhamlawreview.org/law-review-online/the-video-game-industrys-money-laundering-problem-when-dogame-publishers-become-money-transmitters/
+
+## Citation Details
+
+The video game industry’s money laundering problem: when do game publishers become money transmitters?
+**Authors**: Roomberg
+**Year**: 2023
+**DOI**: 10.21202/2782-2923.2023.3.630-644
+**URL**: https://doi.org/10.21202/2782-2923.2023.3.630-644
+
+**Abstract**: Objective: to study the problem of money laundering in video game industry and to develop measures to minimize this illegal behavior.Methods: dialectical approach to cognition of social phenomena, allowing to analyze them in historical development and functioning in the context of the totality of objective and subjective factors, which predetermined the following research methods: formal-logical and sociological.Results: as enthusiasm for immersive multiplayer video games continues to grow, players are placing a high degree of value on virtual items like in-game currency, weapons, vehicles, and “skins”. The value of these items, paired with features that allow players to buy and sell them, has opened the door to criminals who can exploit these features to launder money. The United States maintains a robust legal framework to prevent and punish money laundering. One key piece of that framework is imposing certain reporting and recordkeeping duties on “financial institutions”, including money transmitters. If a company is subject to these duties, it must abide by complex and expensive anti-money laundering compliance requirements.Scientific novelty: the article, for the first time, considers the issue whether a game publisher is a criminal money transmitter. The paper takes up that question detailing the specific game features and publisher policies that, under current rules and guidance, lead to or rebuff the conclusion that a game publisher is a money transmitter.Practical significance: the main provisions and conclusions of the article can be used in scientific, pedagogical and law enforcement activities when considering the issues related to the qualification of actions of video games publishers in case of their  # Truncate if very long
+
+---
+*Extracted from citation research database - all 50 citations available*

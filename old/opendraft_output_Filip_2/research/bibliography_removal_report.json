@@ -1,0 +1,232 @@
+{
+  "stats": {
+    "total_original": 46,
+    "total_filtered": 35,
+    "total_removed": 11,
+    "removal_reasons": {
+      "invalid_url": 8,
+      "invalid_metadata": 3
+    }
+  },
+  "removed_citations": [
+    {
+      "citation": {
+        "id": "cite_001",
+        "authors": [
+          "Gałązkowski, Robert",
+          "Pszczołowski, Konrad",
+          "Pawlak, Agata"
+        ],
+        "year": 2014,
+        "title": "Rola jednostek krajowego systemu ratowniczo- -gaśniczego w funkcjonowaniu systemu Państwowe Ratownictwo Medyczne w rejonach wiejskich w Polsce",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Bezpieczeństwo i Technika Pożarnicza",
+        "publisher": "CNBOP-PIB Centrum Naukowo-Badawcze Ochrony Przeciwpozarowej",
+        "issue": "34",
+        "pages": "15-26",
+        "doi": "10.12845/bitp.34.2.2014.1",
+        "url": "https://doi.org/10.12845/bitp.34.2.2014.1",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 404: https://doi.org/10.12845/bitp.34.2.2014.1",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_005",
+        "authors": [
+          "OECD"
+        ],
+        "year": 2026,
+        "title": "oecd.org",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://www.oecd.org/en/publications/health-at-a-glance-2023_7a7afb35-en.html",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "Domain name as title: 'oecd.org'",
+      "issues": 2
+    },
+    {
+      "citation": {
+        "id": "cite_006",
+        "authors": [
+          "Stang",
+          "McCusker",
+          "Ciampi",
+          "Strumpf"
+        ],
+        "year": 2013,
+        "title": "Emergency Department Conditions Associated With the Number of Patients Who Leave a Pediatric Emergency Department Before Physician Assessment",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Pediatric Emergency Care",
+        "publisher": "Ovid Technologies (Wolters Kluwer Health)",
+        "volume": "29",
+        "issue": "10",
+        "pages": "1082-1090",
+        "doi": "10.1097/pec.0b013e3182a5cbc2",
+        "url": "https://doi.org/10.1097/pec.0b013e3182a5cbc2",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1097/pec.0b013e3182a5cbc2",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_008",
+        "authors": [
+          "World Health Organization"
+        ],
+        "year": 2026,
+        "title": "Content",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://iris.who.int/server/api/core/bitstreams/d9630e9f-add9-4b77-8168-b02ca2b2836c/content",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 500: https://iris.who.int/server/api/core/bitstreams/d9630e9f-add9-4b77-8168-b02ca2b2836c/content",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_009",
+        "authors": [
+          "NIH"
+        ],
+        "year": 2026,
+        "title": "Out-of-hospital emergency medical services in Poland: organization, challenges, and modern solutions - PMC",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12891198/",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 403: https://pmc.ncbi.nlm.nih.gov/articles/PMC12891198/",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_013",
+        "authors": [
+          "Larsen",
+          "Larsen"
+        ],
+        "year": 1984,
+        "title": "Pogotowie Ratunkowe: The emergency medical system of Poland",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Annals of Emergency Medicine",
+        "publisher": "Elsevier BV",
+        "volume": "13",
+        "issue": "11",
+        "pages": "1052-1055",
+        "doi": "10.1016/s0196-0644(84)80069-4",
+        "url": "https://doi.org/10.1016/s0196-0644(84)80069-4",
+        "api_source": "Crossref"
+      },
+      "reason": "Year out of range: 1984",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_014",
+        "authors": [
+          "NIH"
+        ],
+        "year": 2026,
+        "title": "Impact of Geriatric Admissions on Workload in the Emergency Department - PMC",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9957037/",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 403: https://pmc.ncbi.nlm.nih.gov/articles/PMC9957037/",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_018",
+        "authors": [
+          "Rogala"
+        ],
+        "year": 2019,
+        "title": "Analiza strategii rozwojowych największych prywatnych sieci medycznych w Polsce. Podobieństwa i różnice oraz wyzwania na przyszłość",
+        "source_type": "book",
+        "language": "english",
+        "journal": "Ochrona zdrowia i gospodarka. Pacjenci, świadczeniodawcy, turystyka medyczna",
+        "publisher": "Wydawnictwo Naukowe Wydziału Zarządzania Uniwersytetu Warszawskiego",
+        "pages": "215-236",
+        "doi": "10.7172/978-83-66282-07-0.2019.wwz.2.9",
+        "url": "https://doi.org/10.7172/978-83-66282-07-0.2019.wwz.2.9",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.7172/978-83-66282-07-0.2019.wwz.2.9",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_020",
+        "authors": [
+          "Smith"
+        ],
+        "year": 2024,
+        "title": "Renewable Energy in Healthcare and Energy Systems for Resilience",
+        "source_type": "book",
+        "language": "english",
+        "journal": "An Introduction to Inclusive Healthcare Design",
+        "publisher": "Routledge",
+        "pages": "181-191",
+        "doi": "10.4324/9781003414902-20",
+        "url": "https://doi.org/10.4324/9781003414902-20",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 503: https://doi.org/10.4324/9781003414902-20",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_033",
+        "authors": [
+          "PwC"
+        ],
+        "year": 2026,
+        "title": "pwc.com",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://www.strategyand.pwc.com/pl/pl/publikacje/2025/wyzwania-i-mozliwosci-polskiego-systemu-opieki-zdrowotnej-w-2025-roku.html",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "Domain name as title: 'pwc.com'",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_035",
+        "authors": [
+          "Wejnarski",
+          "Leszczyński",
+          "Biadun",
+          "Malm",
+          "Mitura",
+          "Sholokhova",
+          "Rzońca",
+          "Gałązkowski",
+          "Marzec"
+        ],
+        "year": 2024,
+        "title": "Characteristics of Helicopter Emergency Medical Services (HEMS) Interventions for Burn Patients—A Four-Year Retrospective Analysis",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Journal of Clinical Medicine",
+        "doi": "10.3390/jcm13247738",
+        "url": "https://doi.org/10.3390/jcm13247738",
+        "api_source": "Semantic Scholar",
+        "abstract": "Background: The World Health Organization (WHO) estimates that 180,000 patients die from burns every year, which is considered a serious public health issue. Patients with burns require immediate pre-hospital care and transport to specialized treatment facilities. The aim of this study was to outline the profile of the burn patient from the perspective of the Polish Medical Air Rescue (PMAR), as well as to analyze the medical procedures being implemented. Methods: The study includes 2154 interventions by air emergency medical teams (AEMS) which provided aid for burn patients. The analysis covered the period from 2018 to 2022, including nationwide data made available from the IT systems of the PMAR. Statistical design was used, allowing for correlations of variables, at a significance level of p < 0.05. Results: Patients’ ages ranged from 1 month to 96 years (mean 35.05; SD ± 26.88). Adult patients (n = 1409; 65.41%) constituted the vast majority. The number of interventions to children below 1-year-old was noticeable (n = 394; 18.29%). Men were the most likely to suffer burns, up to three times more often than women (n = 1574, 73.07% vs. n = 570, 26.46%. T29—burns to multiple body areas (n = 890)—and T21—burns to the trunk (n = 255)—were most frequently reported as diagnoses according to the ICD-10 classification. A statistically significant association was found between age group and ICD-10 diagnosis (p < 0.001). The vast majority of patients were transported from the scene directly to Burn Treatment Centers (n = 1373; 63.74%). Treatment of pain by helicopter emergency medical services (HEMS) crews appeared to be effective (p < 0.001), and other interventions consisted of administering medications—ketamine (23.72%), rocuronium bromide (15.78%), propofol (14.02%)—and procedures such as sedation (30.87%), as well as intubation (13.42%) and mechanical ventilation (13.23%). Conclusions: The burn patient profile indicates men with a mean age of 35 years. Nevertheless, HEMS crews often carry out missions to infants and newborns. The most common diagnosis was extensive body burns. In 63.74% of the missions, patients were transported to the Burn Treatment Center. The HEMS crews implement effective pharmacological analgesia, and handle rescue medications and procedures to stabilize the patient’s condition.",
+        "citation_count": 2
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.3390/jcm13247738",
+      "issues": 1
+    }
+  ]
+}

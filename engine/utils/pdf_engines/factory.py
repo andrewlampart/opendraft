@@ -36,10 +36,10 @@ class PDFEngineFactory:
     - Dependency Inversion: Returns abstract PDFEngine interface
     """
 
-    # Registry of all available engine classes
-    # Only Pandoc/XeLaTeX - cleanest output for academic documents
+    # Registry of all available engine classes (priority order for auto)
     _ENGINE_CLASSES = [
-        PandocLatexEngine,
+        PandocLatexEngine,   # Best quality, requires pandoc + texlive
+        LibreOfficeEngine,  # Fallback: md→docx→pdf via LibreOffice
     ]
 
     @classmethod
@@ -62,9 +62,10 @@ class PDFEngineFactory:
         if engine_type == 'auto':
             return cls._auto_select()
 
-        # Map engine type to class - Pandoc/XeLaTeX only
+        # Map engine type to class
         engine_map = {
             'pandoc': PandocLatexEngine,
+            'libreoffice': LibreOfficeEngine,
         }
 
         engine_class = engine_map.get(engine_type)

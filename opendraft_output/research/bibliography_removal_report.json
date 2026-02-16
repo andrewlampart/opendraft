@@ -1,0 +1,346 @@
+{
+  "stats": {
+    "total_original": 46,
+    "total_filtered": 31,
+    "total_removed": 15,
+    "removal_reasons": {
+      "invalid_url": 13,
+      "invalid_metadata": 2
+    }
+  },
+  "removed_citations": [
+    {
+      "citation": {
+        "id": "cite_003",
+        "authors": [
+          "Gałązkowski, Robert",
+          "Pszczołowski, Konrad",
+          "Pawlak, Agata"
+        ],
+        "year": 2014,
+        "title": "Rola jednostek krajowego systemu ratowniczo- -gaśniczego w funkcjonowaniu systemu Państwowe Ratownictwo Medyczne w rejonach wiejskich w Polsce",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Bezpieczeństwo i Technika Pożarnicza",
+        "publisher": "CNBOP-PIB Centrum Naukowo-Badawcze Ochrony Przeciwpozarowej",
+        "issue": "34",
+        "pages": "15-26",
+        "doi": "10.12845/bitp.34.2.2014.1",
+        "url": "https://doi.org/10.12845/bitp.34.2.2014.1",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 404: https://doi.org/10.12845/bitp.34.2.2014.1",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_008",
+        "authors": [
+          "Larsen",
+          "Larsen"
+        ],
+        "year": 1984,
+        "title": "Pogotowie Ratunkowe: The emergency medical system of Poland",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Annals of Emergency Medicine",
+        "publisher": "Elsevier BV",
+        "volume": "13",
+        "issue": "11",
+        "pages": "1052-1055",
+        "doi": "10.1016/s0196-0644(84)80069-4",
+        "url": "https://doi.org/10.1016/s0196-0644(84)80069-4",
+        "api_source": "Crossref"
+      },
+      "reason": "Year out of range: 1984",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_010",
+        "authors": [
+          "Eldredge"
+        ],
+        "year": 1999,
+        "title": "Characteristics of Peer Reviewed Clinical Medicine Journals",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Medical Reference Services Quarterly",
+        "publisher": "Informa UK Limited",
+        "volume": "18",
+        "issue": "2",
+        "pages": "13-26",
+        "doi": "10.1300/j115v18n02_02",
+        "url": "https://doi.org/10.1300/j115v18n02_02",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1300/j115v18n02_02",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_012",
+        "authors": [
+          "NIH"
+        ],
+        "year": 2026,
+        "title": "Out-of-hospital emergency medical services in Poland: organization, challenges, and modern solutions - PMC",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12891198/",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 403: https://pmc.ncbi.nlm.nih.gov/articles/PMC12891198/",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_017",
+        "authors": [
+          "and",
+          "in",
+          "Parents",
+          "perspective",
+          "2",
+          "Local",
+          "Authority",
+          "Department",
+          "Public",
+          "Infectious",
+          "Charalambous",
+          "Jelastopulu",
+          "Postgraduate"
+        ],
+        "year": 2023,
+        "title": "Bridging public health and primary care in an Italian Urban Area. Lessons learnt from pandemic",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "European Journal of Public Health",
+        "doi": "10.1093/eurpub/ckad160.1390",
+        "url": "https://doi.org/10.1093/eurpub/ckad160.1390",
+        "api_source": "Semantic Scholar",
+        "abstract": "Abstract COVID-19 pandemic represented a disruptive event for all sectors, especially the healthcare one. It revealed weakness of healthcare systems, often organised in silos, and called for a great coordination among several stakeholders. Different healthcare organizational solutions were implemented in order to address this extraordinary situation. This study investigates the impact of an organizational innovation, District Operation Centres (DOCs), of a Local Health Authority (LHA) in Rome aimed at responding overall to primary care and public health (PH) needs during the first phases of pandemic. In the DOCs health districts professionals supported general physicians (GPs) and family paediatricians (FPs), acting as a bridge with the PH Department, in order to better manage COVID-19 patients and close contacts. To understand the utility and the areas of support to GPs and FPs a survey (21 open questions or on a Likert scale), realised according the Delphi method, was admnistered to them. The sample was calculated using Epi Info, randomization was performed through Excel. A descriptive analysis of the sample and of the answers was carried out. When appropriate, statistical tests were used to understand differences among districts. 215 doctors were interviewed between Dec 2020 and Jan 2021. More than 50% declared to have found DOCs useful, above all for guiding to legislation and to activate medical equipes to deliver swabs at home. The support was evaluated not good regarding COVID-19 cases/contacts and cluster(s) management. Further needs as support in frail patients’ management, involvement of specialists, delivery of telemedicine, more involvement of GPs/FPs in district activities were identified. DOCs were an attempt to support GPs/FPs in improving care to COVID-19 patients/contacts. To provide this new service in the pandemic emergency denotes great leadership in the LHA to yield collaboration among several stakeholeders and vision about patient-centered healthcare. Key messages • Although several limits like need of more integration, DOCs represent an experience aimed at overcoming duality between primary care and public health systems and the fragmentation of the system. • DOCs could be considered an organizational innovation to make the system more resilient and patient-centered.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1093/eurpub/ckad160.1390",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_022",
+        "authors": [
+          "SKRZYPCZAK"
+        ],
+        "year": 2014,
+        "title": "Media Policy on the Implementation of Digital Terrestrial Television in Poland",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Public Policy and Ecnomic Development",
+        "publisher": "Adam Mickiewicz University Poznan",
+        "pages": "49-62",
+        "doi": "10.14746/pped.2014.1.4",
+        "url": "https://doi.org/10.14746/pped.2014.1.4",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 404: https://doi.org/10.14746/pped.2014.1.4",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_023",
+        "authors": [
+          "ceramic-on-metal",
+          "bearing",
+          "hip",
+          "replacement",
+          "of",
+          "Sciences"
+        ],
+        "year": 2023,
+        "title": "HIA as a standard tool for effective decision-making on NCD policies",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "European Journal of Public Health",
+        "doi": "10.1093/eurpub/ckad160.1300",
+        "url": "https://doi.org/10.1093/eurpub/ckad160.1300",
+        "api_source": "Semantic Scholar",
+        "abstract": "Abstract Background Increasing rates of NCD are observed within EU countries. This paper aims to highlight the potential of Health Impact Assessment (HIA) in informing projects, plans, and programs related to health improvement, thus enhancing its role in the decision-making process. Methods The preliminary analysis focuses on HIA's involvement in the decision-making process regarding NCD in the EU, particularly in CEE countries over the past decade. The study examines various aspects of the identified HIAs, including their general information, the time frame of the HIA, proposed preventive measures, methods used, the description of the determinants of health affected by the decision, the type of document assessed, the affected population, the impact of the HIA on subsequent decisions, the source and cost of funding, the limitations of the study, HIA as a part of EIA or not, the use of artificial intelligence algorithms in the possibility of HIA implementation, etc. The impact of each HIA on subsequent decisions was categorized using an adaptation of a classification system developed by Wismar et al. for use in evaluating European HIAs (Wismar et al. 2007). Results The findings suggest that HIA is crucial in addressing the public and providing transparent information to entities with decision-making authority. It is recommended that the HIA process be a standard tool used to clarify information on health risk factors, implement new health policies, and monitor their effectiveness. The study also indicates that a completely digital approach to HIA is an open question that requires further research. AI algorithms can potentially aid in improving HIA's efficiency and processing complex information and data. Conclusions HIA has excellent potential to improve the decision-making process related to non-communicable diseases, and its incorporation as a standard tool is essential. The use of AI algorithms in HIA implementation is a promising area for future research. Key messages • HIA is a crucial tool in addressing the public and providing transparent information to entities with decision-making authority. • The use of AI algorithms in HIA implementation is a promising area for future research.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1093/eurpub/ckad160.1300",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_024",
+        "authors": [
+          "NIH"
+        ],
+        "year": 2026,
+        "title": "HB-HTA as an implementation problem in Polish health policy - PMC",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8462719/",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 403: https://pmc.ncbi.nlm.nih.gov/articles/PMC8462719/",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_032",
+        "authors": [
+          "Stang",
+          "McCusker",
+          "Ciampi",
+          "Strumpf"
+        ],
+        "year": 2013,
+        "title": "Emergency Department Conditions Associated With the Number of Patients Who Leave a Pediatric Emergency Department Before Physician Assessment",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Pediatric Emergency Care",
+        "publisher": "Ovid Technologies (Wolters Kluwer Health)",
+        "volume": "29",
+        "issue": "10",
+        "pages": "1082-1090",
+        "doi": "10.1097/pec.0b013e3182a5cbc2",
+        "url": "https://doi.org/10.1097/pec.0b013e3182a5cbc2",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1097/pec.0b013e3182a5cbc2",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_033",
+        "authors": [
+          "Polzer",
+          "Thomas",
+          "Kinney",
+          "Penzenik",
+          "Monteith",
+          "Brenner",
+          "Holliday"
+        ],
+        "year": 2024,
+        "title": "A thematic analysis of perceptions of VHA emergency care and suicide risk assessment among Veterans experiencing homelessness",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Journal of Social Distress and Homelessness",
+        "doi": "10.1080/10530789.2024.2379170",
+        "url": "https://doi.org/10.1080/10530789.2024.2379170",
+        "api_source": "Semantic Scholar",
+        "abstract": "ABSTRACT Introduction: Veterans who are homeless are at elevated risk for suicide, and often access Veterans Health Administration (VHA) emergency services to address their health needs. We sought to explore experiences of homeless Veterans utilizing these services, and barriers and facilitators to suicide prevention engagement. Methods: Semi-structured interviews with 25 Veterans who self-reported past 12-month history of homelessness and accessed VHA emergency services. Interviews explored perceptions of VHA emergency care and suicide risk assessment. Results: Interviewees described a complex array of factors contributing to housing instability. Participants detailed challenges navigating interrelated, yet at times disconnected, systems of healthcare and homeless services. Veterans’ experiences receiving care and suicide risk screening in VHA emergency services were generally positive. However, some described rare, striking experiences, feeling stigmatized for “being homeless”. Services following discharge tended to be fragmented. Given numerous contextual factors (e.g. transportation difficulties, timeliness of referrals) complicated by homelessness, individuals tended to routinely rely upon VHA emergency service for future acute care needs. Conclusions: Overall, perceptions of emergency services, including suicide risk screening in this setting, were largely positive and deemed acceptable. However, findings illustrate multiple avenues for optimizing service delivery, including post-discharge services, among homeless Veterans accessing VHA emergency services.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1080/10530789.2024.2379170",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_035",
+        "authors": [
+          "Lelow",
+          "Marincioni"
+        ],
+        "year": 2024,
+        "title": "The European Emergency Number 112 Exploring the Potential of Crowd-Sourced Information for Emergency Management",
+        "source_type": "preprint",
+        "language": "english",
+        "publisher": "Elsevier BV",
+        "doi": "10.2139/ssrn.4982385",
+        "url": "https://doi.org/10.2139/ssrn.4982385",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.2139/ssrn.4982385",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_037",
+        "authors": [
+          "Ebulue",
+          "Ebulue",
+          "Ekesiobi"
+        ],
+        "year": 2024,
+        "title": "Public-private Partnerships in Health Sector Innovation: Lessons from Around the World",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "International medical science research journal",
+        "doi": "10.51594/imsrj.v4i4.1051",
+        "url": "https://doi.org/10.51594/imsrj.v4i4.1051",
+        "api_source": "Semantic Scholar",
+        "abstract": "Public-Private Partnerships (PPPs) have emerged as a crucial mechanism for fostering innovation in the health sector globally. This review encapsulates the lessons learned from diverse PPP models worldwide, highlighting their significance and impact. PPPs in healthcare innovation entail collaboration between governmental bodies, private enterprises, and sometimes non-profit organizations to address challenges, such as limited resources, expertise, and infrastructure, while leveraging the strengths of each sector. The success of PPPs relies on effective governance structures, clear objectives, and mutual accountability. One notable example is the United Kingdom's NHS Innovation Accelerator, which partners with industry leaders to fast-track the adoption of innovative healthcare technologies within the National Health Service (NHS). Through this initiative, pioneering solutions, ranging from digital health platforms to medical devices, have been implemented, enhancing patient care and operational efficiency. Similarly, in low-resource settings like sub-Saharan Africa, PPPs have played a pivotal role in improving access to essential healthcare services. Projects such as the Medicines for Malaria Venture (MMV) collaborate with pharmaceutical companies, governments, and research institutions to develop affordable antimalarial drugs tailored to the region's needs. In the realm of medical research and development, partnerships like the Coalition for Epidemic Preparedness Innovations (CEPI) have demonstrated the power of international collaboration in addressing global health threats. CEPI brings together governments, philanthropic organizations, and the private sector to expedite the development of vaccines against emerging infectious diseases, as witnessed during the COVID-19 pandemic. However, challenges persist in PPP implementation, including complex regulatory frameworks, funding uncertainties, and divergent interests among stakeholders. Lessons from successful PPPs underscore the importance of transparent communication, stakeholder engagement, and sustained political commitment. In conclusion, PPPs in the health sector represent a dynamic avenue for catalyzing innovation and driving transformative change. By drawing insights from diverse experiences worldwide, policymakers and practitioners can refine existing frameworks and foster sustainable partnerships to tackle evolving health challenges effectively. \nKeywords:  Public-Private Partnership, Health, Innovation, World, Review.",
+        "citation_count": 41
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.51594/imsrj.v4i4.1051",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_040",
+        "authors": [
+          "OECD"
+        ],
+        "year": 2026,
+        "title": "oecd.org",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://www.oecd.org/en/publications/health-at-a-glance-2023_7a7afb35-en.html",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "Domain name as title: 'oecd.org'",
+      "issues": 2
+    },
+    {
+      "citation": {
+        "id": "cite_044",
+        "authors": [
+          "Pap",
+          "Lockwood",
+          "Stephenson",
+          "Simpson"
+        ],
+        "year": 2021,
+        "title": "Development of prehospital care quality indicators for the Australian setting: a modified RAND/UCLA appropriateness method",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Emergency Medicine Journal",
+        "doi": "10.1136/emermed-2020-210455",
+        "url": "https://doi.org/10.1136/emermed-2020-210455",
+        "api_source": "Semantic Scholar",
+        "abstract": "Background Globally, the measurement of quality is an important process that supports the provision of high-quality and safe healthcare services. The requirement for valid quality measurement to gauge improvements and monitor performance is echoed in the Australian prehospital care setting. The aim of this study was to use an evidence-informed expert consensus process to identify valid quality indicators (QIs) for Australian prehospital care provided by ambulance services. Methods A modified RAND/UCLA appropriateness method was conducted with a panel of Australian prehospital care experts from February to May 2019. The proposed QIs stemmed from a scoping review and were systematically prepared within a clinical and non-clinical classification system, and a structure/process/outcome and access/safety/effectiveness taxonomy. Rapid reviews were performed for each QI to produce evidence summaries for consideration by the panellists. QIs were deemed valid if the median score by the panel was 7–9 without disagreement. Results Of 117 QIs, the expert panel rated 84 (72%) as valid. This included 26 organisational/system QIs across 7 subdomains and 58 clinical QIs within 10 subdomains. Most QIs were process indicators (n=62; 74%) while QIs describing structural elements and desired outcomes were less common (n=13; 15% and n=9; 11%, respectively). Non-exclusively, 18 (21%) QIs addressed access to healthcare, 21 (25%) described safety aspects and 64 (76%) specified elements contributing to effective services and care. QIs on general time intervals, such as response time, were not considered valid by the panel. Conclusion This study demonstrates that with consideration of best available evidence a substantial proportion of QIs scoped and synthesised from the international literature are valid for use in the Australian prehospital care context.",
+        "citation_count": 5
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1136/emermed-2020-210455",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_046",
+        "authors": [
+          "Paris",
+          "Rowley",
+          "Frank"
+        ],
+        "year": 2023,
+        "title": "The Economic Impact of the Opioid Epidemic",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "International Journal of Advanced Research in Accounting, Economics and Business Perspectives",
+        "publisher": "First Assured Brilliant International Ltd",
+        "volume": "7",
+        "issue": "2",
+        "pages": "42-48",
+        "doi": "10.48028/iiprds/ijaraebp.v7.i2.04",
+        "url": "https://doi.org/10.48028/iiprds/ijaraebp.v7.i2.04",
+        "api_source": "Crossref",
+        "abstract": "There is strong evidence that the opioid epidemic has reduced labor force participation in the United States. While use of prescription opioids aimed at pain management for some individuals may enhance their ability to work, the widespread misuse of opioids has resulted in an epidemic of opioid use disorders (OUD), labor supply disruptions, and unprecedented deaths. Opioid misuse can compromise labor supply in a variety of ways, including absenteeism, increased workplace accidents, and withdrawal from the labor force due to disability, incarceration, or death."
+      },
+      "reason": "URL returns HTTP 404: https://doi.org/10.48028/iiprds/ijaraebp.v7.i2.04",
+      "issues": 1
+    }
+  ]
+}

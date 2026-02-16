@@ -1,0 +1,290 @@
+{
+  "stats": {
+    "total_original": 47,
+    "total_filtered": 34,
+    "total_removed": 13,
+    "removal_reasons": {
+      "invalid_url": 12,
+      "invalid_metadata": 1
+    }
+  },
+  "removed_citations": [
+    {
+      "citation": {
+        "id": "cite_005",
+        "authors": [
+          "McMillan"
+        ],
+        "year": 1992,
+        "title": "Title Pages",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Games Strategies And Managers",
+        "publisher": "Oxford University PressNew York, NY",
+        "pages": "v-vi",
+        "doi": "10.1093/oso/9780195074307.002.0001",
+        "url": "https://doi.org/10.1093/oso/9780195074307.002.0001",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1093/oso/9780195074307.002.0001",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_007",
+        "authors": [
+          "Larreina-Morales",
+          "Mangiron"
+        ],
+        "year": 2024,
+        "title": "Persons with visual disabilities play too",
+        "source_type": "book",
+        "language": "english",
+        "journal": "User-Centric Studies in Game Translation and Accessibility",
+        "publisher": "Routledge",
+        "pages": "148-166",
+        "doi": "10.4324/9781032628677-10",
+        "url": "https://doi.org/10.4324/9781032628677-10",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 503: https://doi.org/10.4324/9781032628677-10",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_012",
+        "authors": [
+          "Thavamuni",
+          "Khalid",
+          "Iida"
+        ],
+        "year": 2025,
+        "title": "Inherent Addiction Mechanisms in Video Games' Gacha",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Inf.",
+        "doi": "10.3390/info16100890",
+        "url": "https://doi.org/10.3390/info16100890",
+        "api_source": "Semantic Scholar",
+        "abstract": "Gacha games, particularly those using Free-to-Play (F2P) models, have become increasingly popular yet controversial due to their addictive mechanics, often likened to gambling. This study investigates the inherent addictive mechanisms of Gacha games, focusing on Genshin Impact, a leading title in the genre. We analyze the interplay between reward frequency, game attractiveness, and player addiction using the Game Refinement theory and the Motion in Mind framework. Our analysis identifies a critical threshold at approximately 55 pulls per rare item (N≈55), with a corresponding gravity-in-mind value of 7.4. Beyond this point, the system exhibits gambling-like dynamics, as indicated by Game Refinement and Motion in Mind metrics. This threshold was measured using empirical gacha data collected from Genshin Impact players and analyzed through theoretical models. While not claiming direct causal evidence of player behavior change, the results highlight a measurable boundary where structural design risks fostering addiction-like compulsion. The study contributes theoretical insights with ethical implications for game design, by identifying critical thresholds in reward frequency and game dynamics that mark the shift toward gambling-like reinforcement. The methodologies, including quantitative analysis and empirical data, ensure robust results contributing to responsible digital entertainment discourse.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.3390/info16100890",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_013",
+        "authors": [
+          "Galehantomo P.S"
+        ],
+        "year": 2015,
+        "title": "Platform Comparison Between Games Console, Mobile Games And PC Games",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "SISFORMA",
+        "publisher": "Soegijapranata Catholic University",
+        "volume": "2",
+        "issue": "1",
+        "pages": "23-26",
+        "doi": "10.24167/sisforma.v2i1.407",
+        "url": "https://doi.org/10.24167/sisforma.v2i1.407",
+        "api_source": "Crossref",
+        "abstract": "In terms of platforms and game console, there are diffrences between, mobile games and pc gamesin the way it is used, the operator, the main event play, the game design and even the way the game work.We know that all the games on console platforms, PC and mobile, have their own characteristic which have advantages and drawbacksAll platforms compete to win the rating for the sake of their platform continuity. For rating, all games platforms develop games that are more qualified. Those games will determine the quality of the platforms, so that the game developers of each platform developtheir games maximally to compete."
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.24167/sisforma.v2i1.407",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_018",
+        "authors": [
+          "Jiménez-Crespo"
+        ],
+        "year": 2024,
+        "title": "Video game localization",
+        "source_type": "book",
+        "language": "english",
+        "journal": "Localization in Translation",
+        "publisher": "Routledge",
+        "pages": "203-223",
+        "doi": "10.4324/9781003340904-10",
+        "url": "https://doi.org/10.4324/9781003340904-10",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 503: https://doi.org/10.4324/9781003340904-10",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_022",
+        "authors": [
+          "Mateas",
+          "Stern"
+        ],
+        "year": 2005,
+        "title": "Build It to Understand It: Ludology Meets Narratology in Game Design Space",
+        "source_type": "conference",
+        "language": "english",
+        "journal": "DiGRA Digital Library",
+        "publisher": "Digitial Games Research Association DiGRA",
+        "doi": "10.26503/dl.v2005i1.172",
+        "url": "https://doi.org/10.26503/dl.v2005i1.172",
+        "api_source": "Crossref"
+      },
+      "reason": "URL contains error keyword: 'https://doi.org/10.26503/dl.v2005i1.172'",
+      "issues": 2
+    },
+    {
+      "citation": {
+        "id": "cite_023",
+        "authors": [
+          "Kluev",
+          "Marinina",
+          "Natalia",
+          "Aksenova",
+          "Merzlyakova"
+        ],
+        "year": 2023,
+        "title": "Videogames and problems of media translation\nin the context of comparison of narratology and ludology",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "E3S Web of Conferences",
+        "doi": "10.1051/e3sconf/202342006033",
+        "url": "https://doi.org/10.1051/e3sconf/202342006033",
+        "api_source": "Semantic Scholar",
+        "abstract": "The article studies the possibility of translating a video game into other types of media, as well as the possibility of a reverse process. Research results received within the framework of the narratological theory of video games and the ludological theory of video games are used as methodological ground. The authors rely on the concept of translation presented in the works of B. Latour. The main provisions and conclusions are formulated by comparing ludological and narratological approaches to the problem of transferring a video game to other media types (cinema), as well as the reverse process. Basic concepts are identified, key points of methodological interest are set out. The article provides illustrative examples of video game translation into cinema, as well as examples of reverse translation, that are commented and explained in the context of the given methodologies. The conclusion is made about the prospects for investigating the issue in the context of media research and media practice.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 503: https://doi.org/10.1051/e3sconf/202342006033",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_024",
+        "authors": [
+          "NIH"
+        ],
+        "year": 2026,
+        "title": "At the nexus of ludology and narratology: Advances in reality-based story-driven games - PMC",
+        "source_type": "report",
+        "language": "english",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9978239/",
+        "api_source": "Gemini Grounded"
+      },
+      "reason": "URL returns HTTP 403: https://pmc.ncbi.nlm.nih.gov/articles/PMC9978239/",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_031",
+        "authors": [
+          "Brewer"
+        ],
+        "year": 2025,
+        "title": "UX",
+        "source_type": "book",
+        "language": "english",
+        "journal": "The Pocket Mentor for Video Game UX UI",
+        "publisher": "CRC Press",
+        "pages": "56-76",
+        "doi": "10.1201/9781003367116-5",
+        "url": "https://doi.org/10.1201/9781003367116-5",
+        "api_source": "Crossref"
+      },
+      "reason": "URL returns HTTP 503: https://doi.org/10.1201/9781003367116-5",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_041",
+        "authors": [
+          "Dodelzon",
+          "Maimone",
+          "Coffey",
+          "Zamora",
+          "Grimm"
+        ],
+        "year": 2025,
+        "title": "Cleanliness Technique in Breast and Axillary Image-Guided Procedures: Best Practices to Minimize Infection.",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Journal of Breast Imaging",
+        "doi": "10.1093/jbi/wbaf037",
+        "url": "https://doi.org/10.1093/jbi/wbaf037",
+        "api_source": "Semantic Scholar",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1093/jbi/wbaf037",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_042",
+        "authors": [
+          "Broome"
+        ],
+        "year": 2021,
+        "title": "Gaming country rankings: Consultancies as knowledge brokers for global benchmarks",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Public Administration",
+        "publisher": "Wiley",
+        "volume": "100",
+        "issue": "3",
+        "pages": "554-570",
+        "doi": "10.1111/padm.12809",
+        "url": "https://doi.org/10.1111/padm.12809",
+        "api_source": "Crossref",
+        "abstract": "AbstractThis article explores how for‐profit consultancies mediate knowledge about global benchmarks in developing countries. Drawing on the case of the Ease of Doing Business rankings, published annually by the World Bank and the International Finance Corporation between 2005 and 2019, it examines the role consultancies play as knowledge brokers connecting global benchmarks produced by intergovernmental organizations to regulatory reform programs undertaken by national public administrations. The article shows how consultancies contracted to implement business enabling environment projects by the United States Agency for International Development advised national policymakers on how to design reforms to improve their country's ranking status. Lending weight to criticisms that shifts in country rankings are misleading as an indicator of changes in regulatory quality, the findings suggest that consultancies have leveraged benchmarks to perpetuate demand for their own expertise rather than to improve the evidence base for aid allocation and the evaluation of development projects."
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1111/padm.12809",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_046",
+        "authors": [
+          "Foxman"
+        ],
+        "year": 2019,
+        "title": "United We Stand: Platforms, Tools and Innovation With the Unity Game Engine",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "Social Media + Society",
+        "publisher": "SAGE Publications",
+        "volume": "5",
+        "issue": "4",
+        "doi": "10.1177/2056305119880177",
+        "url": "https://doi.org/10.1177/2056305119880177",
+        "api_source": "Crossref",
+        "abstract": "The skirmish between game engines Unity and Unreal presents a new front in the platformization of cultural production. This article argues that such programs are “platform tools.” They enable amateurs and professionals to not only build content for platforms but also “lock-in” industry ideologies in the ideation, production, implementation, and distribution of digital creative work, resulting in a homogeneity of developers, practices, and products. The Unity engine’s history, features, and place in the game production pipeline makes it a paradigmatic “platform tool.” Findings from 90 interviews with VR enthusiasts show that Unity set the boundaries or “rules” for developers’ everyday activities and, despite enthusiasm about the medium’s potential, compelled them to create content which conformed to popular gaming genres and standards."
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1177/2056305119880177",
+      "issues": 1
+    },
+    {
+      "citation": {
+        "id": "cite_047",
+        "authors": [
+          "Rehberg",
+          "Williams",
+          "Batmaz",
+          "Ortega"
+        ],
+        "year": 2025,
+        "title": "Repurposing Audio Playback Tools to Test Human Localization with 6DoF Sound",
+        "source_type": "journal",
+        "language": "english",
+        "journal": "ACM Symposium on User Interface Software and Technology",
+        "doi": "10.1145/3746059.3747682",
+        "url": "https://doi.org/10.1145/3746059.3747682",
+        "api_source": "Semantic Scholar",
+        "abstract": "Six-degree-of-freedom audio is a growing interest in interactive software, but it does not easily conform to object-based rendering when achieved with arrays of ambisonics microphones. Prior studies rely on subjective metrics also, which do not clearly indicate how this additional audio interaction might aid a human in a localization task – an indication of enhanced spatial awareness of a sound event. In this paper, we propose an alternative recording and playback technique to achieve six-degree-of-freedom audio to minimize recording overhead, yield object-based rendering, and verify enhanced spatialization through objective testing. The approach taken in this paper utilizes existing audio playback tools in the Unity game engine, and can be redeployed quickly to allow researchers outside of audio engineering exploration in six-degree-of-freedom audio applications. Two studies were conducted within a group of participants using a Microsoft Hololens 2 – testing for interpretation of directional sound cues in a stationary position, and testing the proposed technique in a mobile task. Participants were able to discern additional information within the front-facing “blind spots” and were effectively perfect in a localization task with the proposed audio technique. Participants did not achieve the same performance level with a head-related transfer function alone – indicating meaningful cueing with six-degree-of-freedom sound.",
+        "citation_count": 0
+      },
+      "reason": "URL returns HTTP 403: https://doi.org/10.1145/3746059.3747682",
+      "issues": 1
+    }
+  ]
+}

@@ -35,44 +35,107 @@ def run_expose_export(ctx: DraftContext) -> Tuple[Path, Path]:
         ctx.tracker.update_phase("exporting", progress_percent=70, details={"stage": "creating_expose"})
 
     language_name = get_language_name(ctx.language)
+    _lang = (ctx.language or 'en').split('-')[0].lower()
 
     if ctx.verbose:
         print("\n📋 EXPOSE MODE: Creating research overview...")
 
+    # Localized expose labels
+    _expose_labels = {
+        'en': {
+            'title_prefix': 'Research Expose',
+            'generated': 'Generated',
+            'academic_level': 'Academic Level',
+            'language': 'Language',
+            'executive_summary': 'Executive Summary',
+            'executive_summary_text': f'This research expose provides a preliminary overview of the topic "{ctx.topic}" based on an analysis of {len(ctx.citation_database.citations)} academic sources. It includes a structured outline for a potential full research paper and a comprehensive bibliography.',
+            'research_outline': 'Research Outline',
+            'key_findings': 'Key Research Findings',
+            'research_gaps': 'Identified Research Gaps',
+            'bibliography': 'Bibliography',
+            'next_steps': 'Next Steps',
+            'next_steps_text': f'This research expose serves as a starting point for a comprehensive {ctx.academic_level}-level paper. To develop this into a full draft:',
+            'step_1': 'Expand the outline into detailed chapter content',
+            'step_2': 'Conduct deeper analysis of the identified sources',
+            'step_3': 'Address the research gaps highlighted above',
+            'step_4': 'Develop original arguments based on the literature review',
+            'footer': 'This expose was generated as a research overview. It is intended as a planning tool and starting point for further development.',
+        },
+        'pl': {
+            'title_prefix': 'Ekspoze badawcze',
+            'generated': 'Wygenerowano',
+            'academic_level': 'Poziom akademicki',
+            'language': 'Język',
+            'executive_summary': 'Podsumowanie',
+            'executive_summary_text': f'Niniejsze ekspoze badawcze stanowi wstępny przegląd tematu „{ctx.topic}" na podstawie analizy {len(ctx.citation_database.citations)} źródeł akademickich. Zawiera zarys struktury potencjalnej pełnej pracy badawczej oraz obszerną bibliografię.',
+            'research_outline': 'Zarys pracy',
+            'key_findings': 'Kluczowe wyniki badań',
+            'research_gaps': 'Zidentyfikowane luki badawcze',
+            'bibliography': 'Bibliografia',
+            'next_steps': 'Następne kroki',
+            'next_steps_text': f'Niniejsze ekspoze stanowi punkt wyjścia do opracowania pełnej pracy na poziomie {ctx.academic_level}. Aby rozwinąć je w kompletną pracę:',
+            'step_1': 'Rozwinąć zarys w szczegółową treść rozdziałów',
+            'step_2': 'Przeprowadzić pogłębioną analizę zidentyfikowanych źródeł',
+            'step_3': 'Odnieść się do wskazanych powyżej luk badawczych',
+            'step_4': 'Opracować oryginalne argumenty na podstawie przeglądu literatury',
+            'footer': 'Niniejsze ekspoze zostało wygenerowane jako przegląd badawczy. Służy jako narzędzie planistyczne i punkt wyjścia do dalszych prac.',
+        },
+        'de': {
+            'title_prefix': 'Forschungsexposé',
+            'generated': 'Erstellt',
+            'academic_level': 'Akademisches Niveau',
+            'language': 'Sprache',
+            'executive_summary': 'Zusammenfassung',
+            'executive_summary_text': f'Dieses Forschungsexposé bietet einen vorläufigen Überblick über das Thema „{ctx.topic}" basierend auf einer Analyse von {len(ctx.citation_database.citations)} akademischen Quellen.',
+            'research_outline': 'Forschungsgliederung',
+            'key_findings': 'Wichtige Forschungsergebnisse',
+            'research_gaps': 'Identifizierte Forschungslücken',
+            'bibliography': 'Literaturverzeichnis',
+            'next_steps': 'Nächste Schritte',
+            'next_steps_text': f'Dieses Exposé dient als Ausgangspunkt für eine umfassende Arbeit auf {ctx.academic_level}-Niveau.',
+            'step_1': 'Die Gliederung in detaillierte Kapitelinhalte ausbauen',
+            'step_2': 'Eine vertiefte Analyse der identifizierten Quellen durchführen',
+            'step_3': 'Die oben genannten Forschungslücken adressieren',
+            'step_4': 'Eigenständige Argumente auf Basis der Literaturübersicht entwickeln',
+            'footer': 'Dieses Exposé wurde als Forschungsüberblick erstellt. Es dient als Planungsinstrument und Ausgangspunkt für die weitere Bearbeitung.',
+        },
+    }
+    el = _expose_labels.get(_lang, _expose_labels['en'])
+
     # Compile the expose document
-    expose_content = f"""# Research Expose: {ctx.topic}
+    expose_content = f"""# {el['title_prefix']}: {ctx.topic}
 
-**Generated:** {datetime.now().strftime('%Y-%m-%d')}
-**Academic Level:** {ctx.academic_level.title()}
-**Language:** {language_name}
-
----
-
-## Executive Summary
-
-This research expose provides a preliminary overview of the topic "{ctx.topic}" based on an analysis of {len(ctx.citation_database.citations)} academic sources. It includes a structured outline for a potential full research paper and a comprehensive bibliography.
+**{el['generated']}:** {datetime.now().strftime('%Y-%m-%d')}
+**{el['academic_level']}:** {ctx.academic_level.title()}
+**{el['language']}:** {language_name}
 
 ---
 
-## Research Outline
+## {el['executive_summary']}
+
+{el['executive_summary_text']}
+
+---
+
+## {el['research_outline']}
 
 {ctx.formatter_output}
 
 ---
 
-## Key Research Findings
+## {el['key_findings']}
 
 {ctx.scribe_output[:4000] if len(ctx.scribe_output) > 4000 else ctx.scribe_output}
 
 ---
 
-## Identified Research Gaps
+## {el['research_gaps']}
 
 {ctx.signal_output[:2000] if len(ctx.signal_output) > 2000 else ctx.signal_output}
 
 ---
 
-## Bibliography
+## {el['bibliography']}
 
 """
     for citation in ctx.citation_database.citations:
@@ -89,18 +152,18 @@ This research expose provides a preliminary overview of the topic "{ctx.topic}" 
     expose_content += f"""
 ---
 
-## Next Steps
+## {el['next_steps']}
 
-This research expose serves as a starting point for a comprehensive {ctx.academic_level}-level paper. To develop this into a full draft:
+{el['next_steps_text']}
 
-1. **Expand the outline** into detailed chapter content
-2. **Conduct deeper analysis** of the identified sources
-3. **Address the research gaps** highlighted above
-4. **Develop original arguments** based on the literature review
+1. **{el['step_1']}**
+2. **{el['step_2']}**
+3. **{el['step_3']}**
+4. **{el['step_4']}**
 
 ---
 
-*This expose was generated as a research overview. It is intended as a planning tool and starting point for further development.*
+*{el['footer']}*
 """
 
     # Save expose markdown
@@ -165,7 +228,7 @@ def run_compile_and_export(ctx: DraftContext) -> Tuple[Path, Path]:
     from utils.export_professional import export_pdf, export_docx
     from utils.text_utils import clean_ai_language, strip_meta_text, localize_chapter_headings, clean_agent_output
     from utils.text_cleanup import apply_full_cleanup
-    from draft_generator import slugify
+    from draft_generator import slugify, get_chapter_name
 
     if ctx.verbose:
         print("\n🔧 PHASE 4: COMPILE")
@@ -194,32 +257,88 @@ def run_compile_and_export(ctx: DraftContext) -> Tuple[Path, Path]:
     word_count = len(draft_text.split())
     pages_estimate = word_count // 250
 
-    # Labels
-    draft_type_labels = {
-        'research_paper': 'Research Paper',
-        'bachelor': 'Bachelor Draft',
-        'master': 'Master Draft',
-        'phd': 'PhD Dissertation',
-    }
-    draft_type = draft_type_labels.get(ctx.academic_level, 'Master Draft')
+    # Labels — localized by language
+    lang_code = (ctx.language or 'en').split('-')[0].lower()
 
-    degree_labels = {
-        'research_paper': 'Research Paper',
-        'bachelor': 'Bachelor of Science',
-        'master': 'Master of Science',
-        'phd': 'Doctor of Philosophy',
+    _draft_type_labels = {
+        'en': {
+            'research_paper': 'Research Paper',
+            'bachelor': 'Bachelor Draft',
+            'master': 'Master Draft',
+            'phd': 'PhD Dissertation',
+        },
+        'pl': {
+            'research_paper': 'Praca badawcza',
+            'bachelor': 'Praca licencjacka',
+            'master': 'Praca magisterska',
+            'phd': 'Rozprawa doktorska',
+        },
+        'de': {
+            'research_paper': 'Forschungsarbeit',
+            'bachelor': 'Bachelorarbeit',
+            'master': 'Masterarbeit',
+            'phd': 'Dissertation',
+        },
     }
-    degree = degree_labels.get(ctx.academic_level, 'Master of Science')
+    draft_type = _draft_type_labels.get(lang_code, _draft_type_labels['en']).get(
+        ctx.academic_level, _draft_type_labels['en'].get(ctx.academic_level, 'Master Draft')
+    )
 
-    # YAML metadata
+    _degree_labels = {
+        'en': {
+            'research_paper': 'Research Paper',
+            'bachelor': 'Bachelor of Science',
+            'master': 'Master of Science',
+            'phd': 'Doctor of Philosophy',
+        },
+        'pl': {
+            'research_paper': 'Praca badawcza',
+            'bachelor': 'Licencjat',
+            'master': 'Magister',
+            'phd': 'Doktor',
+        },
+        'de': {
+            'research_paper': 'Forschungsarbeit',
+            'bachelor': 'Bachelor of Science',
+            'master': 'Master of Science',
+            'phd': 'Doktor',
+        },
+    }
+    degree = _degree_labels.get(lang_code, _degree_labels['en']).get(
+        ctx.academic_level, _degree_labels['en'].get(ctx.academic_level, 'Master of Science')
+    )
+
+    # YAML metadata — use empty strings instead of English placeholders for non-English languages
+    _default_department = {"en": "Department of Computer Science", "pl": "Katedra", "de": "Institut"}
+    _default_faculty = {"en": "Faculty of Engineering", "pl": "Wydział", "de": "Fakultät"}
+    _default_location = {"en": "Munich", "pl": "", "de": "München"}
+
     yaml_author = ctx.author_name or "OpenDraft AI"
-    yaml_institution = ctx.institution or "OpenDraft University"
-    yaml_department = ctx.department or "Department of Computer Science"
-    yaml_faculty = ctx.faculty or "Faculty of Engineering"
-    yaml_advisor = ctx.advisor or "Prof. Dr. OpenDraft Supervisor"
-    yaml_second_examiner = ctx.second_examiner or "Prof. Dr. Second Examiner"
-    yaml_location = ctx.location or "Munich"
-    yaml_student_id = ctx.student_id or "N/A"
+    yaml_institution = ctx.institution or ""
+    yaml_department = ctx.department or _default_department.get(lang_code, "")
+    yaml_faculty = ctx.faculty or _default_faculty.get(lang_code, "")
+    yaml_advisor = ctx.advisor or ""
+    yaml_second_examiner = ctx.second_examiner or ""
+    yaml_location = ctx.location or _default_location.get(lang_code, "")
+    yaml_student_id = ctx.student_id or ""
+
+    # Localized section headers
+    h_abstract = get_chapter_name('abstract', ctx.language)
+    h_introduction = get_chapter_name('introduction', ctx.language)
+    h_main_body = get_chapter_name('main_body', ctx.language)
+    h_conclusion = get_chapter_name('conclusion', ctx.language)
+    h_appendix = get_chapter_name('appendix', ctx.language)
+    h_references = get_chapter_name('references', ctx.language)
+
+    # Localized word count label
+    word_count_label = "słów" if lang_code == 'pl' else "Wörter" if lang_code == 'de' else "palabras" if lang_code == 'es' else "mots" if lang_code == 'fr' else "words"
+
+    # Localized abstract placeholder
+    abstract_placeholder_map = {
+        'pl': '[Streszczenie zostanie wygenerowane]',
+        'de': '[Zusammenfassung wird automatisch generiert]',
+    }
+    abstract_placeholder = abstract_placeholder_map.get(lang_code, '[Abstract will be generated]')
 
     full_draft = f"""---
 title: "{ctx.topic}"
@@ -234,37 +353,37 @@ second_examiner: "{yaml_second_examiner}"
 location: "{yaml_location}"
 student_id: "{yaml_student_id}"
 project_type: "{draft_type}"
-word_count: "{word_count:,} words"
+word_count: "{word_count:,} {word_count_label}"
 pages: "{pages_estimate}"
 generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
 ---
 
-## Abstract
-[Abstract will be generated]
+## {h_abstract}
+{abstract_placeholder}
 
 \\newpage
 
-# 1. Introduction
+# 1. {h_introduction}
 {intro_clean}
 
 \\newpage
 
-# 2. Main Body
+# 2. {h_main_body}
 {body_clean}
 
 \\newpage
 
-# 3. Conclusion
+# 3. {h_conclusion}
 {conclusion_clean}
 
 \\newpage
 
-# 4. Appendices
+# 4. {h_appendix}
 {appendix_clean}
 
 \\newpage
 
-# 5. References
+# 5. {h_references}
 [Citations will be compiled]
 """
 
@@ -281,7 +400,7 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
 
     # Remove template References section and append generated one
     compiled_draft = re.sub(
-        r'^\s*#+ (?:\d+\.\s*)?(?:References|Bibliography)\s*\n\s*\[Citations will be compiled\]\s*',
+        r'^\s*#+ (?:\d+\.\s*)?(?:References|Bibliography|Bibliografia|Literaturverzeichnis|Referencias)\s*\n\s*\[Citations will be compiled\]\s*',
         '',
         compiled_draft,
         flags=re.MULTILINE,
@@ -367,32 +486,32 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
     if ctx.verbose:
         print("📄 Exporting PDF (professional formatting)...")
 
-    pdf_success = export_pdf(md_file=final_md_path, output_pdf=pdf_path, engine='pandoc')
+    # PDF: try Pandoc first, fallback to LibreOffice (engine='auto')
+    pdf_success = export_pdf(md_file=final_md_path, output_pdf=pdf_path, engine='auto')
 
-    if not pdf_success:
-        raise RuntimeError("PDF export failed - Professional formatting required!")
-    if not pdf_path.exists():
-        raise RuntimeError(f"PDF export failed - file not created: {pdf_path}")
-
-    if ctx.tracker:
-        ctx.tracker.log_activity("\u2705 PDF document ready", event_type="found", phase="exporting")
-        ctx.tracker.log_activity("📝 Creating Word document...", event_type="info", phase="exporting")
-
-    # DOCX export
+    # DOCX export - always run so user has editable format even if PDF fails
     docx_path = ctx.folders['exports'] / f"{base_filename}.docx"
     docx_success = export_docx(md_file=final_md_path, output_docx=docx_path)
 
     if not docx_success or not docx_path.exists():
         raise RuntimeError(f"DOCX export failed - file not created: {docx_path}")
 
+    if pdf_success and pdf_path.exists():
+        if ctx.tracker:
+            ctx.tracker.log_activity("\u2705 PDF document ready", event_type="found", phase="exporting")
+    else:
+        if ctx.verbose:
+            print("⚠️  PDF export failed - DOCX and Markdown available. Install Pandoc+LaTeX or LibreOffice for PDF.")
+
     if ctx.tracker:
         ctx.tracker.log_activity("\u2705 Word document ready", event_type="found", phase="exporting")
 
-    # ZIP bundle
+    # ZIP bundle (include PDF only if generated)
     zip_path = ctx.folders['exports'] / f"{base_filename}.zip"
     try:
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-            zf.write(pdf_path, pdf_path.name)
+            if pdf_path.exists():
+                zf.write(pdf_path, pdf_path.name)
             zf.write(docx_path, docx_path.name)
             zf.write(final_md_path, final_md_path.name)
         if ctx.tracker:
@@ -405,7 +524,8 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
         ctx.tracker.log_activity("🎉 Thesis generation complete!", event_type="milestone", phase="completed")
 
     if ctx.verbose:
-        print(f"\u2705 Exported PDF: {pdf_path}")
+        if pdf_path.exists():
+            print(f"\u2705 Exported PDF: {pdf_path}")
         print(f"\u2705 Exported DOCX: {docx_path}")
         print(f"📂 Output folder: {ctx.folders['root']}")
 

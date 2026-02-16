@@ -30,6 +30,21 @@ def detect_draft_language(draft_content: str) -> str:
     Returns:
         Language code: 'english', 'german', etc.
     """
+    # Check for Polish indicators
+    polish_indicators = [
+        '## Streszczenie',
+        '## Wprowadzenie',
+        '## Podsumowanie',
+        '## Przegląd literatury',
+        '## Metodologia',
+        '## Dyskusja',
+        'Słowa kluczowe:',
+        '# 1. Wstęp',
+    ]
+
+    if any(indicator in draft_content for indicator in polish_indicators):
+        return 'polish'
+
     # Check for German indicators
     german_indicators = [
         '## Zusammenfassung',
@@ -59,7 +74,8 @@ def has_placeholder_abstract(draft_content: str) -> bool:
     placeholders = [
         '[Abstract will be generated',
         '[Zusammenfassung wird während der PDF-Generierung',
-        '[Zusammenfassung wird automatisch'
+        '[Zusammenfassung wird automatisch',
+        '[Streszczenie zostanie wygenerowane',
     ]
 
     return any(placeholder in draft_content for placeholder in placeholders)
@@ -84,11 +100,11 @@ def extract_draft_for_abstract(draft_content: str, max_chars: int = 15000) -> st
             content_start = end_frontmatter + 3
 
     # Skip TOC and abstract sections
-    toc_match = re.search(r'## (Table of Contents|Inhaltsverzeichnis)', draft_content[content_start:])
+    toc_match = re.search(r'## (Table of Contents|Inhaltsverzeichnis|Spis treści)', draft_content[content_start:])
     if toc_match:
         content_start += toc_match.end()
 
-    abstract_match = re.search(r'## (Abstract|Zusammenfassung)', draft_content[content_start:])
+    abstract_match = re.search(r'## (Abstract|Zusammenfassung|Streszczenie)', draft_content[content_start:])
     if abstract_match:
         abstract_start = content_start + abstract_match.start()
         newpage_match = re.search(r'\\newpage', draft_content[abstract_start:])
@@ -102,8 +118,8 @@ def extract_draft_for_abstract(draft_content: str, max_chars: int = 15000) -> st
     # Try to find conclusion
     conclusion = ""
     conc_patterns = [
-        r'# (Conclusion|Fazit|Schlussfolgerung)\n+(.*?)(?=\n---|$)',
-        r'## (Conclusion|Fazit|Schlussfolgerung)\n+(.*?)(?=\n---|$)'
+        r'# (Conclusion|Fazit|Schlussfolgerung|Podsumowanie)\n+(.*?)(?=\n---|$)',
+        r'## (Conclusion|Fazit|Schlussfolgerung|Podsumowanie)\n+(.*?)(?=\n---|$)'
     ]
 
     for pattern in conc_patterns:
@@ -145,14 +161,17 @@ def replace_placeholder_with_abstract(draft_content: str, generated_abstract: st
     """
     # Clean up the generated abstract (remove any meta-comments)
     generated_abstract = re.sub(
-        r'^(Here is the abstract|Hier ist die Zusammenfassung).*?\n+',
+        r'^(Here is the abstract|Hier ist die Zusammenfassung|Oto streszczenie).*?\n+',
         '',
         generated_abstract,
         flags=re.IGNORECASE
     ).strip()
 
     # Define placeholder patterns (handle optional leading whitespace from indented templates)
-    if language == 'german':
+    if language == 'polish':
+        placeholder_pattern = r'^\s*## Streszczenie\n+\s*\[Streszczenie zostanie wygenerowane.*?\]\n+\s*\\\\?newpage'
+        replacement = f"## Streszczenie\n\n{generated_abstract}\n\n\\\\newpage"
+    elif language == 'german':
         placeholder_pattern = r'^\s*## Zusammenfassung\n+\s*\[Zusammenfassung wird.*?\]\n+\s*\\\\?newpage'
         replacement = f"## Zusammenfassung\n\n{generated_abstract}\n\n\\\\newpage"
     else:
@@ -172,12 +191,15 @@ def replace_placeholder_with_abstract(draft_content: str, generated_abstract: st
             # Match with \newpage (escaped in markdown as \\newpage) - with optional whitespace
             (r'^\s*## Abstract\n+\s*\[.*?\]\n+\s*\\\\newpage', f"## Abstract\n\n{generated_abstract}\n\n\\\\newpage"),
             (r'^\s*## Zusammenfassung\n+\s*\[.*?\]\n+\s*\\\\newpage', f"## Zusammenfassung\n\n{generated_abstract}\n\n\\\\newpage"),
+            (r'^\s*## Streszczenie\n+\s*\[.*?\]\n+\s*\\\\newpage', f"## Streszczenie\n\n{generated_abstract}\n\n\\\\newpage"),
             # Match with literal \newpage - with optional whitespace
             (r'^\s*## Abstract\n+\s*\[.*?\]\n+\s*\\newpage', f"## Abstract\n\n{generated_abstract}\n\n\\newpage"),
             (r'^\s*## Zusammenfassung\n+\s*\[.*?\]\n+\s*\\newpage', f"## Zusammenfassung\n\n{generated_abstract}\n\n\\newpage"),
+            (r'^\s*## Streszczenie\n+\s*\[.*?\]\n+\s*\\newpage', f"## Streszczenie\n\n{generated_abstract}\n\n\\newpage"),
             # Match without newpage - with optional whitespace
             (r'^\s*## Abstract\n+\s*\[.*?\]', f"## Abstract\n\n{generated_abstract}"),
             (r'^\s*## Zusammenfassung\n+\s*\[.*?\]', f"## Zusammenfassung\n\n{generated_abstract}"),
+            (r'^\s*## Streszczenie\n+\s*\[.*?\]', f"## Streszczenie\n\n{generated_abstract}"),
         ]
 
         for pattern, repl in alt_patterns:

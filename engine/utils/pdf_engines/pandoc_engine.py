@@ -206,7 +206,7 @@ class PandocLatexEngine(PDFEngine):
         than creating a full custom template.
 
         REVERTED: Restored original Pandoc template-based approach (pre-83330e9).
-        Pandoc reads YAML frontmatter and calls \maketitle automatically.
+        Pandoc reads YAML frontmatter and calls \\maketitle automatically.
         This approach works for ALL theses (showcase theses have rich YAML = beautiful cover).
 
         Args:
@@ -660,6 +660,14 @@ class PandocLatexEngine(PDFEngine):
             'auteur:': 'author:',
             'nombre_de_mots:': 'word_count:',
             'langue:': 'language:',
+
+            # Polish (6 fields)
+            'tytuł:': 'title:',
+            'podtytuł:': 'subtitle:',
+            'autor:': 'author:',
+            'data:': 'date:',
+            'liczba_słów:': 'word_count:',
+            'język:': 'language:',
         }
 
         # Only process if YAML frontmatter exists

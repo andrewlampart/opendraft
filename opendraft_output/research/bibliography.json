@@ -1,0 +1,567 @@
+{
+  "citations": [
+    {
+      "id": "cite_001",
+      "authors": [
+        "Renk",
+        "Letkiewicz"
+      ],
+      "year": 2023,
+      "title": "Potential for the Use of Telemedicine Tools in the National Emergency Medical Service – a Forecast of a New System Organisation Model Using the Example of Pomorskie Province",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Współczesna Gospodarka",
+      "publisher": "Uniwersytet Gdanski",
+      "volume": "14",
+      "issue": "1 (40)",
+      "doi": "10.26881/wg.2023.1.04",
+      "url": "https://doi.org/10.26881/wg.2023.1.04",
+      "api_source": "Crossref",
+      "abstract": "Purpuse: The National Emergency Medical Service (NEMS) is facing financial and human resources problems and according to the Supreme Audit Office (SAO), the shortage of doctors and the financial problems will increase. The purpose of the paper is to show that the introduction of live streaming to the Emergency Medical Teams (EMTs) will mitigate the problems resulting from the shortage of medical staff and will significantly reduce the cost of maintaining the operational readiness of the EMTs.\nMethodology:The paper is based on applicable legislation and the Provincial Action Plan of the NEMS system for the Pomorskie Province. The forecast was prepared for the outlays and effects of the new organisation and operation of the NEMS system in Pomorskie Province.\nFindings: The implementation of live streaming in Pomorskie Province would help reduce the cost of operation of the NEMS system in the province by PLN 10,190,800.00 per year. In addition, this tool would allow the system to operate with only 16 physicians employed, which corresponds to 10% of the current resources and about 90% of the physicians could be employed in other parts of the healthcare system."
+    },
+    {
+      "id": "cite_002",
+      "authors": [
+        "Filip",
+        "Kucaba",
+        "Załucka",
+        "Ozga",
+        "Wojtaszek"
+      ],
+      "year": 2015,
+      "title": "Analiza występowania zatruć u pacjentów leczonych w oddziale toksykologii w Rzeszowie w latach 2011–2013",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Przegląd Medyczny Uniwersytetu Rzeszowskiego i Narodowego Instytutu Leków w Warszawie",
+      "publisher": "University of Rzeszow",
+      "volume": "13",
+      "issue": "3",
+      "pages": "244-254",
+      "doi": "10.15584/przmed.2015.3.5",
+      "url": "https://doi.org/10.15584/przmed.2015.3.5",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_005",
+      "authors": [
+        "Gromek"
+      ],
+      "year": 2024,
+      "title": "Ratownictwo Medyczne W Polsce. Zarys Holi-systemu",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zeszyty Naukowe Pro Publico Bono",
+      "doi": "10.5604/01.3001.0054.8536",
+      "url": "https://doi.org/10.5604/01.3001.0054.8536",
+      "api_source": "Semantic Scholar",
+      "abstract": "Ratownictwo medyczne w Polsce to więcej niż jedynie funkcjonowanie systemu Państwowe RatownictwoMedyczne. Współczesne uwarunkowania bezpieczeństwa narodowego RP skłaniają kuposzukiwaniu całościowej (holistycznej) formuły systemu ratownictwa medycznego w Polsce. Zacel badań przyjęto implementację koncepcji holi-systemu bezpieczeństwa na grunt problematykiratownictwa medycznego w Polsce. Dokonano tego poprzez określenie elementów konstytutywnychsystemu ratownictwa medycznego w Polsce (misji i celów, elementów i źródeł relacji systemowych),a także określenie ogólnych relacji systemu ratownictwa medycznego w Polsce z wybranymisystemami szczegółowymi systemu bezpieczeństwa narodowego RP. Badanie naukoweprzeprowadzono w oparciu o studiowanie literatury przedmiotu. Udowodniono, że holistycznaformuła systemu ratownictwa medycznego w Polsce wykracza poza struktury systemu PaństwoweRatownictwo Medyczne. Uwidacznia się to w odniesieniu do misji, celów, elementów i źródeł relacjiporządkujących systemowe ratownictwo medyczne w Polsce. Znajduje swoje potwierdzeniew zależnościach łączących system ratownictwa medycznego w Polsce z innymi komponentamisystemu bezpieczeństwa narodowego RP.",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_006",
+      "authors": [
+        "Wojewoda"
+      ],
+      "year": 2019,
+      "title": "Od idei do realizacji – Ogrody dziecięce im. W.E. Raua w Warszawie 1899-1901",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Studia Edukacyjne",
+      "publisher": "Adam Mickiewicz University Poznan",
+      "issue": "53",
+      "pages": "361-372",
+      "doi": "10.14746/se.2019.53.20",
+      "url": "https://doi.org/10.14746/se.2019.53.20",
+      "api_source": "Crossref",
+      "abstract": "In the 19th and 20th centuries the idea of collective games in the open was very popular. The idea of developing physical activity of children was also accepted in the Kingdom of Poland. Drawing inspiration from Germany, Sweden, Belgium and France and inspired by Henryk Jordan Gardens in Krakow, representatives of the Warsaw Hygiene Society decided to set up similar gardens in Warsaw. After the enthusiastic opening of the garden in 1899, they quickly had to interrupt the fun to includ this type of activity in the Society. At that time, being unable to formally conduct collective games, members of the organizing committee were delegated abroad to seek inspiration and organizational and methodical solutions. W.E. Raue Children’s gardens re-started their activity in 1901, after obtaining the consent of the Ministry of the Interior."
+    },
+    {
+      "id": "cite_007",
+      "authors": [
+        "Stańczak"
+      ],
+      "year": 2015,
+      "title": "Sposób Współpracy Systemu Insigma Z Krajowym Systemem Powiadamiania Ratunkowego",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "PRZEGLĄD TELEKOMUNIKACYJNY - WIADOMOŚCI TELEKOMUNIKACYJNE",
+      "publisher": "Wydawnictwo SIGMA-NOT, sp. z.o.o.",
+      "volume": "1",
+      "issue": "4",
+      "pages": "59-62",
+      "doi": "10.15199/59.2015.4.13",
+      "url": "https://doi.org/10.15199/59.2015.4.13",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_009",
+      "authors": [
+        "Dylik",
+        "Królak",
+        "Wasielewski",
+        "Węcławek"
+      ],
+      "year": 2024,
+      "title": "Rozmieszczenie i liczebność lęgowej populacji gawrona Corvus frugilegus w województwie kujawsko-pomorskim w latach 2014–2022",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Ornis Polonica",
+      "publisher": "Bogucki Wydawnictwo Naukowe",
+      "volume": "65",
+      "issue": "1",
+      "pages": "42-56",
+      "doi": "10.12657/ornis.2024.1.3",
+      "url": "https://doi.org/10.12657/ornis.2024.1.3",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_011",
+      "authors": [
+        "Pater"
+      ],
+      "year": 2024,
+      "title": "Organization of the Emergency Medical Service in Poland",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Scientific Papers of Silesian University of Technology. Organization and Management Series",
+      "doi": "10.29119/1641-3466.2024.208.30",
+      "url": "https://doi.org/10.29119/1641-3466.2024.208.30",
+      "api_source": "Semantic Scholar",
+      "abstract": "Purpose: The purpose of the article is to present the organization and financing of the \nemergency medical services system in Poland, against the background of model solutions in \nthis matter. \nDesign/methodology/approach: The methodology of the study is based on the analysis of \nexisting legal regulations on the organization of the emergency medical services system in \nPoland. A review of the available literature, in which the authors addressed issues related to \nmodels of functioning of the emergency medical services system, was also carried out. \nStatistical data provided by the Statistics Poland (GUS) and reports on the implementation of \nthe financial plan provided by the National Health Fund (NFZ) were reviewed. \nFindings: The State Emergency Medical Service system is evolving towards the Anglo\nAmerican model. The previous model of financing through a subsidy from the state budget has \nproved insufficient. In the years under review (2007-2022), the subsidy was insufficient to \ncover the costs of operating the State Emergency Medical Service. After a change in the method \nof financing, the burden of covering operating costs was transferred to the National Health \nFund. In 2023, costs were planned to be higher than they were actually incurred. Year after \nyear, however, the system requires higher expenses. \nOriginality/value: The publication addresses issues related to the organization of state \nemergency medical services in Poland. The subject matter is relevant in the context of the \ncurrent socio-economic and political situation and is a contribution to further in-depth research \nin a situation of shortage of resources allocated to health care.",
+      "citation_count": 2
+    },
+    {
+      "id": "cite_013",
+      "authors": [
+        "Bachman",
+        "Małecka"
+      ],
+      "year": 2022,
+      "title": "Prawidłowe postępowanie członków Zespołów Ratownictwa Medycznego  w sytuacjach trudnych",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Innowacje w Pielęgniarstwie",
+      "publisher": "Panstwowa Akademia Nauk Stosowanych we Wloclawku",
+      "volume": "7",
+      "issue": "2",
+      "pages": "28-39",
+      "doi": "10.21784/iwp.2022.008",
+      "url": "https://doi.org/10.21784/iwp.2022.008",
+      "api_source": "Crossref",
+      "abstract": "Wstęp. Praca w Zespołach Ratownictwa Medycznego to stresująca i odpowiedzialna służba. Medycy na co dzień stykają się z trudnymi sytuacjami. Podejmują ważne decyzje, patrzą na ludzki ból i cierpienie. Są świadkami śmierci i nowego życia. Ratują, pomagają, leczą a przy tym wszystkim są tylko ludźmi kierującymi się emocjami, potrzebującymi wypoczynku, a niekiedy wsparcia.&#x0D;\nCel. Celem badań była ocena prawidłowego postępowania członków Zespołów Ratownictwa Medycznego w sytuacjach trudnych.&#x0D;\nMateriał i metody. Grupę badawczą stanowiło 120 osób, członków Zespołów Ratownictwa Medycznego. Użyta metoda – sondaż diagnostyczny, narzędzie badawcze – autorski kwestionariusz ankiety. Do obliczeń zależności pomiędzy kilkoma poziomami zmiennych zastosowano test Chi Kwadrat Pearsona. Przedstawiono w pracy analizy tablic krzyżowych, gdzie zachodziła różnica istotna statystycznie czyli relacja pomiędzy jedną zmienną a drugą.&#x0D;\nWyniki. W przeprowadzonym badaniu wzięły udział kobiety – 19 osób i mężczyźni 101 osób. Ankietowani wskazali, że sytuacje najbardziej traumatyczne, to nagłe zdarzenia z udziałem dzieci. Wyjazdy do zdarzeń z udziałem pacjenta z kategorii \"ładuj i jedź\", przez samych ratowników również są określane, jako sytuacje trudne. Najmniej natomiast problemów, dostrzegają w zdarzeniach z udziałem osób pobudzonych, leczonych psychiatrycznie.&#x0D;\nWnioski. Uzyskane badania wykazały, że pracownicy medyczni bez względu na wykonywany zawód, w sposób szczególny są przygotowywani do pracy w służbach ratowniczych, jednakże w sytuacjach traumatycznych nie zawsze podejmują najbardziej skuteczne działania.&#x0D;\nNa prawidłowe postępowanie członków Zespołów Ratownictwa Medycznego w wybranych sytuacjach trudnych ma wpływ czas pracy i wypoczynek, nie ma natomiast wpływu wiedza i doświadczenie zawodowe oraz wiek, a także płeć. Decyzja o zawodzie, podjęta w późnym wieku oraz wiek rozpoczęcia pracy w Zespole Ratownictwa Medycznego, również nie wpływają na działania ratownicze podejmowane w sytuacjach traumatycznych."
+    },
+    {
+      "id": "cite_014",
+      "authors": [
+        "Alanazy",
+        "Alruwaili"
+      ],
+      "year": 2025,
+      "title": "The impact of pre-hospital emergency medical services on the outcomes of patients with burn: a systematic review and meta-analysis",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Emergency Care Journal",
+      "publisher": "PAGEPress Publications",
+      "doi": "10.4081/ecj.2025.13074",
+      "url": "https://doi.org/10.4081/ecj.2025.13074",
+      "api_source": "Crossref",
+      "abstract": "Burn injuries are a worldwide health issue, significantly burdening healthcare facilities. Specialized burn centres are only sometimes available near the site of burn injury. First aid greatly impacted the outcomes of burns by evaluating the severity of the burn and associated injuries. Pre-hospital Emergency Medical Services (EMS) have more remarkable contributions to healthcare systems. We aimed to reveal the interventions provided by the EMS staff on the scene of burn injuries and the impact of these interventions on the outcomes of burn injuries. Furthermore, the study aimed to identify areas for improvement in pre-hospital burn care. A systematic literature review was carried out from inception to 1st July 2023 using twelve databases. All original articles that included patients with burn injuries who received the necessary pre-hospital care by EMS staff were included. Nine articles comprehending 6149 patients with burn injuries were retrieved. The analysis revealed that EMS interventions significantly improved  the outcomes of burn management. This included better control for pain and vital parameters, and lower mortality risk. The EMS provided analgesic administration, cooling of the burn wound, and the necessary urgent therapies.  However, the study identified a need for better EMS training in assessing burn severity and managing burn injuries effectively. Enhancing EMS providers' knowledge and skills in pre-hospital burn management could substantially improve patient outcomes and reduce the burden on healthcare systems. Improving the understanding of EMS providers towards burn care can minimize the risk of burn-related poor outcomes and reduce the burden on healthcare facilities."
+    },
+    {
+      "id": "cite_015",
+      "authors": [
+        "Almutair",
+        "Alharbi",
+        "Aljuhani",
+        "Alqahtani",
+        "Alenezi"
+      ],
+      "year": 2024,
+      "title": "Effectiveness of Paramedic Interventions in Pre-hospital Emergency Care: A Systematic Review",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Cuestiones de Fisioterapia",
+      "doi": "10.48047/ga9kkf15",
+      "url": "https://doi.org/10.48047/ga9kkf15",
+      "api_source": "Semantic Scholar",
+      "abstract": "Background: Pre-hospital emergency care plays a critical role in reducing morbidity and mortality among patients experiencing acute medical and traumatic events. Paramedics serve as frontline responders, delivering rapid, often life-saving interventions before hospital arrival. As the scope of paramedic practice continues to expand, evaluating the effectiveness of these interventions is essential to improving outcomes and optimizing emergency medical services (EMS) systems. \nObjective: This systematic review aims to assess the effectiveness of paramedic-led interventions in pre-hospital emergency care, focusing on clinical outcomes, patient safety, and response efficiency. \nMethods: A comprehensive literature search was conducted across five major databases (PubMed, Scopus, Web of Science, CINAHL, and EMBASE) for peer-reviewed studies published between 2016 and 2024. Eligible studies included randomized controlled trials, cohort studies, and observational research evaluating clinical outcomes of paramedic-administered interventions. Data extraction and quality assessment were performed independently by two reviewers following PRISMA guidelines. \nResults: Out of 2,347 identified records, 42 studies met the inclusion criteria. Interventions analyzed included airway management, defibrillation, hemorrhage control, analgesia, stroke identification, and early sepsis treatment. Evidence suggests that timely paramedic interventions are associated with improved survival rates in cardiac arrest, better pain management, and faster recognition of time-sensitive conditions such as stroke and sepsis. However, variations in protocols, training levels, and patient populations limited the ability to generalize some findings. \nConclusion: Paramedic-led interventions in the pre-hospital setting are generally effective in improving patient outcomes, particularly when guided by standardized protocols and supported by continuous training. Further high-quality research is needed to strengthen the evidence base and support the development of best-practice models in EMS systems.",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_016",
+      "authors": [
+        "Nadolny",
+        "Robert Ładny",
+        "Gałązkowski"
+      ],
+      "year": 2019,
+      "title": "2 - An analysis of activities and medical rescue actions in patients with OHCA in the system of emergency medical services in Silesia region (Poland)",
+      "source_type": "report",
+      "language": "english",
+      "publisher": "Morressier",
+      "doi": "10.26226/morressier.5d24abdefcc52c7b9b69e486",
+      "url": "https://doi.org/10.26226/morressier.5d24abdefcc52c7b9b69e486",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_019",
+      "authors": [
+        "Goniewicz",
+        "Goniewicz",
+        "PawÅowski",
+        "Czerski"
+      ],
+      "year": 2018,
+      "title": "Management of Injuries in Children",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/a802549a2f470cc9ddc67599666d8d96b88c9966",
+      "api_source": "Semantic Scholar",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_020",
+      "authors": [
+        "Kont"
+      ],
+      "year": 2023,
+      "title": "Information Security Awareness of Librarians in the Baltic Countries: A Comparative Analysis",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Baltic Journal of Modern Computing",
+      "publisher": "University of Latvia",
+      "volume": "11",
+      "issue": "3",
+      "doi": "10.22364/bjmc.2023.11.3.07",
+      "url": "https://doi.org/10.22364/bjmc.2023.11.3.07",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_021",
+      "authors": [
+        "Dzioba",
+        "Muślewski",
+        "Gutsche",
+        "Lisjak",
+        "Sojka"
+      ],
+      "year": 2021,
+      "title": "Comparative analysis of selected freight means in the aspect of EMS sets implementation",
+      "source_type": "conference",
+      "language": "english",
+      "journal": "MATEC Web of Conferences",
+      "doi": "10.1051/matecconf/202133801007",
+      "url": "https://doi.org/10.1051/matecconf/202133801007",
+      "api_source": "Semantic Scholar",
+      "abstract": "The Three Seas Initiative, which gathers 12 European countries located from the Baltic Sea, the Adriatic Sea to the Black Sea, is both an opportunity and a challenge for the countries of Central and Eastern Europe. The concept has primarily a regional dimension, while its global impact is appreciated and supported by, among others, Scandinavian countries and the U.S. government. While the potential for economic development within the scope this initiative is high, in order to develop it, there is a need to modernize the transporting, energetic and digital infrastructure necessary for the implementation of logistic processes. It is also necessary to change legal regulations. The article describes the international economic and political initiative gathering selected countries in the Three Seas area and characterizes the purposefulness of the application of European Modular Systems. On the basis of previously selected features influencing the increase of economic efficiency and appropriately selected weights, a comparative analysis of selected cargo means was conducted. The Bellinger’s method was applied in order to conduct the comparative analysis. Based on the analysis of the obtained research results, the benefits of using sets with increased loading capacity on a selected route between the ports of the Baltic Sea and the Adriatic Sea were demonstrated.",
+      "citation_count": 1
+    },
+    {
+      "id": "cite_025",
+      "authors": [
+        "Żurowska-Wolak",
+        "Barczentewicz",
+        "Grochowski",
+        "Wolak"
+      ],
+      "year": 2015,
+      "title": "Bezpieczeństwo pacjenta w świetle systemu „Państwowe Ratownictwo Medyczne”",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Państwo i Społeczeństwo: Medycyna i zdrowie publiczne",
+      "publisher": "Andrzej Frycz Modrzewski Krakow University",
+      "volume": "2015",
+      "issue": "3",
+      "pages": "79-90",
+      "doi": "10.31749/pismzp2015/20335",
+      "url": "https://doi.org/10.31749/pismzp2015/20335",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_026",
+      "authors": [
+        "Golinowska"
+      ],
+      "year": 2025,
+      "title": "O trudnej historii czasopisma naukowego o zdrowiu publicznym w kontekście reformy organizacji nauki w Polsce. Podsumowanie działalności wydawniczej „Zeszytów Ochrony Zdrowia. Zdrowie Publiczne i Zarządzanie” w latach 2003–2024",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zdrowie Publiczne i Zarządzanie",
+      "doi": "10.4467/20842627oz.24.011.21315",
+      "url": "https://doi.org/10.4467/20842627oz.24.011.21315",
+      "api_source": "Semantic Scholar",
+      "abstract": "This article describes the history of the first journal in the field of public health in Poland in the last quarter of a century. With the political and economic transformation of the country in the 1990s, the organisation and funding of science were changed. In the social sciences, new journals were being created and the conduct of the old ones was changed. In the context of public health, it basically meant starting from scratch, although the more general issues of disease prevention and the organisation of healthcare were not only covered in medical courses, but also by a certain amount of writing in medical journals.\nThe journal (hereafter “Zeszyty Naukowe”) included two areas of interest in its title. One was knowledge and concern for population health (rather than disease treatment). The other, institutional change in health sector governance. Due to the wide range of topics declared for publication in the “Zeszyty Naukowe”, the publishing policy was geared towards creating monothematic issues, inviting specialists in the field to lead them. In this way, mini handbooks of important healthcare topics were created. They were of great interest and enjoyed recognition not only in the scientific community, but also in the practice of health sector policy makers. The reform of the organisation of science and the introduction of the new public management (NPM) to academic institutions; also concerned scientific journals. They were classified on the grounds of the Impact Factor score, which became the basis for evaluating the achievements of authors and the funding of journals from public funds. An important criterion was the so-called internationalisation of journals. In subsequent years, the so-called ministerial criteria, formulated by the political authorities of the Ministry of Science and Higher Education, were added. Under these conditions, “Zeszyty Naukowe” were losing points, authors’ offers and a source of funding. At the same time, the range of public health and health sector management problems was increasing dramatically (not only the COVID-19 pandemic) and the urgency of their presentation and debate was rising as well. In 2025, with subsequent political changes, efforts were made to save the “Zeszyty Naukowe” as a journal addressed to the scientific community and, at the same time, to health care practitioners.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_027",
+      "authors": [
+        "Hill",
+        "Lederman",
+        "Jonsson",
+        "Bolin",
+        "Vicente"
+      ],
+      "year": 2024,
+      "title": "Optimizing EMS Response Times with Machine Learning: A Multivariate Analysis for Enhanced Resource Allocation",
+      "source_type": "preprint",
+      "language": "english",
+      "publisher": "Springer Science and Business Media LLC",
+      "doi": "10.21203/rs.3.rs-5237650/v1",
+      "url": "https://doi.org/10.21203/rs.3.rs-5237650/v1",
+      "api_source": "Crossref",
+      "abstract": "Abstract\n                \n                  Background\n                  This study examines the multifaceted determinants of Emergency Medical Services (EMS) response times through a machine learning approach. Using data from over one million EMS missions spanning 2017 to 2022, this research aims to understand and predict factors influencing response times, highlighting the role of machine learning in optimizing emergency services.\n                  Methods\n                  Advanced machine learning techniques, including Gradient Boosting models, were employed to analyze response times across various emergency scenarios. The data set was carefully curated to consider numerous factors such as urgency levels, call handling times, travel times, and geographical and temporal variables.\n                  Results\n                  The analysis confirms significant variability in response times influenced by factors such as the urgency of calls, weather conditions. Adverse weather and extreme temperatures were found to exacerbate response times significantly. Central urban areas showed faster response times compared to remote regions. The machine learning models effectively identified and quantified these impacts, offering a nuanced understanding that can inform more targeted EMS deployment strategies.\n                  Conclusions\n                  The findings advocate for the integration of real-time data on traffic, weather, and incident specifics into EMS resource allocation strategies to optimize response times dynamically. This approach underscores the importance of leveraging predictive analytics in emergency response planning, enhancing service delivery and patient outcomes. The study not only contributes to academic knowledge but also provides practical insights for emergency service administrators aiming to improve operational efficiency and response effectiveness."
+    },
+    {
+      "id": "cite_028",
+      "authors": [
+        "Gunning",
+        "Perkins",
+        "Crilly",
+        "Rahden"
+      ],
+      "year": 2013,
+      "title": "Paramedic Rapid Sequence Intubation (RSI) in a South African Emergency Medical Service (EMS) is effective, but is it safe?",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Scandinavian Journal of Trauma, Resuscitation and Emergency Medicine",
+      "doi": "10.1186/1757-7241-21-S1-S29",
+      "url": "https://doi.org/10.1186/1757-7241-21-S1-S29",
+      "api_source": "Semantic Scholar",
+      "abstract": "Background Early access to critical care interventions may improve outcomes for severely ill and injured patients. A Cochrane review [1] in 2009 reported that evidence supporting prehospital emergency intubation is lacking, but this does not equate to lack of benefit and prehospital RSI remains controversial. South Africa faces unique challenges due to prolonged prehospital times and limited access to physicians. In response to these challenges, the Health Professions Council of South Africa introduced paramedic RSI in 2008. This has been shown to be superior to intubation without paralysis, but a recent meta-analysis concluded that in the absence of prehospital physicians, alternatives to RSI should be strongly considered due to patient safety concerns[2]. This study aimed to identify if RSI performed by paramedics, in the South African prehospital care context is effective and safe.",
+      "citation_count": 4
+    },
+    {
+      "id": "cite_029",
+      "authors": [
+        "Pawłuszko"
+      ],
+      "year": 2025,
+      "title": "Ochrona ludności. Organizacja nowego systemu bezpieczeństwa powszechnego",
+      "source_type": "journal",
+      "language": "english",
+      "publisher": "Łukasiewicz Research Network – ITECH Institute of Innovation and Technology",
+      "doi": "10.36735/iqmc3624",
+      "url": "https://doi.org/10.36735/iqmc3624",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_030",
+      "authors": [
+        "Böbel",
+        "Verhoeven",
+        "Scholz",
+        "Penders",
+        "Doetter",
+        "Christensen",
+        "Krafft"
+      ],
+      "year": 2025,
+      "title": "Strengthening the WHO Emergency Care Systems Framework: insights from an integrated, patient-centered approach in the Copenhagen Emergency Medical Services system—a qualitative system analysis",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "BMC Health Services Research",
+      "doi": "10.1186/s12913-025-12465-7",
+      "url": "https://doi.org/10.1186/s12913-025-12465-7",
+      "api_source": "Semantic Scholar",
+      "abstract": "The World Health Organization Emergency Care Systems Framework (WHO ECSF) was designed to offer guidance in establishing and developing effective Emergency Medical Services (EMS) systems. However, evolving disease patterns, changing community needs, and a rising demand for emergency care services, highlight the need for more integrated and patient-centered EMS systems. This evolution should be mirrored in the WHO ECSF. Hence, this study explores system components of the Copenhagen (CPH) EMS that may enhance the WHO ECSF´s emphasis on integrated and patient-centered care. A qualitative case study was conducted from April through June 2021, including (i) semi-structured interviews with researchers and professionals at the CPH EMS and (ii) a scoping literature review using PubMed, Google Scholar, expert recommendations and snowballing. Thirteen expert interviews and 35 records were analyzed, revealing key integrated care components within the CPH EMS. These include education and citizen participation programs, early triaging, differentiated care pathways coordinated with primary care and out-of-hours services, and specialized mobile care units complementing “traditional” ambulance services. Technology supports integrated and patient-centered care by facilitating early differentiation of care, efficient dispatching, and communication. Data-driven approaches were fostered through technology-aided data collection, supporting research, quality improvement, and patient safety. The identified components were mapped within the WHO ECSF´s four domains: scene, transport, facility, and cross-cutting elements. Due to the prehospital focus of the CPH EMS, limited data was available for the “facility” site. The CPH EMS demonstrates an integrated, patient-centered systems approach that emphasizes seamless coordination along the patient care pathway, bridging EMS with broader health and social systems. Research-informed initiatives and intelligent technology solutions underscore the potential for enhancing the WHO ECSF. These findings highlight the importance of continued system integration and a holistic health perspective, including in emergency settings. Further research is needed to assess the transferability of these components across diverse global contexts. Not applicable.",
+      "citation_count": 7
+    },
+    {
+      "id": "cite_031",
+      "authors": [
+        "Clinical Services",
+        "Systems (CSY)"
+      ],
+      "year": 2018,
+      "title": "WHO Emergency care system framework",
+      "source_type": "report",
+      "language": "english",
+      "url": "https://www.who.int/publications/i/item/who-emergency-care-system-framework",
+      "api_source": "Gemini Grounded"
+    },
+    {
+      "id": "cite_036",
+      "authors": [
+        "Shyrhan"
+      ],
+      "year": 2025,
+      "title": "Entities of the emergency assistance system via the single telephone number 112",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Analytical and Comparative Jurisprudence",
+      "doi": "10.24144/2788-6018.2025.04.2.69",
+      "url": "https://doi.org/10.24144/2788-6018.2025.04.2.69",
+      "api_source": "Semantic Scholar",
+      "abstract": "The article presents a comprehensive research of the composition of the entities involved in the emergency assistance system for the population through the single emergency number 112, which serves as a key element of the state’s public safety infrastructure. The relevance of the topic stems from the constant growth of threats of various kinds, which require rapid, coordinated, and institutionally organized responses by state structures. The implementation of the System 112 in Ukraine, as part of the pan-European model of emergency assistance, requires a clear definition of its participants, their powers, functions, and responsibilities within the legal framework. \nThe research identifies and characterizes the main entities included in the System 112: the State Emergency Service of Ukraine, the National Police of Ukraine, the Emergency Medical Service (units of the Ministry of Health/National Health Service of Ukraine), Emergency service of gas, telecommunications operators, as well as coordinating bodies, including the Ministry of Internal Affairs of Ukraine. Special attention is paid to the institutional role of local self-government bodies and executive authorities, which ensure accessibility and organizational functioning of the 112 service at the local level. It is clarified that technical coordination of emergency calls, load distribution among dispatch centers, and monitoring of call processing are performed by specialized structural units within the Ministry of Internal Affairs. \nThe article defines the powers of each system participant: the State Emergency Service responds to natural and man-made emergencies, conducts rescue operations and firefighting; the National Police is responsible for responding to crimes and threats to public order and safety; the emergency medical service ensures the deployment of mobile teams in cases of threats to life or health; Emergency service of gas processes reports of gas leaks, damage to gas pipelines, and the threat of explosion; telecommunications operators provide free and uninterrupted access to the 112 service; local self-government bodies are responsible for organizing logistics, ensuring local resources, and providing premises for emergency response centers. Functional interagency cooperation, information exchange mechanisms, and dispatch procedures are identified as essential components of the effective operation of the System 112. \nThe conclusions and proposals formulated in the article may serve as a foundation for further improvement of the legal and regulatory framework governing the activities of the entities within the System 112, particularly in terms of delineating powers, enhancing interagency integration, and unifying response standards across the territory of Ukraine, taking into account European approaches.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_038",
+      "authors": [
+        "Menon",
+        "Rekha,Dmytraczenko",
+        "Tania,Heinz",
+        "Marcus,Skwarczynska",
+        "Barbara,"
+      ],
+      "year": 2026,
+      "title": "Strategic Review of Long-Term Care Services in Poland",
+      "source_type": "report",
+      "language": "english",
+      "url": "https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099041625104010902",
+      "api_source": "Gemini Grounded"
+    },
+    {
+      "id": "cite_039",
+      "authors": [
+        "Hajer",
+        "Mounir"
+      ],
+      "year": 2013,
+      "title": "Study in performance analyses of hospital emergency services: Case Habib Bourguiba hospital",
+      "source_type": "conference",
+      "language": "english",
+      "journal": "2013 International Conference on Advanced Logistics and Transport",
+      "publisher": "IEEE",
+      "pages": "500-505",
+      "doi": "10.1109/icadlt.2013.6568509",
+      "url": "https://doi.org/10.1109/icadlt.2013.6568509",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_041",
+      "authors": [
+        "Larrucea",
+        "Moffie",
+        "Asaf",
+        "Santamaria"
+      ],
+      "year": 2020,
+      "title": "Towards a GDPR compliant way to secure European cross border Healthcare Industry 4.0",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Computer Standards &amp; Interfaces",
+      "publisher": "Elsevier BV",
+      "volume": "69",
+      "pages": "103408",
+      "doi": "10.1016/j.csi.2019.103408",
+      "url": "https://doi.org/10.1016/j.csi.2019.103408",
+      "api_source": "Crossref"
+    },
+    {
+      "id": "cite_042",
+      "authors": [
+        "MALONOHA"
+      ],
+      "year": 2020,
+      "title": "Digital Infrastructure as a Component of Emergency Medical Services Transformation",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Public administration and local government",
+      "publisher": "Publishing house “Grani”",
+      "volume": "47",
+      "issue": "4",
+      "pages": "138-146",
+      "doi": "10.33287/102078",
+      "url": "https://doi.org/10.33287/102078",
+      "api_source": "Crossref",
+      "abstract": "The importance of digital infrastructure for the transformation of emergency medical services as one of the priority areas of public policy and public authorities are considered. Some approaches to the definition of digital infrastructure are studied. This study made it possible to identify the components of the digital infrastructure of emergency medical services and outline its role in the health care ecosystem. The approach to the application of the modular architecture of the digital infrastructure of emergency medical services as a conceptual basis for the integration of information systems of different departments into a single emergency system is considered. Exist two groups of mechanisms that influence the formation of the digital infrastructure of emergency medical services and indicate the causal links that explain how their use can lead to the transformation of emergency medical services. The range of tasks that are solve due to the digital infrastructure aimed at improving the efficiency, accuracy of diagnosis and provision of emergency medical services is outlined. New opportunities are opening up to improve the quality of emergency medical services provision in a human-centered health care system based on a digital infrastructure, the central elements of which are the exchange of information contained in electronic records and patient health cards and mobile digital devices, diagnostics and information transfer. The list of problems on the way of emergency medical services transformation is formulated and some recommendations for their solution are offered, the formulation of which is based on the analysis of existing practices and own long-term experience at the emergency medical services system."
+    },
+    {
+      "id": "cite_043",
+      "authors": [
+        "Algaith",
+        "Alhajouj",
+        "Alghlfas",
+        "Aldawsari",
+        "Ghonemi",
+        "Khormi",
+        "Hamzi",
+        "Almajdi"
+      ],
+      "year": 2025,
+      "title": "Emergency Medical Services Access and Patient Extrication: Operational, Safety, and Administrative Considerations for Health Security and Healthcare Leadership",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Saudi Journal of Medicine and Public Health",
+      "doi": "10.64483/202522586",
+      "url": "https://doi.org/10.64483/202522586",
+      "api_source": "Semantic Scholar",
+      "abstract": "Background: Emergency medical services (EMS) frequently operate in unstable, confined, and hazardous environments where rapid access and extrication are essential to patient outcomes and responder safety.  \nAim: To synthesize operational, clinical, and administrative considerations for safe patient access and extrication across diverse settings, and to outline evidenceinformed practices for EMS, health security leadership, and system administrators.  \nMethods: Narrative integration of scene safety principles; environmental hazard mitigation; graded access techniques; delivery of medical care during entrapment (airway, circulation, spinal motion restriction, analgesia, hypothermia prevention); and highrisk, specialcircumstance procedures (crush injury protocols, early blood, impalement management, and lastresort field amputation).  \nResults: Effective operations hinge on disciplined scene sizeup, stabilization of vehicles/structures, and interagency coordination to balance urgency with provider safety. Early, ongoing medical interventions during extrication—airway protection, ventilation, hemorrhage control, spinal alignment, analgesia, thermal management—reduce secondary injury. Crushinjury protocols prioritize prerelease fluid resuscitation and hyperkalemia mitigation; when available, early blood products should be initiated even during rescue. Automotive entrapments may require dash displacement or roof removal performed by trained teams adhering to standardized rescue practices. Postextrication, risks of hypothermia, metabolic derangement, hemorrhage, and airway compromise persist, necessitating vigilant reassessment and structured handover to receiving facilities.  \nConclusion: Treating extrication as a timesensitive medical intervention embedded within a highrisk operational context improves survival and safeguards responders. Systemlevel preparedness—policies, training, equipment, interagency agreements, and EMS physician engagement—underpins consistent, highquality performance.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_045",
+      "authors": [
+        "Rifando",
+        "Gusdini",
+        "Ramli"
+      ],
+      "year": 2025,
+      "title": "Strategi Penanggulangan Kebakaran Hutan Dan Lahan (Karhutla) Di Area Heavy Oil (Ho), Duri Field Pt Xyz Zona Rokan Menggunakan Pendekatan Analytical Hierarchy Process (Ahp)",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "INTECOMS: Journal of Information Technology and Computer Science",
+      "doi": "10.31539/0nw9eg31",
+      "url": "https://doi.org/10.31539/0nw9eg31",
+      "api_source": "Semantic Scholar",
+      "abstract": "Kebakaran hutan dan lahan (KARHUTLA) merupakan bencana yang umumnya dipicu oleh aktivitas manusia, seperti praktik pembukaan lahan dengan cara membakar, serta diperparah oleh kondisi iklim ekstrem, seperti musim kemarau panjang yang dipengaruhi oleh fenomena cuaca seperti El Niño. Sepanjang Maret hingga Oktober 2024, wilayah Heavy Oil Duri Field PT XYZ Zona Rokan mencatat sebanyak 18 kejadian KARHUTLA, dengan frekuensi kejadian tertinggi berada di area 10, 12, dan 8. Penelitian ini bertujuan untuk: (1) Menganalisis dan membandingkan kondisi eksisting PT XYZ Zona Rokan dalam penanganan KARHUTLA dengan regulasi dan standard seperti ISO 22320: Security and resilience - Emergency management - Guidelines for incident management, NFPA 1600 Standard on Continuity Emergency and Crisis Management, Undang-Undang No. 24 Tahun 2007 tentang Penanggulangan Bencana, dan Peraturan Pemerintah No. 21 Tahun 2008 tentang Penyelenggaraan Penanggulangan Bencana, serta (2) menyusun rekomendasi strategi yang optimal berdasarkan hasil analisis menggunakan metode Analytical Hierarchy Process (AHP). Pendekatan yang digunakan melibatkan analisis perbandingan antara kebijakan aktual dan regulasi, serta pengolahan data kuesioner dari narasumber ahli menggunakan metode AHP dengan perangkat lunak Expert Choice. Hasil analisis menunjukkan bahwa ketersediaan sumber daya merupakan kriteria paling dominan (74,1%), disusul oleh efektivitas operasional (18,1%), dan risiko serta dampak lingkungan (7,8%). Berdasarkan bobot prioritas tersebut, strategi pemadaman langsung dipilih sebagai alternatif utama (75,8%), diikuti pemadaman tidak langsung (17%), dan pembakaran terkendali (7,2%). Hasil penelitian ini menjadi rujukan strategis dalam meningkatkan efektivitas penanggulangan KARHUTLA yang lebih terencana dan sesuai standar\nKata Kunci: Kebakaran Hutan Dan Lahan, Strategi Pemadaman, AHP, Zona Rokan.",
+      "citation_count": 0
+    },
+    {
+      "id": "cite_047",
+      "authors": [
+        "Brookings Institution"
+      ],
+      "year": 2023,
+      "title": "Center on Health Policy | Brookings",
+      "source_type": "report",
+      "language": "english",
+      "url": "https://www.brookings.edu/centers/center-on-health-policy/",
+      "api_source": "Gemini Grounded"
+    },
+    {
+      "id": "cite_048",
+      "authors": [
+        "Rafferty",
+        "Busse",
+        "Zander-Jentsch",
+        "Sermeus",
+        "Bruyneel"
+      ],
+      "year": 2019,
+      "title": "Strengthening health systems through nursing: Evidence from 14 European countries",
+      "source_type": "journal",
+      "language": "english",
+      "url": "https://www.semanticscholar.org/paper/d9449c52ebee6c31c464448623ebb96319b3effc",
+      "api_source": "Semantic Scholar",
+      "citation_count": 51
+    },
+    {
+      "id": "cite_050",
+      "authors": [
+        "Lipka"
+      ],
+      "year": 2020,
+      "title": "Państwowe Ratownictwo Medyczne W Systemie Bezpieczeństwa Rzeczypospolitej Polskiej",
+      "source_type": "journal",
+      "language": "english",
+      "journal": "Zeszyty Naukowe Pro Publico Bono",
+      "publisher": "Index Copernicus",
+      "volume": "1",
+      "issue": "1",
+      "pages": "157-165",
+      "doi": "10.5604/01.3001.0014.4655",
+      "url": "https://doi.org/10.5604/01.3001.0014.4655",
+      "api_source": "Crossref",
+      "abstract": "W opracowaniu przedstawiono rolę Państwowego Ratownictwa Medycznego w systemie\nbezpieczeństwa państwa. Koniecznym do tego krokiem było zdefiniowanie terminu bezpieczeństwa\noraz opisanie struktury systemu bezpieczeństwa, co pozwoliło na umiejscowienie\nw nim Państwowego Ratownictwa Medycznego (PRM). W celu przybliżenia czytelnikowi\nPRM dokonano analizy jego zadań, struktury oraz funkcjonowania. Na podstawie analizy\nliteratury oraz wywiadów z ekspertami opisany został aspekt współpracy z innymi podmiotami\nodpowiedzialnymi za bezpieczeństwo obywateli, takimi jak Policja czy Państwowa\nStraż Pożarna oraz podkreślona została istotność sprawnego systemu PRM. Autor zwrócił\nuwagę na potrzebę rozwoju i modernizacji PRM, tak aby udzielane świadczenia były na jak\nnajwyższym poziomie oraz dostarczane do każdego potrzebującego."
+    }
+  ],
+  "metadata": {
+    "total_citations": 31,
+    "citation_style": "APA 7th",
+    "draft_language": "polish",
+    "extracted_date": "2026-02-16T21:19:54.466141"
+  }
+}

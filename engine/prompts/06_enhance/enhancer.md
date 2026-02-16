@@ -26,17 +26,17 @@ If the input draft is in a **non-English language** (German, Spanish, French, et
 
 **✅ MUST match input language:**
 - ✅ YAML frontmatter fields (title, subtitle, author, etc.)
-- ✅ Section 6 (Limitations / Einschränkungen / Limitaciones)
-- ✅ Section 7 (Future Research / Zukünftige Forschung / Investigación Futura)
-- ✅ Section 8 (Conclusion / Schlussfolgerung / Conclusión)
+- ✅ Section 6 (Limitations / Einschränkungen / Limitaciones / Ograniczenia)
+- ✅ Section 7 (Future Research / Zukünftige Forschung / Investigación Futura / Kierunki przyszłych badań)
+- ✅ Section 8 (Conclusion / Schlussfolgerung / Conclusión / Podsumowanie)
 - ✅ All appendix content and headers
-- ✅ Table captions: "Table" → "Tabelle" (German) / "Tabla" (Spanish) / "Tableau" (French)
-- ✅ Figure captions: "Figure" → "Abbildung" (German) / "Figura" (Spanish) / "Figure" (French)
-- ✅ Section headers: "Content" → "Inhalt" (German) / "Contenido" (Spanish) / "Contenu" (French)
-- ✅ Section metadata: "Section:" → "Abschnitt:" / "Sección:" / "Section:"
-- ✅ Section metadata: "Word Count:" → "Wortzahl:" / "Recuento de palabras:" / "Nombre de mots:"
-- ✅ Section metadata: "Status:" → "Status:" (same in German/Spanish/French)
-- ✅ Status values: "Draft v1" → "Entwurf v1" (German) / "Borrador v1" (Spanish) / "Brouillon v1" (French)
+- ✅ Table captions: "Table" → "Tabelle" (German) / "Tabla" (Spanish) / "Tableau" (French) / "Tabela" (Polish)
+- ✅ Figure captions: "Figure" → "Abbildung" (German) / "Figura" (Spanish) / "Figure" (French) / "Rycina" (Polish)
+- ✅ Section headers: "Content" → "Inhalt" (German) / "Contenido" (Spanish) / "Contenu" (French) / "Treść" (Polish)
+- ✅ Section metadata: "Section:" → "Abschnitt:" / "Sección:" / "Section:" / "Sekcja:"
+- ✅ Section metadata: "Word Count:" → "Wortzahl:" / "Recuento de palabras:" / "Nombre de mots:" / "Liczba słów:"
+- ✅ Section metadata: "Status:" → "Status:" (German/Spanish/French) / "Status:" (Polish)
+- ✅ Status values: "Draft v1" → "Entwurf v1" (German) / "Borrador v1" (Spanish) / "Brouillon v1" (French) / "Wersja robocza v1" (Polish)
 
 ### Common Translation Patterns
 
@@ -67,6 +67,16 @@ If the input draft is in a **non-English language** (German, Spanish, French, et
 - Figure → Figure
 - Content → Contenu
 - Appendix → Annexe
+
+**Polish:**
+- Limitations → Ograniczenia
+- Future Research Directions → Kierunki przyszłych badań
+- Conclusion → Podsumowanie
+- Table → Tabela
+- Figure → Rycina
+- Content → Treść
+- Appendix → Załącznik
+- Draft v1 / Draft v2 → Wersja robocza v1 / Wersja robocza v2
 
 ### Pre-Output Validation
 

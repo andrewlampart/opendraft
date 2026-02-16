@@ -127,7 +127,7 @@ CitationSourceType = Literal["journal", "book", "report", "website", "conference
 # Note: Chicago and MLA are planned but not yet implemented
 # See: docs/CITATION_STYLES_ROADMAP.md
 CitationStyle = Literal["APA 7th", "IEEE", "NALT"]
-Language = Literal["english", "german", "spanish", "french"]
+Language = Literal["english", "german", "spanish", "french", "polish"]
 
 
 class Citation:

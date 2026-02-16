@@ -125,6 +125,28 @@ CHAPTER_TRANSLATIONS = {
         'Acknowledgments': 'Agradecimentos',
         'Acknowledgements': 'Agradecimentos',
     },
+    'pl': {
+        'Introduction': 'Wprowadzenie',
+        'Literature Review': 'Przegląd literatury',
+        'Methodology': 'Metodologia',
+        'Results': 'Wyniki',
+        'Results and Analysis': 'Wyniki i analiza',
+        'Analysis': 'Analiza',
+        'Discussion': 'Dyskusja',
+        'Conclusion': 'Podsumowanie',
+        'Conclusions': 'Podsumowanie',
+        'References': 'Bibliografia',
+        'Bibliography': 'Bibliografia',
+        'Appendix': 'Załącznik',
+        'Appendices': 'Załączniki',
+        'Abstract': 'Streszczenie',
+        'Summary': 'Streszczenie',
+        'Table of Contents': 'Spis treści',
+        'List of Figures': 'Spis rysunków',
+        'List of Tables': 'Spis tabel',
+        'Acknowledgments': 'Podziękowania',
+        'Acknowledgements': 'Podziękowania',
+    },
 }
 
 

@@ -1,0 +1,23 @@
+# HIA as a standard tool for effective decision-making on NCD policies
+
+**Authors:** ceramic-on-metal, bearing, hip, replacement, of, Sciences
+**Year:** 2023
+**DOI:** 10.1093/eurpub/ckad160.1300
+**URL:** https://doi.org/10.1093/eurpub/ckad160.1300
+
+## Abstract
+
+Abstract Background Increasing rates of NCD are observed within EU countries. This paper aims to highlight the potential of Health Impact Assessment (HIA) in informing projects, plans, and programs related to health improvement, thus enhancing its role in the decision-making process. Methods The preliminary analysis focuses on HIA's involvement in the decision-making process regarding NCD in the EU, particularly in CEE countries over the past decade. The study examines various aspects of the identified HIAs, including their general information, the time frame of the HIA, proposed preventive measures, methods used, the description of the determinants of health affected by the decision, the type of document assessed, the affected population, the impact of the HIA on subsequent decisions, the source and cost of funding, the limitations of the study, HIA as a part of EIA or not, the use of artificial intelligence algorithms in the possibility of HIA implementation, etc. The impact of each HIA on subsequent decisions was categorized using an adaptation of a classification system developed by Wismar et al. for use in evaluating European HIAs (Wismar et al. 2007). Results The findings suggest that HIA is crucial in addressing the public and providing transparent information to entities with decision-making authority. It is recommended that the HIA process be a standard tool used to clarify information on health risk factors, implement new health policies, and monitor their effectiveness. The study also indicates that a completely digital approach to HIA is an open question that requires further research. AI algorithms can potentially aid in improving HIA's efficiency and processing complex information and data. Conclusions HIA has excellent potential to improve the decision-making process related to non-communicable diseases, and its incorporation as a standard tool is essential. The use of AI algorithms in HIA implementation is a promising area for future research. Key messages • HIA is a crucial tool in addressing the public and providing transparent information to entities with decision-making authority. • The use of AI algorithms in HIA implementation is a promising area for future research.
+
+## Citation Details
+
+HIA as a standard tool for effective decision-making on NCD policies
+**Authors**: ceramic-on-metal, bearing, hip, replacement, of, Sciences
+**Year**: 2023
+**DOI**: 10.1093/eurpub/ckad160.1300
+**URL**: https://doi.org/10.1093/eurpub/ckad160.1300
+
+**Abstract**: Abstract Background Increasing rates of NCD are observed within EU countries. This paper aims to highlight the potential of Health Impact Assessment (HIA) in informing projects, plans, and programs related to health improvement, thus enhancing its role in the decision-making process. Methods The preliminary analysis focuses on HIA's involvement in the decision-making process regarding NCD in the EU, particularly in CEE countries over the past decade. The study examines various aspects of the identified HIAs, including their general information, the time frame of the HIA, proposed preventive measures, methods used, the description of the determinants of health affected by the decision, the type of document assessed, the affected population, the impact of the HIA on subsequent decisions, the source and cost of funding, the limitations of the study, HIA as a part of EIA or not, the use of artificial intelligence algorithms in the possibility of HIA implementation, etc. The impact of each HIA on subsequent decisions was categorized using an adaptation of a classification system developed by Wismar et al. for use in evaluating European HIAs (Wismar et al. 2007). Results The findings suggest that HIA is crucial in addressing the public and providing transparent information to entities with decision-making authority. It is recommended that the HIA process be a standard tool used to clarify information on health risk factors, implement new health policies, and monitor their effectiveness. The study also indicates that a completely digital approach to HIA is an open question that requires further research. AI algorithms can potentially aid in improving HIA's efficiency and processing complex information and data. Conclu  # Truncate if very long
+
+---
+*Extracted from citation research database - all 51 citations available*
