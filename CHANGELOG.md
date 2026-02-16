@@ -28,3 +28,5 @@ All notable changes are documented in this file.
 - Hardened live script execution paths (`python tests/test_live_crafter.py`, `python tests/audit_output.py`) with prerequisite-aware skip behavior.
 - Expanded CI quality workflow to execute `python -m pytest tests -q`.
 - Added secret-gated live-validation workflow (`.github/workflows/live-validation.yml`) for weekly/manual execution of API-backed checks.
+- Fixed live audit model selection to use `GEMINI_MODEL` override with `gemini-2.0-flash` fallback (`f8b8a6c`).
+- Verified live-validation workflow success on GitHub Actions (`run 22061717973`).

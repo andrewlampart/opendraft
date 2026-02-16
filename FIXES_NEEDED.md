@@ -7,6 +7,7 @@ Scope: `/Users/federicodeponte/opendraft`
 - `python3 -W error::SyntaxWarning -m compileall -q engine tests` -> pass
 - `python3 -m pytest tests -q` -> `286 passed, 4 deselected`
 - Legacy SDK scan -> no `google.generativeai` imports and no `google-generativeai` dependency pins
+- Live validation workflow -> success (`Live Validation` run `22061717973`, commit `f8b8a6c`)
 
 ## Resolved in This Pass
 
@@ -45,8 +46,10 @@ Scope: `/Users/federicodeponte/opendraft`
 ## Remaining Tracked Gaps
 - None from this issue set.
 
-## Remaining Validation Gap
-- Live API integration scripts now execute with prerequisite-aware skip behavior:
-  - `tests/test_live_crafter.py` (direct script invocation)
-  - `tests/audit_output.py` (direct script invocation)
-- Full live generation assertions remain environment-dependent (API key + outbound network required).
+## Live Validation Status
+- Closed in CI:
+  - `.github/workflows/live-validation.yml` passes with repository secret gating and direct script execution.
+  - `tests/audit_output.py` now uses `GEMINI_MODEL` override with fallback `gemini-2.0-flash`, avoiding deprecated/unavailable model IDs.
+- Local execution remains environment-dependent (API key + outbound network required):
+  - `python3 tests/test_live_crafter.py`
+  - `python3 tests/audit_output.py`
