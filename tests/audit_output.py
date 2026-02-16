@@ -15,17 +15,20 @@ audits it for issues like:
 import os
 import sys
 import re
+import socket
 from pathlib import Path
 from collections import Counter
 from dotenv import load_dotenv
 
+PROJECT_ROOT = Path(__file__).parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 # Load environment
-load_dotenv(Path(__file__).parent.parent / ".env.local", override=True)
+load_dotenv(PROJECT_ROOT / ".env.local", override=True)
 
 from google import genai
 from engine.utils.gemini_client import GeminiModelWrapper
-
-PROJECT_ROOT = Path(__file__).parent.parent
 
 
 def setup_model():
@@ -35,6 +38,38 @@ def setup_model():
         raise ValueError("No API key found")
     client = genai.Client(api_key=api_key)
     return GeminiModelWrapper(client, "gemini-2.0-flash-exp")
+
+
+def has_api_key():
+    """Return whether a Gemini API key is configured."""
+    return bool(os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"))
+
+
+def network_ready():
+    """Check DNS reachability for Gemini endpoint."""
+    try:
+        socket.getaddrinfo("generativelanguage.googleapis.com", 443, proto=socket.IPPROTO_TCP)
+        return True, ""
+    except OSError as exc:
+        return False, str(exc)
+
+
+def is_network_error(exc: Exception) -> bool:
+    """Detect connectivity errors for graceful skip behavior."""
+    if isinstance(exc, OSError):
+        return True
+    error_text = str(exc).lower()
+    markers = [
+        "connecterror",
+        "connection error",
+        "timed out",
+        "deadline exceeded",
+        "temporary failure in name resolution",
+        "name or service not known",
+        "nodename nor servname",
+        "[errno 8]",
+    ]
+    return any(marker in error_text for marker in markers)
 
 
 def load_prompt(prompt_path: str) -> str:
@@ -384,6 +419,15 @@ def main():
     print("OPENDRAFT OUTPUT AUDITOR")
     print("="*70)
 
+    if not has_api_key():
+        print("\n⏭️  SKIP: No GOOGLE_API_KEY/GEMINI_API_KEY configured")
+        return 0
+
+    ready, reason = network_ready()
+    if not ready:
+        print(f"\n⏭️  SKIP: Network/DNS unavailable for Gemini endpoint ({reason})")
+        return 0
+
     try:
         # Generate sample content
         text = generate_sample_paper()
@@ -407,6 +451,9 @@ def main():
         return 0 if issues == 0 else 1
 
     except Exception as e:
+        if is_network_error(e):
+            print(f"\n⏭️  SKIP: Network unavailable during live generation ({e})")
+            return 0
         print(f"\n❌ ERROR: {e}")
         import traceback
         traceback.print_exc()

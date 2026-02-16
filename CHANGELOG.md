@@ -23,10 +23,7 @@ All notable changes are documented in this file.
 - `python3 -m pytest tests -q` passed (`286 passed, 4 deselected`).
 - Push preflight passed with clean sync and correct maintainer account.
 
-### Commits
-- `8d09aa8` migrate gemini runtime to google-genai
-- `ffdb23c` fix output cleaning regressions and reference handling
-- `2c09445` add quality gates and verified fixes log
-- `b6dca5e` stabilize pytest harness for ticket and integration tests
-- `acaa0d2` harden live factcheck tests for offline and restricted envs
-- `31c2b57` add push preflight runbook and guard script
+### Follow-up
+- Aligned CLI/npm requirement consistency (`6e74e75`).
+- Hardened live script execution paths (`python -m tests.test_live_crafter`, `python -m tests.audit_output`) with prerequisite-aware skip behavior.
+- Expanded CI quality workflow to execute `python -m pytest tests -q`.

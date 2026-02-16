@@ -46,4 +46,7 @@ Scope: `/Users/federicodeponte/opendraft`
 - None from this issue set.
 
 ## Remaining Validation Gap
-- Live API integration scripts were not executed in this pass (`tests/test_live_crafter.py`, `tests/audit_output.py`) because they require configured external API access.
+- Live API integration scripts now execute with prerequisite-aware skip behavior:
+  - `tests/test_live_crafter.py` (direct and module invocation)
+  - `tests/audit_output.py` (direct and module invocation)
+- Full live generation assertions remain environment-dependent (API key + outbound network required).
