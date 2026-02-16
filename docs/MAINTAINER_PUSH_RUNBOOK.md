@@ -70,8 +70,8 @@ python3 -m pytest tests/test_factcheck_live.py -q -m integration
 ## 6) Live validation execution paths
 
 - Local (requires configured API key + outbound network):
-  - `python3 -m tests.test_live_crafter`
-  - `python3 -m tests.audit_output`
+  - `python3 tests/test_live_crafter.py`
+  - `python3 tests/audit_output.py`
 - CI (secret-gated): `.github/workflows/live-validation.yml`
   - Runs on manual trigger and weekly schedule.
   - Executes live checks only when `GOOGLE_API_KEY` or `GEMINI_API_KEY` is configured in repository secrets.

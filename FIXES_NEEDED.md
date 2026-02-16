@@ -47,6 +47,6 @@ Scope: `/Users/federicodeponte/opendraft`
 
 ## Remaining Validation Gap
 - Live API integration scripts now execute with prerequisite-aware skip behavior:
-  - `tests/test_live_crafter.py` (direct and module invocation)
-  - `tests/audit_output.py` (direct and module invocation)
+  - `tests/test_live_crafter.py` (direct script invocation)
+  - `tests/audit_output.py` (direct script invocation)
 - Full live generation assertions remain environment-dependent (API key + outbound network required).
