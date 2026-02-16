@@ -31,6 +31,8 @@ logs/
 
 # Cache files
 .citation_cache_*.json
+.coverage
+engine/.coverage
 
 # Temporary
 tmp/
@@ -39,7 +41,9 @@ temp/
 
 # Test outputs
 tests/outputs/
+engine/tests/outputs/
 outputs/
+output/
 test_results/
 
 # Generated outputs (keep examples/)
@@ -55,3 +59,9 @@ section_comparison/
 # Generated JSON artifacts
 quality_test_results.json
 token_usage.json
+thesis_gptoss_stats.json
+thesis_tracking_stats.json
+
+# Build artifacts
+engine/dist/*.whl
+engine/dist/*.tar.gz
