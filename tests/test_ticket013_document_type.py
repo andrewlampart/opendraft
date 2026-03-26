@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_narrator_has_document_type_section():
     """Test 1: Verify narrator.md has document type consistency section"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Narrator has document type consistency section")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/narrator.md")
 
@@ -51,9 +51,9 @@ def test_narrator_has_document_type_section():
 
 def test_narrator_lists_document_types():
     """Test 2: Verify narrator lists different document types"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Narrator lists different document types")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/narrator.md")
 
@@ -79,17 +79,19 @@ def test_narrator_lists_document_types():
 
 def test_narrator_shows_inconsistency_example():
     """Test 3: Verify narrator shows inconsistency example"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Narrator shows inconsistency example")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/narrator.md")
 
     checks = [
         ("INCONSISTENT" in prompt, "Labels inconsistent example"),
         ("CONSISTENT" in prompt, "Labels consistent example"),
-        ("This paper" in prompt and "this thesis" in prompt.lower(),
-         "Shows paper vs thesis confusion"),
+        (
+            "This paper" in prompt and "this thesis" in prompt.lower(),
+            "Shows paper vs thesis confusion",
+        ),
     ]
 
     all_passed = True
@@ -106,9 +108,9 @@ def test_narrator_shows_inconsistency_example():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-013 VALIDATION: Document Type Consistency")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "document_type_section": test_narrator_has_document_type_section(),
@@ -116,9 +118,9 @@ def main():
         "inconsistency_example": test_narrator_shows_inconsistency_example(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

@@ -11,20 +11,23 @@ from pathlib import Path
 
 
 # Try to load environment variables from .env files
-# Priority: .env.local > .env (local overrides default)
+# Priority: opendraft/.env < engine/.env < engine/.env.local (later wins)
+# Docker: zmienne często wstrzyknięte przez compose env_file / environment.
 try:
     from dotenv import load_dotenv
 
-    # Get directory where config.py is located
     config_dir = Path(__file__).parent
+    opendraft_root = config_dir.parent
 
-    # Load .env first (defaults)
-    env_path = config_dir / '.env'
+    root_env = opendraft_root / ".env"
+    if root_env.exists():
+        load_dotenv(root_env)
+
+    env_path = config_dir / ".env"
     if env_path.exists():
-        load_dotenv(env_path)
+        load_dotenv(env_path, override=True)
 
-    # Load .env.local second (overrides, gitignored)
-    env_local_path = config_dir / '.env.local'
+    env_local_path = config_dir / ".env.local"
     if env_local_path.exists():
         load_dotenv(env_local_path, override=True)
 
@@ -40,14 +43,15 @@ class ModelConfig:
 
     Supports Gemini models with configurable parameters.
     """
-    provider: Literal['gemini', 'claude', 'openai'] = field(
-        default_factory=lambda: os.getenv('AI_PROVIDER', 'gemini')
+
+    provider: Literal["gemini", "claude", "openai"] = field(
+        default_factory=lambda: os.getenv("AI_PROVIDER", "gemini")
     )
     model_name: str = field(
         default_factory=lambda: (
-            os.getenv('OPENAI_MODEL', 'gpt-4.1-nano')
-            if os.getenv('AI_PROVIDER') == 'openai'
-            else os.getenv('GEMINI_MODEL', 'gemini-3-pro-preview')
+            os.getenv("OPENAI_MODEL", "gpt-4.1-nano")
+            if os.getenv("AI_PROVIDER") == "openai"
+            else os.getenv("GEMINI_MODEL", "gemini-3-pro-preview")
         )
     )
     temperature: float = 0.7
@@ -57,26 +61,26 @@ class ModelConfig:
     def __post_init__(self):
         """Validate model configuration."""
         valid_gemini_models = [
-            'gemini-3-pro-preview',    # Pro model for complex tasks
-            'gemini-3-flash-preview',  # Primary flash model (supports JSON output)
-            'gemini-2.5-pro',          # Legacy support
-            'gemini-2.5-flash',        # Legacy support
-            'gemini-2.0-flash-exp',    # Legacy support
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
+            "gemini-3-pro-preview",  # Pro model for complex tasks
+            "gemini-3-flash-preview",  # Primary flash model (supports JSON output)
+            "gemini-2.5-pro",  # Legacy support
+            "gemini-2.5-flash",  # Legacy support
+            "gemini-2.0-flash-exp",  # Legacy support
+            "gemini-1.5-flash",
+            "gemini-1.5-pro",
         ]
 
         valid_openai_models = [
-            'gpt-4.1-nano',
+            "gpt-4.1-nano",
         ]
 
-        if self.provider == 'gemini' and self.model_name not in valid_gemini_models:
+        if self.provider == "gemini" and self.model_name not in valid_gemini_models:
             raise ValueError(
                 f"Invalid Gemini model: {self.model_name}. "
                 f"Valid options: {', '.join(valid_gemini_models)}"
             )
 
-        if self.provider == 'openai' and self.model_name not in valid_openai_models:
+        if self.provider == "openai" and self.model_name not in valid_openai_models:
             raise ValueError(
                 f"Invalid OpenAI model: {self.model_name}. "
                 f"Valid options: {', '.join(valid_openai_models)}"
@@ -86,11 +90,15 @@ class ModelConfig:
 @dataclass
 class ValidationConfig:
     """Configuration for validation agents (Skeptic, Verifier, Referee, FactCheck)."""
-    use_pro_model: bool = field(default_factory=lambda: os.getenv('USE_PRO_FOR_VALIDATION', 'false').lower() == 'true')
-    pro_model_name: str = 'gemini-3-pro-preview'
+
+    use_pro_model: bool = field(
+        default_factory=lambda: os.getenv("USE_PRO_FOR_VALIDATION", "false").lower()
+        == "true"
+    )
+    pro_model_name: str = "gemini-3-pro-preview"
     validate_per_section: bool = True  # Always validate each section independently
     enable_factcheck: bool = field(
-        default_factory=lambda: os.getenv('ENABLE_FACTCHECK', 'true').lower() == 'true'
+        default_factory=lambda: os.getenv("ENABLE_FACTCHECK", "true").lower() == "true"
     )
 
     def get_validation_model(self, base_model: str) -> str:
@@ -101,9 +109,10 @@ class ValidationConfig:
 @dataclass
 class PathConfig:
     """Path configuration for outputs and prompts."""
+
     project_root: Path = field(default_factory=lambda: Path(__file__).parent)
-    output_dir: Path = field(default_factory=lambda: Path('tests/outputs'))
-    prompts_dir: Path = field(default_factory=lambda: Path('prompts'))
+    output_dir: Path = field(default_factory=lambda: Path("tests/outputs"))
+    prompts_dir: Path = field(default_factory=lambda: Path("prompts"))
 
     def __post_init__(self):
         """Ensure paths are absolute."""
@@ -119,15 +128,25 @@ class AppConfig:
     Single source of truth for all settings across the application.
     Follows SOLID principles and provides type-safe access to configuration.
     """
+
     # API Keys (GEMINI_API_KEY is alias for GOOGLE_API_KEY)
     google_api_key: str = field(
-        default_factory=lambda: os.getenv('GOOGLE_API_KEY') or os.getenv('GEMINI_API_KEY', '')
+        default_factory=lambda: os.getenv("GOOGLE_API_KEY")
+        or os.getenv("GEMINI_API_KEY", "")
     )
-    google_api_key_fallback: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK', ''))
-    google_api_key_fallback_2: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK_2', ''))
-    google_api_key_fallback_3: str = field(default_factory=lambda: os.getenv('GOOGLE_API_KEY_FALLBACK_3', ''))
-    anthropic_api_key: str = field(default_factory=lambda: os.getenv('ANTHROPIC_API_KEY', ''))
-    openai_api_key: str = field(default_factory=lambda: os.getenv('OPENAI_API_KEY', ''))
+    google_api_key_fallback: str = field(
+        default_factory=lambda: os.getenv("GOOGLE_API_KEY_FALLBACK", "")
+    )
+    google_api_key_fallback_2: str = field(
+        default_factory=lambda: os.getenv("GOOGLE_API_KEY_FALLBACK_2", "")
+    )
+    google_api_key_fallback_3: str = field(
+        default_factory=lambda: os.getenv("GOOGLE_API_KEY_FALLBACK_3", "")
+    )
+    anthropic_api_key: str = field(
+        default_factory=lambda: os.getenv("ANTHROPIC_API_KEY", "")
+    )
+    openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
 
     # Sub-configurations
     model: ModelConfig = field(default_factory=ModelConfig)
@@ -135,8 +154,12 @@ class AppConfig:
     paths: PathConfig = field(default_factory=PathConfig)
 
     # Citation and paper settings
-    citation_style: str = field(default_factory=lambda: os.getenv('CITATION_STYLE', 'apa'))
-    ai_detection_threshold: float = field(default_factory=lambda: float(os.getenv('AI_DETECTION_THRESHOLD', '0.20')))
+    citation_style: str = field(
+        default_factory=lambda: os.getenv("CITATION_STYLE", "apa")
+    )
+    ai_detection_threshold: float = field(
+        default_factory=lambda: float(os.getenv("AI_DETECTION_THRESHOLD", "0.20"))
+    )
 
     def __post_init__(self):
         """Validate configuration on initialization."""
@@ -151,27 +174,27 @@ class AppConfig:
         Call this before operations that need API access.
         Raises ValueError if required keys are missing.
         """
-        if self.model.provider == 'gemini' and not self.google_api_key:
+        if self.model.provider == "gemini" and not self.google_api_key:
             raise ValueError(
                 "GOOGLE_API_KEY environment variable is required for Gemini models. "
                 "Set it in .env file or environment. "
                 "Get your key at: https://makersuite.google.com/app/apikey"
             )
 
-        if self.model.provider == 'claude' and not self.anthropic_api_key:
+        if self.model.provider == "claude" and not self.anthropic_api_key:
             raise ValueError("ANTHROPIC_API_KEY required for Claude models")
 
-        if self.model.provider == 'openai' and not self.openai_api_key:
+        if self.model.provider == "openai" and not self.openai_api_key:
             raise ValueError("OPENAI_API_KEY required for OpenAI models")
 
     @property
     def has_api_key(self) -> bool:
         """Check if required API key is configured (without raising)."""
-        if self.model.provider == 'gemini':
+        if self.model.provider == "gemini":
             return bool(self.google_api_key)
-        if self.model.provider == 'claude':
+        if self.model.provider == "claude":
             return bool(self.anthropic_api_key)
-        if self.model.provider == 'openai':
+        if self.model.provider == "openai":
             return bool(self.openai_api_key)
         return False
 
@@ -205,7 +228,7 @@ def update_model(model_name: str) -> None:
     cfg.model.__post_init__()  # Re-validate
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Configuration validation test
     cfg = get_config()
     print(f"✅ Configuration loaded successfully")

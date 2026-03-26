@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_verifier_has_preprint_checks():
     """Test 1: Verify verifier.md has preprint update checks"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Verifier has preprint update checks")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/verifier.md")
 
@@ -56,9 +56,9 @@ def test_verifier_has_preprint_checks():
 
 def test_verifier_shows_update_example():
     """Test 2: Verify verifier shows preprint update example"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Verifier shows preprint update example")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/verifier.md")
 
@@ -66,7 +66,10 @@ def test_verifier_shows_update_example():
         ("PREPRINT UPDATE NEEDED" in prompt, "Shows update needed flag"),
         ("Published version found" in prompt, "Shows how to find published version"),
         ("Update to:" in prompt, "Shows update action"),
-        ("Nature Communications" in prompt or "Nat Commun" in prompt, "Shows journal example"),
+        (
+            "Nature Communications" in prompt or "Nat Commun" in prompt,
+            "Shows journal example",
+        ),
     ]
 
     all_passed = True
@@ -83,15 +86,18 @@ def test_verifier_shows_update_example():
 
 def test_scout_has_preprint_handling():
     """Test 3: Verify scout.md has preprint handling"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Scout has preprint handling guidance")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/01_research/scout.md")
 
     checks = [
         ("PREPRINT HANDLING" in prompt, "Has preprint handling section"),
-        ("prefer journal-published versions" in prompt.lower(), "Prefers journal versions"),
+        (
+            "prefer journal-published versions" in prompt.lower(),
+            "Prefers journal versions",
+        ),
         ("bioRxiv" in prompt, "Mentions bioRxiv"),
         ("Check for published version first" in prompt, "Checks for published version"),
         ("Preprint age matters" in prompt, "Has age-based guidance"),
@@ -113,9 +119,9 @@ def test_scout_has_preprint_handling():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-004 VALIDATION: Preprints Updated to Journal Versions")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "verifier_preprint_checks": test_verifier_has_preprint_checks(),
@@ -123,9 +129,9 @@ def main():
         "scout_preprint_handling": test_scout_has_preprint_handling(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

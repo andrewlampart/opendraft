@@ -189,7 +189,8 @@ class CrossrefClient(BaseAPIClient):
             if abstract:
                 # Strip JATS XML tags if present (<jats:p>, <jats:italic>, etc.)
                 import re
-                abstract = re.sub(r'<[^>]+>', '', abstract)
+
+                abstract = re.sub(r"<[^>]+>", "", abstract)
                 abstract = abstract.strip()
 
             # Source type
@@ -198,7 +199,10 @@ class CrossrefClient(BaseAPIClient):
 
             # Calculate confidence score
             confidence = self._calculate_confidence(
-                has_doi=bool(doi), has_journal=bool(journal), has_publisher=bool(publisher), author_count=len(authors)
+                has_doi=bool(doi),
+                has_journal=bool(journal),
+                has_publisher=bool(publisher),
+                author_count=len(authors),
             )
 
             return {
@@ -243,7 +247,9 @@ class CrossrefClient(BaseAPIClient):
 
         return type_mapping.get(crossref_type, "journal")  # Default to journal
 
-    def _calculate_confidence(self, has_doi: bool, has_journal: bool, has_publisher: bool, author_count: int) -> float:
+    def _calculate_confidence(
+        self, has_doi: bool, has_journal: bool, has_publisher: bool, author_count: int
+    ) -> float:
         """
         Calculate confidence score for paper metadata.
 

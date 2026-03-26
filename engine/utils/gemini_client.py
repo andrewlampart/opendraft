@@ -104,7 +104,10 @@ class GeminiModelWrapper:
                 config["temperature"] = generation_config.temperature
             if hasattr(generation_config, "max_output_tokens"):
                 config["max_output_tokens"] = generation_config.max_output_tokens
-            if hasattr(generation_config, "response_mime_type") and generation_config.response_mime_type:
+            if (
+                hasattr(generation_config, "response_mime_type")
+                and generation_config.response_mime_type
+            ):
                 config["response_mime_type"] = generation_config.response_mime_type
 
             # Handle dict

@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class CallStatus(str, Enum):
     """Status of an API call."""
+
     SUCCESS = "success"
     FAILURE = "failure"
     PARTIAL = "partial"
@@ -28,6 +29,7 @@ class CallStatus(str, Enum):
 @dataclass
 class APICall:
     """Record of a single API call."""
+
     stage: str
     input_tokens: int
     output_tokens: int
@@ -42,6 +44,7 @@ class APICall:
 @dataclass
 class StageStats:
     """Aggregated stats for a pipeline stage."""
+
     stage: str
     calls: int = 0
     input_tokens: int = 0
@@ -73,7 +76,9 @@ class TokenTracker:
         if self._pricing:
             logger.info(f"TokenTracker: Using pricing for {self._pricing.name}")
         else:
-            logger.warning(f"TokenTracker: No pricing found for '{model_name}' — costs will be $0")
+            logger.warning(
+                f"TokenTracker: No pricing found for '{model_name}' — costs will be $0"
+            )
 
     def add_call(
         self,
@@ -88,10 +93,9 @@ class TokenTracker:
 
         cost = 0.0
         if self._pricing:
-            cost = (
-                (input_tokens / 1_000_000) * self._pricing.input_price
-                + (output_tokens / 1_000_000) * self._pricing.output_price
-            )
+            cost = (input_tokens / 1_000_000) * self._pricing.input_price + (
+                output_tokens / 1_000_000
+            ) * self._pricing.output_price
 
         call = APICall(
             stage=stage,
@@ -158,7 +162,11 @@ class TokenTracker:
         lines.append("═" * 70)
         lines.append("")
 
-        model_display = self._pricing.display_name if self._pricing and self._pricing.display_name else self.model_name
+        model_display = (
+            self._pricing.display_name
+            if self._pricing and self._pricing.display_name
+            else self.model_name
+        )
         lines.append(f"Model: {model_display}")
         lines.append(f"Duration: {elapsed:.1f}s ({elapsed/60:.1f} min)")
         lines.append("")
@@ -216,7 +224,7 @@ class TokenTracker:
         # Count calls by status
         status_counts = {}
         for call in self.calls:
-            status = getattr(call, 'status', CallStatus.SUCCESS)
+            status = getattr(call, "status", CallStatus.SUCCESS)
             status_str = status.value if isinstance(status, CallStatus) else str(status)
             status_counts[status_str] = status_counts.get(status_str, 0) + 1
 

@@ -87,9 +87,15 @@ SYNONYM_CHAINS = [
 # Mid-document thesis restatements to neutralize (sentence-start only)
 THESIS_RESTATEMENTS = [
     (r"(?<=\.\s)As\s+this\s+(?:paper|study)\s+argues?,?\s*", "As discussed, "),
-    (r"(?<=\.\s)This\s+(?:paper|study)\s+has\s+argued\s+that\b", "The analysis shows that"),
+    (
+        r"(?<=\.\s)This\s+(?:paper|study)\s+has\s+argued\s+that\b",
+        "The analysis shows that",
+    ),
     (r"(?<=\.\s)We\s+argue\s+that\b", "The evidence suggests that"),
-    (r"(?<=\.\s)The\s+central\s+argument\s+of\s+this\s+(?:paper|study)\b", "A key finding"),
+    (
+        r"(?<=\.\s)The\s+central\s+argument\s+of\s+this\s+(?:paper|study)\b",
+        "A key finding",
+    ),
     (r"(?<=\.\s)This\s+study\s+demonstrates\s+that\b", "The analysis reveals that"),
 ]
 
@@ -97,10 +103,18 @@ THESIS_RESTATEMENTS = [
 # Format: (pattern, [list of synonyms to rotate through])
 VOCAB_DIVERSITY = [
     (r"\bmechanism\b", ["process", "pathway", "driver", "dynamic", "factor"]),
-    (r"\bvulnerability\b", ["susceptibility", "risk factor", "exposure", "sensitivity"]),
-    (r"\bsignificant\b(?!\s+(?:at|p\s*[<>=]|difference|effect))",
-     ["substantial", "considerable", "notable", "marked", "meaningful"]),
-    (r"\bdemonstrates?\b", ["shows", "reveals", "indicates", "illustrates", "establishes"]),
+    (
+        r"\bvulnerability\b",
+        ["susceptibility", "risk factor", "exposure", "sensitivity"],
+    ),
+    (
+        r"\bsignificant\b(?!\s+(?:at|p\s*[<>=]|difference|effect))",
+        ["substantial", "considerable", "notable", "marked", "meaningful"],
+    ),
+    (
+        r"\bdemonstrates?\b",
+        ["shows", "reveals", "indicates", "illustrates", "establishes"],
+    ),
     (r"\butilize[sd]?\b", ["use", "uses", "used"]),
     (r"\bfacilitate[sd]?\b", ["enables", "supports", "helps", "allows"]),
     (r"\bcomprehensive\b", ["thorough", "extensive", "detailed", "wide-ranging"]),
@@ -114,8 +128,14 @@ CLAIM_CALIBRATION = [
     (r"\bindisputable\s+evidence\b", "strong evidence"),
     (r"\bundeniable\b", "well-established"),
     (r"\bunquestionable\b", "well-documented"),
-    (r"\bproves\s+conclusively\s+that\b", "provides strong support for the conclusion that"),
-    (r"\bprove\s+conclusively\s+that\b", "provide strong support for the conclusion that"),
+    (
+        r"\bproves\s+conclusively\s+that\b",
+        "provides strong support for the conclusion that",
+    ),
+    (
+        r"\bprove\s+conclusively\s+that\b",
+        "provide strong support for the conclusion that",
+    ),
     (r"\bwithout\s+(?:a\s+)?doubt\b", "with high confidence"),
     (r"\bis\s+the\s+only\b", "is a primary"),
     (r"\bthe\s+only\s+solution\b", "a key solution"),
@@ -139,6 +159,7 @@ CLAIM_CALIBRATION = [
 # =============================================================================
 # PURE FUNCTIONS (no external dependencies)
 # =============================================================================
+
 
 def apply_full_cleanup(text: str) -> Dict[str, Any]:
     """
@@ -223,7 +244,7 @@ def apply_full_cleanup(text: str) -> Dict[str, Any]:
                     synonym = synonym.title()
                 elif match.group().isupper():
                     synonym = synonym.upper()
-                text = text[:match.start()] + synonym + text[match.end():]
+                text = text[: match.start()] + synonym + text[match.end() :]
                 stats["vocab_diversified"] += 1
 
     # 8. Claim calibration
@@ -288,39 +309,42 @@ def detect_repetition(text: str) -> Dict[str, Any]:
 
     # Count thesis restatements
     thesis_patterns = [
-        r'this\s+paper\s+argues?',
-        r'the\s+central\s+argument',
-        r'this\s+study\s+demonstrates?',
-        r'we\s+argue\s+that',
+        r"this\s+paper\s+argues?",
+        r"the\s+central\s+argument",
+        r"this\s+study\s+demonstrates?",
+        r"we\s+argue\s+that",
     ]
     thesis_count = sum(len(re.findall(p, text, re.I)) for p in thesis_patterns)
     if thesis_count > 3:
-        warnings.append({
-            "type": "thesis_repetition",
-            "count": thesis_count,
-            "message": f"Thesis restated {thesis_count} times (expected 2-3)"
-        })
+        warnings.append(
+            {
+                "type": "thesis_repetition",
+                "count": thesis_count,
+                "message": f"Thesis restated {thesis_count} times (expected 2-3)",
+            }
+        )
 
     # Check for repeated phrases (same 5+ word sequence appearing 3+ times)
     words = text.lower().split()
     if len(words) > 100:
         phrase_counts = {}
         for i in range(len(words) - 4):
-            phrase = " ".join(words[i:i+5])
+            phrase = " ".join(words[i : i + 5])
             phrase_counts[phrase] = phrase_counts.get(phrase, 0) + 1
 
         repeated = [(p, c) for p, c in phrase_counts.items() if c >= 3]
         if repeated:
-            warnings.append({
-                "type": "repeated_phrases",
-                "count": len(repeated),
-                "examples": [p for p, c in sorted(repeated, key=lambda x: -x[1])[:5]]
-            })
+            warnings.append(
+                {
+                    "type": "repeated_phrases",
+                    "count": len(repeated),
+                    "examples": [
+                        p for p, c in sorted(repeated, key=lambda x: -x[1])[:5]
+                    ],
+                }
+            )
 
-    return {
-        "warnings": warnings,
-        "status": "pass" if not warnings else "needs_review"
-    }
+    return {"warnings": warnings, "status": "pass" if not warnings else "needs_review"}
 
 
 def detect_advocacy_language(text: str) -> Dict[str, Any]:
@@ -333,12 +357,12 @@ def detect_advocacy_language(text: str) -> Dict[str, Any]:
         dict with "findings" list and "status" ("pass" or "needs_review")
     """
     patterns = [
-        (r'\bmust\s+be\s+adopted\b', "prescriptive"),
-        (r'\bwe\s+advocate\b', "advocacy"),
-        (r'\bundeniably\b', "overconfident"),
-        (r'\bunquestionably\b', "overconfident"),
-        (r'\bobviously\b', "overconfident"),
-        (r'\bdemands\s+that\b', "prescriptive"),
+        (r"\bmust\s+be\s+adopted\b", "prescriptive"),
+        (r"\bwe\s+advocate\b", "advocacy"),
+        (r"\bundeniably\b", "overconfident"),
+        (r"\bunquestionably\b", "overconfident"),
+        (r"\bobviously\b", "overconfident"),
+        (r"\bdemands\s+that\b", "prescriptive"),
     ]
 
     findings = []
@@ -347,15 +371,13 @@ def detect_advocacy_language(text: str) -> Dict[str, Any]:
         if matches:
             findings.append({"pattern": desc, "count": len(matches)})
 
-    return {
-        "findings": findings,
-        "status": "pass" if not findings else "needs_review"
-    }
+    return {"findings": findings, "status": "pass" if not findings else "needs_review"}
 
 
 # =============================================================================
 # CONVENIENCE WRAPPER
 # =============================================================================
+
 
 def clean_text(text: str) -> str:
     """

@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # FIFO Cache with TTL (ported from hallucination-detector-v2)
 # =========================================================================
 
+
 class FIFOCache:
     """Simple FIFO cache with TTL expiry for verification results."""
 
@@ -75,17 +76,22 @@ def strip_json_fences(text: str) -> str:
     Returns the inner text ready for json.loads().
     """
     text = text.strip()
-    if text.startswith('```'):
-        lines = text.split('\n')
-        lines = [l for l in lines if not l.strip().startswith('```')]
-        text = '\n'.join(lines)
+    if text.startswith("```"):
+        lines = text.split("\n")
+        lines = [l for l in lines if not l.strip().startswith("```")]
+        text = "\n".join(lines)
     return text
 
 
-def _make_verdict(claim_obj: Dict[str, str], verdict: str = VERDICT_INSUFFICIENT,
-                  confidence: float = 0.0, wrong_part: Optional[str] = None,
-                  correct_value: Optional[str] = None, source_url: Optional[str] = None,
-                  evidence_snippet: str = "") -> Dict[str, Any]:
+def _make_verdict(
+    claim_obj: Dict[str, str],
+    verdict: str = VERDICT_INSUFFICIENT,
+    confidence: float = 0.0,
+    wrong_part: Optional[str] = None,
+    correct_value: Optional[str] = None,
+    source_url: Optional[str] = None,
+    evidence_snippet: str = "",
+) -> Dict[str, Any]:
     """Build a standardised verdict dict from a claim object."""
     return {
         "claim": claim_obj.get("claim", ""),
@@ -103,6 +109,7 @@ def _make_verdict(claim_obj: Dict[str, str], verdict: str = VERDICT_INSUFFICIENT
 # =========================================================================
 # FactCheck Verifier
 # =========================================================================
+
 
 class FactCheckVerifier:
     """
@@ -128,7 +135,9 @@ class FactCheckVerifier:
         self.grounded_client = GeminiGroundedClient(api_key=api_key)
         self._cache = FIFOCache(max_size=100, ttl_seconds=3600)
 
-    def _verify_single_claim(self, i: int, total: int, claim_obj: Dict[str, str]) -> Optional[Dict[str, Any]]:
+    def _verify_single_claim(
+        self, i: int, total: int, claim_obj: Dict[str, str]
+    ) -> Optional[Dict[str, Any]]:
         """
         Verify a single claim. Used as a worker for parallel execution.
 
@@ -159,9 +168,13 @@ class FactCheckVerifier:
 
         except Exception as e:
             logger.warning(f"[FactCheck] Failed to verify claim: {e}")
-            return _make_verdict(claim_obj, evidence_snippet=f"Verification failed: {e}")
+            return _make_verdict(
+                claim_obj, evidence_snippet=f"Verification failed: {e}"
+            )
 
-    def verify_claims(self, claims: List[Dict[str, str]], max_workers: int = 10) -> List[Dict[str, Any]]:
+    def verify_claims(
+        self, claims: List[Dict[str, str]], max_workers: int = 10
+    ) -> List[Dict[str, Any]]:
         """
         Verify each claim using web evidence, in parallel.
 
@@ -210,40 +223,46 @@ class FactCheckVerifier:
         try:
             prompt = (
                 f"Is this claim true or false? Find evidence:\n\n"
-                f"Claim: \"{claim}\"\n\n"
+                f'Claim: "{claim}"\n\n'
                 f"Search for the most reliable sources that confirm or deny this claim. "
                 f"Report what the evidence says with specific numbers, dates, or facts. "
                 f"Include source URLs."
             )
 
-            response_data = self.grounded_client._generate_content_with_grounding(prompt)
+            response_data = self.grounded_client._generate_content_with_grounding(
+                prompt
+            )
 
             if response_data:
-                candidates = response_data.get('candidates', [])
+                candidates = response_data.get("candidates", [])
                 if candidates:
                     candidate = candidates[0]
-                    content = candidate.get('content', {})
-                    parts = content.get('parts', [])
-                    text = parts[0].get('text', '') if parts else ''
+                    content = candidate.get("content", {})
+                    parts = content.get("parts", [])
+                    text = parts[0].get("text", "") if parts else ""
 
                     if text:
-                        evidence.append({
-                            'snippet': text[:1000],
-                            'url': '',
-                            'title': 'Gemini Grounded Search',
-                        })
+                        evidence.append(
+                            {
+                                "snippet": text[:1000],
+                                "url": "",
+                                "title": "Gemini Grounded Search",
+                            }
+                        )
 
-                    grounding_metadata = candidate.get('groundingMetadata', {})
-                    grounding_chunks = grounding_metadata.get('groundingChunks', [])
+                    grounding_metadata = candidate.get("groundingMetadata", {})
+                    grounding_chunks = grounding_metadata.get("groundingChunks", [])
 
                     for chunk in grounding_chunks:
-                        web = chunk.get('web', {})
-                        if web.get('uri'):
-                            evidence.append({
-                                'snippet': web.get('title', ''),
-                                'url': web.get('uri', ''),
-                                'title': web.get('title', 'Web Source'),
-                            })
+                        web = chunk.get("web", {})
+                        if web.get("uri"):
+                            evidence.append(
+                                {
+                                    "snippet": web.get("title", ""),
+                                    "url": web.get("uri", ""),
+                                    "title": web.get("title", "Web Source"),
+                                }
+                            )
 
         except Exception as e:
             logger.warning(f"[FactCheck] Evidence search failed: {e}")
@@ -253,17 +272,21 @@ class FactCheckVerifier:
             try:
                 result = self.grounded_client.search_paper(claim)
                 if result:
-                    evidence.append({
-                        'snippet': result.get('snippet', ''),
-                        'url': result.get('url', ''),
-                        'title': result.get('title', 'Source'),
-                    })
+                    evidence.append(
+                        {
+                            "snippet": result.get("snippet", ""),
+                            "url": result.get("url", ""),
+                            "title": result.get("title", "Source"),
+                        }
+                    )
             except Exception as e:
                 logger.warning(f"[FactCheck] Fallback search failed: {e}")
 
         return evidence
 
-    def _judge(self, claim_obj: Dict[str, str], evidence: List[Dict[str, str]]) -> Dict[str, Any]:
+    def _judge(
+        self, claim_obj: Dict[str, str], evidence: List[Dict[str, str]]
+    ) -> Dict[str, Any]:
         """
         LLM call: compare claim against evidence, return verdict.
 
@@ -287,9 +310,9 @@ class FactCheckVerifier:
         for i, ev in enumerate(evidence, 1):
             evidence_text += f"\n--- Evidence {i} ---\n"
             evidence_text += f"Source: {ev.get('title', 'Unknown')}\n"
-            if ev.get('url'):
+            if ev.get("url"):
                 evidence_text += f"URL: {ev['url']}\n"
-                source_urls.append(ev['url'])
+                source_urls.append(ev["url"])
             evidence_text += f"Content: {ev.get('snippet', 'No content')}\n"
 
         if not evidence_text.strip():
@@ -415,7 +438,10 @@ class FactCheckVerifier:
 
             for result in insufficient:
                 lines.append(f"- ❓ \"{result['claim']}\"")
-                if result.get("evidence_snippet") and result["evidence_snippet"] != "No evidence found":
+                if (
+                    result.get("evidence_snippet")
+                    and result["evidence_snippet"] != "No evidence found"
+                ):
                     lines.append(f"  - Note: {result['evidence_snippet'][:150]}")
 
             lines.append("")
@@ -427,14 +453,22 @@ class FactCheckVerifier:
         lines.append("")
 
         if contradicted:
-            lines.append(f"1. **Fix {len(contradicted)} factual error(s)** using the Find/Replace corrections above")
+            lines.append(
+                f"1. **Fix {len(contradicted)} factual error(s)** using the Find/Replace corrections above"
+            )
             lines.append("2. **Verify corrections** against the provided source URLs")
-            lines.append("3. **Re-run fact-check** after applying fixes to confirm accuracy")
+            lines.append(
+                "3. **Re-run fact-check** after applying fixes to confirm accuracy"
+            )
         else:
-            lines.append("All checked claims appear accurate based on available evidence.")
+            lines.append(
+                "All checked claims appear accurate based on available evidence."
+            )
 
         if insufficient:
-            lines.append(f"\n**Note:** {len(insufficient)} claim(s) could not be verified — consider adding citations or rephrasing as qualified statements.")
+            lines.append(
+                f"\n**Note:** {len(insufficient)} claim(s) could not be verified — consider adding citations or rephrasing as qualified statements."
+            )
 
         lines.append("")
 

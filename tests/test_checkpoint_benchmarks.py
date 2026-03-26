@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from utils.checkpoint import (
@@ -59,7 +60,9 @@ def _create_context_with_size(
     ctx.department = "Computer Science"
 
     # Create content sized by multiplier
-    base_paragraph = "This is academic content for benchmarking checkpoint performance. " * 10
+    base_paragraph = (
+        "This is academic content for benchmarking checkpoint performance. " * 10
+    )
 
     ctx.scout_output = base_paragraph * word_multiplier
     ctx.scribe_output = base_paragraph * word_multiplier
@@ -101,8 +104,10 @@ class TestSaveBenchmarks:
 
     def test_save_small_context(self, tmp_path):
         """Benchmark: Save small research paper context (< 50ms)."""
-        ctx = _create_context_with_size("research_paper", word_multiplier=1, citation_count=10)
-        ctx.folders = {'root': tmp_path}
+        ctx = _create_context_with_size(
+            "research_paper", word_multiplier=1, citation_count=10
+        )
+        ctx.folders = {"root": tmp_path}
 
         # Warm up
         save_checkpoint(ctx, "compose", tmp_path)
@@ -116,7 +121,9 @@ class TestSaveBenchmarks:
         avg_time = statistics.mean(times)
         p95_time = sorted(times)[int(len(times) * 0.95)]
 
-        assert avg_time < 50, f"Small context save too slow: {avg_time:.1f}ms (target: <50ms)"
+        assert (
+            avg_time < 50
+        ), f"Small context save too slow: {avg_time:.1f}ms (target: <50ms)"
         assert p95_time < 100, f"P95 save too slow: {p95_time:.1f}ms (target: <100ms)"
 
         print(f"\nSmall context save: avg={avg_time:.1f}ms, p95={p95_time:.1f}ms")
@@ -124,7 +131,7 @@ class TestSaveBenchmarks:
     def test_save_medium_context(self, tmp_path):
         """Benchmark: Save medium master thesis context (< 100ms)."""
         ctx = _create_context_with_size("master", word_multiplier=5, citation_count=50)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Benchmark
         times = []
@@ -135,7 +142,9 @@ class TestSaveBenchmarks:
         avg_time = statistics.mean(times)
         p95_time = max(times)  # With 5 samples, use max
 
-        assert avg_time < 100, f"Medium context save too slow: {avg_time:.1f}ms (target: <100ms)"
+        assert (
+            avg_time < 100
+        ), f"Medium context save too slow: {avg_time:.1f}ms (target: <100ms)"
         assert p95_time < 200, f"P95 save too slow: {p95_time:.1f}ms (target: <200ms)"
 
         print(f"\nMedium context save: avg={avg_time:.1f}ms, p95={p95_time:.1f}ms")
@@ -143,7 +152,7 @@ class TestSaveBenchmarks:
     def test_save_large_context(self, tmp_path):
         """Benchmark: Save large PhD dissertation context (< 500ms)."""
         ctx = _create_context_with_size("phd", word_multiplier=20, citation_count=150)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Benchmark
         times = []
@@ -154,7 +163,9 @@ class TestSaveBenchmarks:
         avg_time = statistics.mean(times)
         max_time = max(times)
 
-        assert avg_time < 500, f"Large context save too slow: {avg_time:.1f}ms (target: <500ms)"
+        assert (
+            avg_time < 500
+        ), f"Large context save too slow: {avg_time:.1f}ms (target: <500ms)"
         assert max_time < 1000, f"Max save too slow: {max_time:.1f}ms (target: <1000ms)"
 
         print(f"\nLarge context save: avg={avg_time:.1f}ms, max={max_time:.1f}ms")
@@ -165,8 +176,10 @@ class TestLoadBenchmarks:
 
     def test_load_small_context(self, tmp_path):
         """Benchmark: Load small research paper context (< 20ms)."""
-        ctx = _create_context_with_size("research_paper", word_multiplier=1, citation_count=10)
-        ctx.folders = {'root': tmp_path}
+        ctx = _create_context_with_size(
+            "research_paper", word_multiplier=1, citation_count=10
+        )
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         checkpoint_path = tmp_path / "checkpoint.json"
@@ -180,7 +193,9 @@ class TestLoadBenchmarks:
         avg_time = statistics.mean(times)
         p95_time = sorted(times)[int(len(times) * 0.95)]
 
-        assert avg_time < 20, f"Small context load too slow: {avg_time:.1f}ms (target: <20ms)"
+        assert (
+            avg_time < 20
+        ), f"Small context load too slow: {avg_time:.1f}ms (target: <20ms)"
         assert p95_time < 50, f"P95 load too slow: {p95_time:.1f}ms (target: <50ms)"
 
         print(f"\nSmall context load: avg={avg_time:.1f}ms, p95={p95_time:.1f}ms")
@@ -188,7 +203,7 @@ class TestLoadBenchmarks:
     def test_load_medium_context(self, tmp_path):
         """Benchmark: Load medium master thesis context (< 50ms)."""
         ctx = _create_context_with_size("master", word_multiplier=5, citation_count=50)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         checkpoint_path = tmp_path / "checkpoint.json"
@@ -202,7 +217,9 @@ class TestLoadBenchmarks:
         avg_time = statistics.mean(times)
         p95_time = max(times)
 
-        assert avg_time < 50, f"Medium context load too slow: {avg_time:.1f}ms (target: <50ms)"
+        assert (
+            avg_time < 50
+        ), f"Medium context load too slow: {avg_time:.1f}ms (target: <50ms)"
         assert p95_time < 100, f"P95 load too slow: {p95_time:.1f}ms (target: <100ms)"
 
         print(f"\nMedium context load: avg={avg_time:.1f}ms, p95={p95_time:.1f}ms")
@@ -210,7 +227,7 @@ class TestLoadBenchmarks:
     def test_load_large_context(self, tmp_path):
         """Benchmark: Load large PhD dissertation context (< 200ms)."""
         ctx = _create_context_with_size("phd", word_multiplier=20, citation_count=150)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         checkpoint_path = tmp_path / "checkpoint.json"
@@ -224,7 +241,9 @@ class TestLoadBenchmarks:
         avg_time = statistics.mean(times)
         max_time = max(times)
 
-        assert avg_time < 200, f"Large context load too slow: {avg_time:.1f}ms (target: <200ms)"
+        assert (
+            avg_time < 200
+        ), f"Large context load too slow: {avg_time:.1f}ms (target: <200ms)"
         assert max_time < 500, f"Max load too slow: {max_time:.1f}ms (target: <500ms)"
 
         print(f"\nLarge context load: avg={avg_time:.1f}ms, max={max_time:.1f}ms")
@@ -235,8 +254,10 @@ class TestRestoreBenchmarks:
 
     def test_restore_small_context(self, tmp_path):
         """Benchmark: Restore small context (< 10ms)."""
-        ctx = _create_context_with_size("research_paper", word_multiplier=1, citation_count=10)
-        ctx.folders = {'root': tmp_path}
+        ctx = _create_context_with_size(
+            "research_paper", word_multiplier=1, citation_count=10
+        )
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         data, _ = load_checkpoint(tmp_path / "checkpoint.json")
@@ -250,14 +271,16 @@ class TestRestoreBenchmarks:
 
         avg_time = statistics.mean(times)
 
-        assert avg_time < 10, f"Small restore too slow: {avg_time:.1f}ms (target: <10ms)"
+        assert (
+            avg_time < 10
+        ), f"Small restore too slow: {avg_time:.1f}ms (target: <10ms)"
 
         print(f"\nSmall context restore: avg={avg_time:.1f}ms")
 
     def test_restore_large_context(self, tmp_path):
         """Benchmark: Restore large context (< 50ms)."""
         ctx = _create_context_with_size("phd", word_multiplier=20, citation_count=150)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         data, _ = load_checkpoint(tmp_path / "checkpoint.json")
@@ -271,7 +294,9 @@ class TestRestoreBenchmarks:
 
         avg_time = statistics.mean(times)
 
-        assert avg_time < 50, f"Large restore too slow: {avg_time:.1f}ms (target: <50ms)"
+        assert (
+            avg_time < 50
+        ), f"Large restore too slow: {avg_time:.1f}ms (target: <50ms)"
 
         print(f"\nLarge context restore: avg={avg_time:.1f}ms")
 
@@ -281,40 +306,48 @@ class TestFileSizeBenchmarks:
 
     def test_file_size_small(self, tmp_path):
         """Verify small context checkpoint file size."""
-        ctx = _create_context_with_size("research_paper", word_multiplier=1, citation_count=10)
-        ctx.folders = {'root': tmp_path}
+        ctx = _create_context_with_size(
+            "research_paper", word_multiplier=1, citation_count=10
+        )
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         size_kb = (tmp_path / "checkpoint.json").stat().st_size / 1024
 
         # Small context should be < 100KB
-        assert size_kb < 100, f"Small checkpoint too large: {size_kb:.1f}KB (target: <100KB)"
+        assert (
+            size_kb < 100
+        ), f"Small checkpoint too large: {size_kb:.1f}KB (target: <100KB)"
 
         print(f"\nSmall context file size: {size_kb:.1f}KB")
 
     def test_file_size_medium(self, tmp_path):
         """Verify medium context checkpoint file size."""
         ctx = _create_context_with_size("master", word_multiplier=5, citation_count=50)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         size_kb = (tmp_path / "checkpoint.json").stat().st_size / 1024
 
         # Medium context should be < 500KB
-        assert size_kb < 500, f"Medium checkpoint too large: {size_kb:.1f}KB (target: <500KB)"
+        assert (
+            size_kb < 500
+        ), f"Medium checkpoint too large: {size_kb:.1f}KB (target: <500KB)"
 
         print(f"\nMedium context file size: {size_kb:.1f}KB")
 
     def test_file_size_large(self, tmp_path):
         """Verify large context checkpoint file size."""
         ctx = _create_context_with_size("phd", word_multiplier=20, citation_count=150)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "compose", tmp_path)
 
         size_kb = (tmp_path / "checkpoint.json").stat().st_size / 1024
 
         # Large context should be < 5MB
-        assert size_kb < 5000, f"Large checkpoint too large: {size_kb:.1f}KB (target: <5000KB)"
+        assert (
+            size_kb < 5000
+        ), f"Large checkpoint too large: {size_kb:.1f}KB (target: <5000KB)"
 
         print(f"\nLarge context file size: {size_kb:.1f}KB")
 
@@ -324,8 +357,10 @@ class TestRoundtripBenchmarks:
 
     def test_full_roundtrip_small(self, tmp_path):
         """Benchmark: Full roundtrip for small context (< 80ms)."""
-        ctx = _create_context_with_size("research_paper", word_multiplier=1, citation_count=10)
-        ctx.folders = {'root': tmp_path}
+        ctx = _create_context_with_size(
+            "research_paper", word_multiplier=1, citation_count=10
+        )
+        ctx.folders = {"root": tmp_path}
 
         # Benchmark full cycle
         times = []
@@ -342,14 +377,16 @@ class TestRoundtripBenchmarks:
 
         avg_time = statistics.mean(times)
 
-        assert avg_time < 80, f"Small roundtrip too slow: {avg_time:.1f}ms (target: <80ms)"
+        assert (
+            avg_time < 80
+        ), f"Small roundtrip too slow: {avg_time:.1f}ms (target: <80ms)"
 
         print(f"\nSmall roundtrip: avg={avg_time:.1f}ms")
 
     def test_full_roundtrip_large(self, tmp_path):
         """Benchmark: Full roundtrip for large context (< 750ms)."""
         ctx = _create_context_with_size("phd", word_multiplier=20, citation_count=150)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Benchmark full cycle
         times = []
@@ -366,14 +403,16 @@ class TestRoundtripBenchmarks:
 
         avg_time = statistics.mean(times)
 
-        assert avg_time < 750, f"Large roundtrip too slow: {avg_time:.1f}ms (target: <750ms)"
+        assert (
+            avg_time < 750
+        ), f"Large roundtrip too slow: {avg_time:.1f}ms (target: <750ms)"
 
         print(f"\nLarge roundtrip: avg={avg_time:.1f}ms")
 
     def test_data_integrity_after_roundtrip(self, tmp_path):
         """Verify data integrity is preserved after roundtrip."""
         ctx = _create_context_with_size("master", word_multiplier=5, citation_count=50)
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Save
         save_checkpoint(ctx, "compose", tmp_path)

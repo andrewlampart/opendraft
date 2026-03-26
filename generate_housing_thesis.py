@@ -40,11 +40,7 @@ print(f"Language: English")
 print("\nStarting generation (this may take 15-30 minutes)...")
 
 generator = DraftGenerator()
-draft = generator.generate(
-    topic=topic,
-    paper_type="master",
-    language="en"
-)
+draft = generator.generate(topic=topic, paper_type="master", language="en")
 
 print("\nGeneration complete! Exporting files...")
 
@@ -74,7 +70,7 @@ except Exception as e:
 # Create ZIP
 zip_path = os.path.join(OUTPUT_DIR, "affordable_housing_india_thesis.zip")
 try:
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         if os.path.exists(pdf_path):
             zipf.write(pdf_path, os.path.basename(pdf_path))
         if os.path.exists(docx_path):

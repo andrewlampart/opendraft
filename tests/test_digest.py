@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 
 # Add engine to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'engine'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 
 
 class TestElevenLabsClient:
@@ -54,14 +54,16 @@ class TestDigestGeneration:
 
         # Create test document
         doc = tmp_path / "paper.md"
-        doc.write_text("""
+        doc.write_text(
+            """
         # Sleep and Performance Study
 
         This research examines how sleep deprivation affects workplace performance.
         A study of 500 healthcare workers found alarming results about safety.
         Those sleeping under 6 hours made 3x more errors in critical tasks.
         The brain enters microsleeps without the person being aware.
-        """)
+        """
+        )
 
         mock_response = Mock()
         mock_response.text = """Today we're looking at sleep and workplace safety...
@@ -73,11 +75,11 @@ class TestDigestGeneration:
         If you're in a safety-critical job, your gut feeling about being "fine"
         is probably wrong. Get more sleep... your coworkers are counting on it."""
 
-        with patch('digest.GeminiModelWrapper') as MockModel:
+        with patch("digest.GeminiModelWrapper") as MockModel:
             mock_instance = MockModel.return_value
             mock_instance.generate_content.return_value = mock_response
 
-            with patch('google.genai'):
+            with patch("google.genai"):
                 script, metadata = generate_script(doc)
 
         assert "sleep" in script.lower()
@@ -109,7 +111,9 @@ class TestDigestGeneration:
         from digest import _clean_script
 
         # Should NOT remove these (not citations)
-        assert "3000 participants" in _clean_script("The study (about 3000 participants) shows.")
+        assert "3000 participants" in _clean_script(
+            "The study (about 3000 participants) shows."
+        )
         assert "2019-2020" in _clean_script("In the year (2019-2020) there was growth.")
         assert "circa 1985" in _clean_script("Results from (circa 1985) experiments.")
 
@@ -160,15 +164,15 @@ class TestDigestOutput:
         mock_response = Mock()
         mock_response.text = "This is a test digest script about research findings and their implications for the field."
 
-        with patch('digest.GeminiModelWrapper') as MockModel:
+        with patch("digest.GeminiModelWrapper") as MockModel:
             mock_instance = MockModel.return_value
             mock_instance.generate_content.return_value = mock_response
 
-            with patch('google.genai'):
+            with patch("google.genai"):
                 result = generate_digest(
                     doc,
                     output_dir=output_dir,
-                    generate_audio=False  # Skip audio for unit test
+                    generate_audio=False,  # Skip audio for unit test
                 )
 
         assert "script" in result

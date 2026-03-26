@@ -9,4 +9,3 @@ from utils.fallback_services import scrape_page_with_openpull, get_url_context_s
 # Backward compatibility aliases
 OpenPullClient = None  # Use scrape_page_with_openpull() directly
 URLContextFallback = None  # Use scrape_page_with_openpull() directly
-

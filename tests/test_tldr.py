@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 
 # Add engine to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'engine'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 
 
 class TestDocumentReader:
@@ -76,7 +76,8 @@ class TestTLDRGeneration:
 
         # Create test document
         doc = tmp_path / "paper.md"
-        doc.write_text("""
+        doc.write_text(
+            """
         # Research Paper
 
         This paper investigates the impact of sleep deprivation on cognitive performance.
@@ -84,7 +85,8 @@ class TestTLDRGeneration:
         The methodology involved controlled laboratory experiments with 100 participants.
         Results suggest that chronic sleep debt has cumulative effects on brain function.
         Limitations include the artificial lab environment which may not reflect real-world conditions.
-        """)
+        """
+        )
 
         # Mock the Gemini client
         mock_response = Mock()
@@ -96,11 +98,11 @@ class TestTLDRGeneration:
 - **[Implication]**: Chronic sleep debt has cumulative, compounding effects on brain function.
 - **[Limitation]**: Lab conditions may not accurately represent real-world sleep patterns."""
 
-        with patch('tldr.GeminiModelWrapper') as MockModel:
+        with patch("tldr.GeminiModelWrapper") as MockModel:
             mock_instance = MockModel.return_value
             mock_instance.generate_content.return_value = mock_response
 
-            with patch('google.genai'):
+            with patch("google.genai"):
                 tldr = generate_tldr(doc)
 
         assert "## TL;DR" in tldr

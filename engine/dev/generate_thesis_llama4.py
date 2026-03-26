@@ -78,17 +78,21 @@ def patch_tracking():
 
         TRACKING_STATS["input_tokens"] += input_tokens
         TRACKING_STATS["output_tokens"] += output_tokens
-        TRACKING_STATS["total_tokens"] += (input_tokens + output_tokens)
+        TRACKING_STATS["total_tokens"] += input_tokens + output_tokens
 
-        TRACKING_STATS["calls_detail"].append({
-            "call_number": TRACKING_STATS["llm_calls"],
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
-            "duration_seconds": round(call_duration, 2),
-            "timestamp": datetime.now().isoformat()
-        })
+        TRACKING_STATS["calls_detail"].append(
+            {
+                "call_number": TRACKING_STATS["llm_calls"],
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "duration_seconds": round(call_duration, 2),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
-        print(f"  Llama 4 Call #{TRACKING_STATS['llm_calls']}: {input_tokens:,} in + {output_tokens:,} out ({call_duration:.1f}s)")
+        print(
+            f"  Llama 4 Call #{TRACKING_STATS['llm_calls']}: {input_tokens:,} in + {output_tokens:,} out ({call_duration:.1f}s)"
+        )
 
         return response
 
@@ -115,26 +119,28 @@ def print_final_stats():
     print(f"   TOTAL TOKENS:        {TRACKING_STATS['total_tokens']:,}")
 
     # Estimate cost (Llama 4 Maverick on Groq: $0.20/1M input, $0.60/1M output)
-    input_cost = (TRACKING_STATS['input_tokens'] / 1_000_000) * 0.20
-    output_cost = (TRACKING_STATS['output_tokens'] / 1_000_000) * 0.60
+    input_cost = (TRACKING_STATS["input_tokens"] / 1_000_000) * 0.20
+    output_cost = (TRACKING_STATS["output_tokens"] / 1_000_000) * 0.60
     total_cost = input_cost + output_cost
     print(f"   Estimated Cost:      ${total_cost:.4f}")
 
     # Compare to Gemini pricing
-    gemini_input_cost = (TRACKING_STATS['input_tokens'] / 1_000_000) * 0.50
-    gemini_output_cost = (TRACKING_STATS['output_tokens'] / 1_000_000) * 3.00
+    gemini_input_cost = (TRACKING_STATS["input_tokens"] / 1_000_000) * 0.50
+    gemini_output_cost = (TRACKING_STATS["output_tokens"] / 1_000_000) * 3.00
     gemini_total = gemini_input_cost + gemini_output_cost
     savings = gemini_total - total_cost
     print(f"   Gemini would cost:   ${gemini_total:.4f}")
     print(f"   SAVINGS:             ${savings:.4f} ({(savings/gemini_total*100):.0f}%)")
 
-    print(f"\n   Total Duration:      {duration:.1f} seconds ({duration/60:.1f} minutes)")
+    print(
+        f"\n   Total Duration:      {duration:.1f} seconds ({duration/60:.1f} minutes)"
+    )
 
     print("\n" + "=" * 70)
 
     # Save stats to JSON
     stats_file = PROJECT_ROOT / "thesis_llama4_stats.json"
-    with open(stats_file, 'w') as f:
+    with open(stats_file, "w") as f:
         json.dump(TRACKING_STATS, f, indent=2, default=str)
     print(f"Stats saved to: {stats_file}")
 
@@ -179,7 +185,7 @@ def main():
             academic_level="master",
             output_dir=OUTPUT_DIR,
             skip_validation=True,
-            verbose=True
+            verbose=True,
         )
 
         print("\nGeneration complete!")
@@ -189,6 +195,7 @@ def main():
     except Exception as e:
         print(f"\nGeneration failed: {e}")
         import traceback
+
         traceback.print_exc()
 
     # Print final stats regardless of success/failure

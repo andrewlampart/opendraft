@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 PHASES = ["research", "structure", "citations", "compose", "validate", "compile"]
 
 
-def save_checkpoint(ctx: 'DraftContext', phase: str, checkpoint_dir: Path) -> Path:
+def save_checkpoint(ctx: "DraftContext", phase: str, checkpoint_dir: Path) -> Path:
     """
     Save checkpoint after a phase completes.
 
@@ -36,7 +36,6 @@ def save_checkpoint(ctx: 'DraftContext', phase: str, checkpoint_dir: Path) -> Pa
         "version": "1.0",
         "completed_phase": phase,
         "timestamp": datetime.now().isoformat(),
-
         # User inputs (all serializable)
         "topic": ctx.topic,
         "language": ctx.language,
@@ -46,7 +45,6 @@ def save_checkpoint(ctx: 'DraftContext', phase: str, checkpoint_dir: Path) -> Pa
         "skip_validation": ctx.skip_validation,
         "verbose": ctx.verbose,
         "blurb": ctx.blurb,
-
         # Academic metadata
         "author_name": ctx.author_name,
         "institution": ctx.institution,
@@ -56,29 +54,23 @@ def save_checkpoint(ctx: 'DraftContext', phase: str, checkpoint_dir: Path) -> Pa
         "second_examiner": ctx.second_examiner,
         "location": ctx.location,
         "student_id": ctx.student_id,
-
         # Derived values (can be recalculated, but save for convenience)
         "language_name": ctx.language_name,
         "language_instruction": ctx.language_instruction,
         "word_targets": ctx.word_targets,
-
         # Folders as strings
         "folders": {k: str(v) for k, v in ctx.folders.items()},
-
         # Research phase outputs
         "scout_output": ctx.scout_output,
         "scribe_output": ctx.scribe_output,
         "signal_output": ctx.signal_output,
         "scout_result": _serialize_scout_result(ctx.scout_result),
-
         # Structure phase outputs
         "architect_output": ctx.architect_output,
         "formatter_output": ctx.formatter_output,
-
         # Citation management outputs
         "citation_summary": ctx.citation_summary,
         # Note: citation_database is saved separately as bibliography.json
-
         # Compose phase outputs
         "intro_output": ctx.intro_output,
         "lit_review_output": ctx.lit_review_output,
@@ -90,7 +82,9 @@ def save_checkpoint(ctx: 'DraftContext', phase: str, checkpoint_dir: Path) -> Pa
         "appendix_output": ctx.appendix_output,
     }
 
-    checkpoint_path.write_text(json.dumps(checkpoint_data, indent=2, ensure_ascii=False), encoding='utf-8')
+    checkpoint_path.write_text(
+        json.dumps(checkpoint_data, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     logger.info(f"Checkpoint saved after {phase} phase: {checkpoint_path}")
 
     return checkpoint_path
@@ -109,15 +103,17 @@ def load_checkpoint(checkpoint_path: Path) -> Tuple[Dict[str, Any], str]:
     if not checkpoint_path.exists():
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
 
-    checkpoint_data = json.loads(checkpoint_path.read_text(encoding='utf-8'))
+    checkpoint_data = json.loads(checkpoint_path.read_text(encoding="utf-8"))
     completed_phase = checkpoint_data.get("completed_phase", "")
 
-    logger.info(f"Loaded checkpoint from {checkpoint_path}, last phase: {completed_phase}")
+    logger.info(
+        f"Loaded checkpoint from {checkpoint_path}, last phase: {completed_phase}"
+    )
 
     return checkpoint_data, completed_phase
 
 
-def restore_context(ctx: 'DraftContext', checkpoint_data: Dict[str, Any]) -> None:
+def restore_context(ctx: "DraftContext", checkpoint_data: Dict[str, Any]) -> None:
     """
     Restore context state from checkpoint data.
 
@@ -147,7 +143,9 @@ def restore_context(ctx: 'DraftContext', checkpoint_data: Dict[str, Any]) -> Non
 
     # Restore derived values
     ctx.language_name = checkpoint_data.get("language_name", ctx.language_name)
-    ctx.language_instruction = checkpoint_data.get("language_instruction", ctx.language_instruction)
+    ctx.language_instruction = checkpoint_data.get(
+        "language_instruction", ctx.language_instruction
+    )
     ctx.word_targets = checkpoint_data.get("word_targets", ctx.word_targets)
 
     # Restore folders as Path objects
@@ -199,7 +197,9 @@ def get_next_phase(completed_phase: str) -> Optional[str]:
     return None
 
 
-def _serialize_scout_result(scout_result: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def _serialize_scout_result(
+    scout_result: Optional[Dict[str, Any]]
+) -> Optional[Dict[str, Any]]:
     """Serialize scout_result, converting Citation objects to dicts."""
     if scout_result is None:
         return None
@@ -211,14 +211,15 @@ def _serialize_scout_result(scout_result: Optional[Dict[str, Any]]) -> Optional[
     # Convert citations list if present
     if "citations" in result and result["citations"]:
         result["citations"] = [
-            c.to_dict() if hasattr(c, 'to_dict') else c
-            for c in result["citations"]
+            c.to_dict() if hasattr(c, "to_dict") else c for c in result["citations"]
         ]
 
     return result
 
 
-def _deserialize_scout_result(scout_result: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def _deserialize_scout_result(
+    scout_result: Optional[Dict[str, Any]]
+) -> Optional[Dict[str, Any]]:
     """Deserialize scout_result, converting dicts back to Citation objects."""
     if scout_result is None:
         return None

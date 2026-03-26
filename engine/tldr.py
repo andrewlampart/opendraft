@@ -47,7 +47,9 @@ def generate_tldr(
     try:
         from google import genai
     except ImportError:
-        raise ImportError("google-genai required. Install with: pip install google-genai")
+        raise ImportError(
+            "google-genai required. Install with: pip install google-genai"
+        )
 
     document_path = Path(document_path)
     content = read_document(document_path, max_chars=max_chars)
@@ -154,7 +156,7 @@ def main():
     parser.add_argument(
         "--model",
         default="gemini-3-flash-preview",
-        help="Gemini model (default: gemini-3-flash-preview)"
+        help="Gemini model (default: gemini-3-flash-preview)",
     )
 
     args = parser.parse_args()

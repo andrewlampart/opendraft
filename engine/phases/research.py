@@ -20,15 +20,23 @@ def run_research_phase(ctx: DraftContext) -> None:
 
     Mutates ctx: scout_result, scout_output, scribe_output, signal_output
     """
-    from utils.agent_runner import run_agent, rate_limit_delay, research_citations_via_api
+    from utils.agent_runner import (
+        run_agent,
+        rate_limit_delay,
+        research_citations_via_api,
+    )
     from utils.text_utils import smart_truncate
 
     if ctx.verbose:
         print("\n📚 PHASE 1: RESEARCH")
 
     if ctx.tracker:
-        ctx.tracker.log_activity("🔍 Starting academic research", event_type="search", phase="research")
-        ctx.tracker.update_phase("research", progress_percent=5, details={"stage": "starting_research"})
+        ctx.tracker.log_activity(
+            "🔍 Starting academic research", event_type="search", phase="research"
+        )
+        ctx.tracker.update_phase(
+            "research", progress_percent=5, details={"stage": "starting_research"}
+        )
         ctx.tracker.check_cancellation()
 
     # Prepare research topics
@@ -51,17 +59,20 @@ def run_research_phase(ctx: DraftContext) -> None:
     # AGENT: Scout
     # -----------------------------------------------------------------------
     try:
+
         def progress_callback(message: str, event_type: str) -> None:
             if ctx.tracker:
-                ctx.tracker.log_activity(message, event_type=event_type, phase="research")
+                ctx.tracker.log_activity(
+                    message, event_type=event_type, phase="research"
+                )
 
-        min_citations = ctx.word_targets['min_citations']
-        deep_research_min = ctx.word_targets['deep_research_min_sources']
+        min_citations = ctx.word_targets["min_citations"]
+        deep_research_min = ctx.word_targets["deep_research_min_sources"]
 
         ctx.scout_result = research_citations_via_api(
             model=ctx.model,
             research_topics=research_topics,
-            output_path=ctx.folders['research'] / "scout_raw.md",
+            output_path=ctx.folders["research"] / "scout_raw.md",
             target_minimum=min_citations,
             verbose=ctx.verbose,
             use_deep_research=True,
@@ -75,22 +86,30 @@ def run_research_phase(ctx: DraftContext) -> None:
             print(f"\u2705 Scout: {ctx.scout_result['count']} citations found")
 
         if ctx.tracker:
-            for i, citation in enumerate(ctx.scout_result.get('citations', [])[:10]):
+            for i, citation in enumerate(ctx.scout_result.get("citations", [])[:10]):
                 ctx.tracker.log_source_found(
                     title=citation.title,
                     authors=citation.authors[:3] if citation.authors else None,
                     year=citation.year,
                     source_type=citation.api_source or "paper",
-                    doi=getattr(citation, 'doi', None),
-                    url=getattr(citation, 'url', None),
+                    doi=getattr(citation, "doi", None),
+                    url=getattr(citation, "url", None),
                     verified=True,
                 )
-            if len(ctx.scout_result.get('citations', [])) > 10:
-                remaining = len(ctx.scout_result['citations']) - 10
-                ctx.tracker.log_activity(f"...and {remaining} more sources", event_type="found", phase="research")
-            ctx.tracker.update_research(sources_count=ctx.scout_result['count'], phase_detail="Scout completed")
+            if len(ctx.scout_result.get("citations", [])) > 10:
+                remaining = len(ctx.scout_result["citations"]) - 10
+                ctx.tracker.log_activity(
+                    f"...and {remaining} more sources",
+                    event_type="found",
+                    phase="research",
+                )
+            ctx.tracker.update_research(
+                sources_count=ctx.scout_result["count"], phase_detail="Scout completed"
+            )
 
-        ctx.scout_output = (ctx.folders['research'] / "scout_raw.md").read_text(encoding='utf-8')
+        ctx.scout_output = (ctx.folders["research"] / "scout_raw.md").read_text(
+            encoding="utf-8"
+        )
 
     except ValueError as e:
         raise ValueError(f"Insufficient citations for draft generation: {str(e)}")
@@ -101,14 +120,16 @@ def run_research_phase(ctx: DraftContext) -> None:
     # AGENT: Scribe
     # -----------------------------------------------------------------------
     if ctx.tracker:
-        ctx.tracker.log_activity("📝 Summarizing research findings...", event_type="info", phase="research")
+        ctx.tracker.log_activity(
+            "📝 Summarizing research findings...", event_type="info", phase="research"
+        )
 
     ctx.scribe_output = run_agent(
         model=ctx.model,
         name="Scribe - Summarize Papers",
         prompt_path="prompts/01_research/scribe.md",
         user_input=f"Summarize these research findings:\n\n{smart_truncate(ctx.scout_output, max_chars=8000, preserve_json=True)}",
-        save_to=ctx.folders['research'] / "combined_research.md",
+        save_to=ctx.folders["research"] / "combined_research.md",
         skip_validation=ctx.skip_validation,
         verbose=ctx.verbose,
         token_tracker=ctx.token_tracker,
@@ -116,21 +137,29 @@ def run_research_phase(ctx: DraftContext) -> None:
     )
 
     if ctx.tracker:
-        ctx.tracker.log_activity("\u2705 Research summaries complete", event_type="found", phase="research")
+        ctx.tracker.log_activity(
+            "\u2705 Research summaries complete", event_type="found", phase="research"
+        )
 
     # Split scribe output into individual paper files
     if ctx.tracker:
-        ctx.tracker.log_activity("📚 Organizing research papers...", event_type="info", phase="research")
+        ctx.tracker.log_activity(
+            "📚 Organizing research papers...", event_type="info", phase="research"
+        )
 
-    split_scribe_to_papers(ctx.scribe_output, ctx.folders['papers'], verbose=ctx.verbose)
+    split_scribe_to_papers(
+        ctx.scribe_output, ctx.folders["papers"], verbose=ctx.verbose
+    )
     extract_all_citations_as_papers(
-        scout_output_path=ctx.folders['research'] / "scout_raw.md",
-        papers_dir=ctx.folders['papers'],
+        scout_output_path=ctx.folders["research"] / "scout_raw.md",
+        papers_dir=ctx.folders["papers"],
         verbose=ctx.verbose,
     )
 
     if ctx.tracker:
-        ctx.tracker.log_activity("\u2705 All research papers organized", event_type="found", phase="research")
+        ctx.tracker.log_activity(
+            "\u2705 All research papers organized", event_type="found", phase="research"
+        )
 
     rate_limit_delay()
 
@@ -138,14 +167,16 @@ def run_research_phase(ctx: DraftContext) -> None:
     # AGENT: Signal
     # -----------------------------------------------------------------------
     if ctx.tracker:
-        ctx.tracker.log_activity("🔍 Analyzing research gaps...", event_type="info", phase="research")
+        ctx.tracker.log_activity(
+            "🔍 Analyzing research gaps...", event_type="info", phase="research"
+        )
 
     ctx.signal_output = run_agent(
         model=ctx.model,
         name="Signal - Research Gaps",
         prompt_path="prompts/01_research/signal.md",
         user_input=f"Analyze research gaps:\n\n{smart_truncate(ctx.scribe_output, max_chars=8000)}",
-        save_to=ctx.folders['research'] / "research_gaps.md",
+        save_to=ctx.folders["research"] / "research_gaps.md",
         skip_validation=ctx.skip_validation,
         verbose=ctx.verbose,
         token_tracker=ctx.token_tracker,
@@ -153,7 +184,9 @@ def run_research_phase(ctx: DraftContext) -> None:
     )
 
     if ctx.tracker:
-        ctx.tracker.log_activity("\u2705 Research gaps identified", event_type="found", phase="research")
+        ctx.tracker.log_activity(
+            "\u2705 Research gaps identified", event_type="found", phase="research"
+        )
 
     rate_limit_delay()
 
@@ -162,14 +195,17 @@ def run_research_phase(ctx: DraftContext) -> None:
 # Helper functions (only used by research phase)
 # ---------------------------------------------------------------------------
 
+
 def _slugify(text: str, max_length: int = 30) -> str:
     """Convert text to a safe filename slug."""
-    slug = re.sub(r'[^\w\s-]', '', text.lower())
-    slug = re.sub(r'[\s_]+', '_', slug).strip('_')
+    slug = re.sub(r"[^\w\s-]", "", text.lower())
+    slug = re.sub(r"[\s_]+", "_", slug).strip("_")
     return slug[:max_length]
 
 
-def split_scribe_to_papers(scribe_output: str, papers_dir: Path, verbose: bool = True) -> List[Path]:
+def split_scribe_to_papers(
+    scribe_output: str, papers_dir: Path, verbose: bool = True
+) -> List[Path]:
     """
     Split the combined scribe output into individual paper files.
 
@@ -181,7 +217,7 @@ def split_scribe_to_papers(scribe_output: str, papers_dir: Path, verbose: bool =
     created_files = []
 
     paper_pattern = re.compile(
-        r'^##\s*(?:Paper\s*)?(\d+)[:.]\s*(.+?)$',
+        r"^##\s*(?:Paper\s*)?(\d+)[:.]\s*(.+?)$",
         re.MULTILINE,
     )
 
@@ -189,7 +225,7 @@ def split_scribe_to_papers(scribe_output: str, papers_dir: Path, verbose: bool =
 
     if not matches:
         alt_pattern = re.compile(
-            r'^##\s+(.+?)$\n\*\*Authors?:\*\*\s*(.+?)$',
+            r"^##\s+(.+?)$\n\*\*Authors?:\*\*\s*(.+?)$",
             re.MULTILINE,
         )
         matches = list(alt_pattern.finditer(scribe_output))
@@ -212,17 +248,19 @@ def split_scribe_to_papers(scribe_output: str, papers_dir: Path, verbose: bool =
             paper_num = str(i + 1)
             title = f"paper_{i+1}"
 
-        author_match = re.search(r'\*\*Authors?:\*\*\s*([^*\n]+)', paper_content)
-        year_match = re.search(r'\*\*Year:\*\*\s*(\d{4})', paper_content)
+        author_match = re.search(r"\*\*Authors?:\*\*\s*([^*\n]+)", paper_content)
+        year_match = re.search(r"\*\*Year:\*\*\s*(\d{4})", paper_content)
 
-        author = _slugify(author_match.group(1).split(',')[0] if author_match else 'unknown', 15)
-        year = year_match.group(1) if year_match else 'na'
+        author = _slugify(
+            author_match.group(1).split(",")[0] if author_match else "unknown", 15
+        )
+        year = year_match.group(1) if year_match else "na"
         title_slug = _slugify(title, 40)
 
         filename = f"paper_{int(paper_num):03d}_{author}_{year}_{title_slug}.md"
         file_path = papers_dir / filename
 
-        file_path.write_text(paper_content, encoding='utf-8')
+        file_path.write_text(paper_content, encoding="utf-8")
         created_files.append(file_path)
 
     if verbose and created_files:
@@ -246,12 +284,14 @@ def extract_all_citations_as_papers(
 
     if not scout_output_path.exists():
         if verbose:
-            print("   \u26a0\ufe0f  scout_raw.md not found, skipping citation extraction")
+            print(
+                "   \u26a0\ufe0f  scout_raw.md not found, skipping citation extraction"
+            )
         return created_files
 
-    content = scout_output_path.read_text(encoding='utf-8')
+    content = scout_output_path.read_text(encoding="utf-8")
 
-    citation_pattern = r'####\s+\d+\.\s+(.+?)(?=\n####\s+\d+\.|\n---|\Z)'
+    citation_pattern = r"####\s+\d+\.\s+(.+?)(?=\n####\s+\d+\.|\n---|\Z)"
     matches = list(re.finditer(citation_pattern, content, re.DOTALL))
 
     if not matches:
@@ -262,32 +302,36 @@ def extract_all_citations_as_papers(
     if verbose:
         print(f"   📚 Extracting {len(matches)} citations as paper files...")
 
-    existing_papers = {f.name for f in papers_dir.glob('paper_*.md')}
+    existing_papers = {f.name for f in papers_dir.glob("paper_*.md")}
     start_idx = len(existing_papers) + 1
 
     for i, match in enumerate(matches, start=start_idx):
         section = match.group(1).strip()
 
-        title_line = section.split('\n')[0].strip()
-        title = re.sub(r'^\*\*|\*\*$', '', title_line).strip()
+        title_line = section.split("\n")[0].strip()
+        title = re.sub(r"^\*\*|\*\*$", "", title_line).strip()
 
-        author_match = re.search(r'\*\*Authors?\*\*:\s*(.+?)(?:\n|$)', section)
-        authors_str = author_match.group(1).strip() if author_match else 'Unknown'
-        authors = [a.strip() for a in authors_str.split(',')]
+        author_match = re.search(r"\*\*Authors?\*\*:\s*(.+?)(?:\n|$)", section)
+        authors_str = author_match.group(1).strip() if author_match else "Unknown"
+        authors = [a.strip() for a in authors_str.split(",")]
 
-        year_match = re.search(r'\*\*Year\*\*:\s*(\d{4})', section)
-        year = year_match.group(1) if year_match else 'na'
+        year_match = re.search(r"\*\*Year\*\*:\s*(\d{4})", section)
+        year = year_match.group(1) if year_match else "na"
 
-        doi_match = re.search(r'\*\*DOI\*\*:\s*(.+?)(?:\n|$)', section)
+        doi_match = re.search(r"\*\*DOI\*\*:\s*(.+?)(?:\n|$)", section)
         doi = doi_match.group(1).strip() if doi_match else None
 
-        url_match = re.search(r'\*\*URL\*\*:\s*(.+?)(?:\n|$)', section)
+        url_match = re.search(r"\*\*URL\*\*:\s*(.+?)(?:\n|$)", section)
         url = url_match.group(1).strip() if url_match else None
 
-        abstract_match = re.search(r'\*\*Abstract\*\*:\s*(.+?)(?:\n\n|\n\*\*|\Z)', section, re.DOTALL)
+        abstract_match = re.search(
+            r"\*\*Abstract\*\*:\s*(.+?)(?:\n\n|\n\*\*|\Z)", section, re.DOTALL
+        )
         abstract = abstract_match.group(1).strip() if abstract_match else None
 
-        author = authors[0].split()[0] if authors and authors[0] != 'Unknown' else 'unknown'
+        author = (
+            authors[0].split()[0] if authors and authors[0] != "Unknown" else "unknown"
+        )
         title_slug = _slugify(title, 40)
 
         filename = f"paper_{i:03d}_{author}_{year}_{title_slug}.md"
@@ -315,11 +359,13 @@ def extract_all_citations_as_papers(
 *Extracted from citation research database - all {len(matches)} citations available*
 """
 
-        filepath.write_text(paper_content, encoding='utf-8')
+        filepath.write_text(paper_content, encoding="utf-8")
         created_files.append(filepath)
 
     if verbose and created_files:
-        print(f"   \u2705 Extracted {len(created_files)} additional citations as papers")
+        print(
+            f"   \u2705 Extracted {len(created_files)} additional citations as papers"
+        )
         print(f"   📊 Total papers now: {len(list(papers_dir.glob('paper_*.md')))}")
 
     return created_files

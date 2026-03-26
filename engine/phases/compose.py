@@ -31,8 +31,17 @@ def run_compose_phase(ctx: DraftContext) -> None:
         print("\n\u270d\ufe0f  PHASE 3: COMPOSE")
 
     if ctx.tracker:
-        ctx.tracker.log_activity("\u270d\ufe0f Starting chapter composition", event_type="milestone", phase="writing")
-        ctx.tracker.update_phase("writing", progress_percent=35, chapters_count=0, details={"stage": "starting_composition"})
+        ctx.tracker.log_activity(
+            "\u270d\ufe0f Starting chapter composition",
+            event_type="milestone",
+            phase="writing",
+        )
+        ctx.tracker.update_phase(
+            "writing",
+            progress_percent=35,
+            chapters_count=0,
+            details={"stage": "starting_composition"},
+        )
         ctx.tracker.check_cancellation()
         ctx.tracker.send_heartbeat()
 
@@ -68,13 +77,17 @@ def run_compose_phase(ctx: DraftContext) -> None:
 def _write_introduction(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    intro_target = ctx.word_targets['introduction']
+    intro_target = ctx.word_targets["introduction"]
     logger.info("[CHAPTER 1/4] Starting Introduction")
     chapter_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Introduction chapter...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Introduction chapter...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.intro_output = run_agent(
             model=ctx.model,
@@ -92,7 +105,7 @@ Outline:
 2. Include at least 1-2 tables (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "01_introduction.md",
+            save_to=ctx.folders["drafts"] / "01_introduction.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -100,7 +113,9 @@ Outline:
         )
 
         if ctx.tracker:
-            ctx.tracker.log_activity("\u2705 Introduction complete", event_type="complete", phase="writing")
+            ctx.tracker.log_activity(
+                "\u2705 Introduction complete", event_type="complete", phase="writing"
+            )
 
         chapter_time = time.time() - chapter_start
         logger.info(f"[CHAPTER 1/4] \u2705 Complete in {chapter_time:.1f}s")
@@ -117,23 +132,35 @@ Outline:
         ctx.streamer.stream_chapter_complete(
             chapter_num=1,
             chapter_name="Introduction",
-            chapter_path=ctx.folders['drafts'] / "01_introduction.md",
+            chapter_path=ctx.folders["drafts"] / "01_introduction.md",
         )
 
     if ctx.tracker:
-        ctx.tracker.update_phase("writing", progress_percent=40, chapters_count=1, details={"stage": "introduction_complete", "milestone": "introduction_complete"})
+        ctx.tracker.update_phase(
+            "writing",
+            progress_percent=40,
+            chapters_count=1,
+            details={
+                "stage": "introduction_complete",
+                "milestone": "introduction_complete",
+            },
+        )
 
 
 def _write_literature_review(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    lit_review_target = ctx.word_targets['literature_review']
+    lit_review_target = ctx.word_targets["literature_review"]
     logger.info("[SECTION 2.1/4] Starting Literature Review")
     section_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Literature Review section...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Literature Review section...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.lit_review_output = run_agent(
             model=ctx.model,
@@ -178,7 +205,7 @@ Outline context:
 - Research gaps that your draft will address
 
 **Use the abstracts provided to write evidence-based literature review with specific findings, NOT generic statements.**{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "02_1_literature_review.md",
+            save_to=ctx.folders["drafts"] / "02_1_literature_review.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -189,14 +216,23 @@ Outline context:
         logger.info(f"[SECTION 2.1/4] \u2705 Complete in {section_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.log_activity("\u2705 Literature Review complete", event_type="complete", phase="writing")
-            ctx.tracker.update_phase("writing", progress_percent=45, chapters_count=2, details={"stage": "literature_review_complete"})
+            ctx.tracker.log_activity(
+                "\u2705 Literature Review complete",
+                event_type="complete",
+                phase="writing",
+            )
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=45,
+                chapters_count=2,
+                details={"stage": "literature_review_complete"},
+            )
 
         if ctx.streamer:
             ctx.streamer.stream_chapter_complete(
                 chapter_num=2,
                 chapter_name="Literature Review (Section 2.1)",
-                chapter_path=ctx.folders['drafts'] / "02_1_literature_review.md",
+                chapter_path=ctx.folders["drafts"] / "02_1_literature_review.md",
             )
 
     except Exception as e:
@@ -210,13 +246,17 @@ Outline context:
 def _write_methodology(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    methodology_target = ctx.word_targets['methodology']
+    methodology_target = ctx.word_targets["methodology"]
     logger.info("[SECTION 2.2/4] Starting Methodology")
     section_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Methodology section...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Methodology section...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.methodology_output = run_agent(
             model=ctx.model,
@@ -272,7 +312,7 @@ Outline:
 - Study limitations and considerations - theoretical discussion
 
 **Connect to Literature Review:** "To address the gap identified in section 2.1 regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."**{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "02_2_methodology.md",
+            save_to=ctx.folders["drafts"] / "02_2_methodology.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -283,14 +323,21 @@ Outline:
         logger.info(f"[SECTION 2.2/4] \u2705 Complete in {section_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.log_activity("\u2705 Methodology complete", event_type="complete", phase="writing")
-            ctx.tracker.update_phase("writing", progress_percent=50, chapters_count=2, details={"stage": "methodology_complete"})
+            ctx.tracker.log_activity(
+                "\u2705 Methodology complete", event_type="complete", phase="writing"
+            )
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=50,
+                chapters_count=2,
+                details={"stage": "methodology_complete"},
+            )
 
         if ctx.streamer:
             ctx.streamer.stream_chapter_complete(
                 chapter_num=2,
                 chapter_name="Methodology (Section 2.2)",
-                chapter_path=ctx.folders['drafts'] / "02_2_methodology.md",
+                chapter_path=ctx.folders["drafts"] / "02_2_methodology.md",
             )
 
     except Exception as e:
@@ -304,13 +351,17 @@ Outline:
 def _write_results(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    results_target = ctx.word_targets['results']
+    results_target = ctx.word_targets["results"]
     logger.info("[SECTION 2.3/4] Starting Analysis and Results")
     section_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Analysis & Results section...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Analysis & Results section...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.results_output = run_agent(
             model=ctx.model,
@@ -367,7 +418,7 @@ Research data:
 - Comparison with baseline/benchmarks FROM CITED RESEARCH
 
 **Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."**{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "02_3_analysis_results.md",
+            save_to=ctx.folders["drafts"] / "02_3_analysis_results.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -378,14 +429,23 @@ Research data:
         logger.info(f"[SECTION 2.3/4] \u2705 Complete in {section_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.log_activity("\u2705 Analysis & Results complete", event_type="complete", phase="writing")
-            ctx.tracker.update_phase("writing", progress_percent=55, chapters_count=2, details={"stage": "results_complete"})
+            ctx.tracker.log_activity(
+                "\u2705 Analysis & Results complete",
+                event_type="complete",
+                phase="writing",
+            )
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=55,
+                chapters_count=2,
+                details={"stage": "results_complete"},
+            )
 
         if ctx.streamer:
             ctx.streamer.stream_chapter_complete(
                 chapter_num=2,
                 chapter_name="Analysis & Results (Section 2.3)",
-                chapter_path=ctx.folders['drafts'] / "02_3_analysis_results.md",
+                chapter_path=ctx.folders["drafts"] / "02_3_analysis_results.md",
             )
 
     except Exception as e:
@@ -399,13 +459,17 @@ Research data:
 def _write_discussion(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    discussion_target = ctx.word_targets['discussion']
+    discussion_target = ctx.word_targets["discussion"]
     logger.info("[SECTION 2.4/4] Starting Discussion")
     section_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Discussion section...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Discussion section...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.discussion_output = run_agent(
             model=ctx.model,
@@ -466,7 +530,7 @@ You MUST include these explicit phrases to connect back to previous sections:
 **Example opening:** "The findings FROM LITERATURE synthesized in section 2.3 reveal significant insights that both align with and extend the theoretical frameworks discussed in section 2.1. As noted in the literature review (section 2.1), previous studies by [Author] {{cite_001}} demonstrated [X]; research findings {{cite_002}}{{cite_003}} confirm this relationship while also revealing [new insight]."
 
 **Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.**{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "02_4_discussion.md",
+            save_to=ctx.folders["drafts"] / "02_4_discussion.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -477,14 +541,21 @@ You MUST include these explicit phrases to connect back to previous sections:
         logger.info(f"[SECTION 2.4/4] \u2705 Complete in {section_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.log_activity("\u2705 Discussion complete", event_type="complete", phase="writing")
-            ctx.tracker.update_phase("writing", progress_percent=60, chapters_count=2, details={"stage": "discussion_complete"})
+            ctx.tracker.log_activity(
+                "\u2705 Discussion complete", event_type="complete", phase="writing"
+            )
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=60,
+                chapters_count=2,
+                details={"stage": "discussion_complete"},
+            )
 
         if ctx.streamer:
             ctx.streamer.stream_chapter_complete(
                 chapter_num=2,
                 chapter_name="Discussion (Section 2.4)",
-                chapter_path=ctx.folders['drafts'] / "02_4_discussion.md",
+                chapter_path=ctx.folders["drafts"] / "02_4_discussion.md",
             )
 
     except Exception as e:
@@ -500,24 +571,26 @@ def _merge_body_sections(ctx: DraftContext) -> None:
     logger.info("[CHAPTER 2/4] Merging 4 sections into Main Body")
 
     if ctx.tracker:
-        ctx.tracker.log_activity("🔗 Merging sections into Main Body...", event_type="info", phase="writing")
+        ctx.tracker.log_activity(
+            "🔗 Merging sections into Main Body...", event_type="info", phase="writing"
+        )
 
     try:
         merged_content = []
         for section_file in [
-            ctx.folders['drafts'] / "02_1_literature_review.md",
-            ctx.folders['drafts'] / "02_2_methodology.md",
-            ctx.folders['drafts'] / "02_3_analysis_results.md",
-            ctx.folders['drafts'] / "02_4_discussion.md",
+            ctx.folders["drafts"] / "02_1_literature_review.md",
+            ctx.folders["drafts"] / "02_2_methodology.md",
+            ctx.folders["drafts"] / "02_3_analysis_results.md",
+            ctx.folders["drafts"] / "02_4_discussion.md",
         ]:
             if section_file.exists():
-                content = section_file.read_text(encoding='utf-8')
+                content = section_file.read_text(encoding="utf-8")
                 merged_content.append(content)
                 merged_content.append("\n\n")
 
         ctx.body_output = "".join(merged_content)
-        main_body_file = ctx.folders['drafts'] / "02_main_body.md"
-        main_body_file.write_text(ctx.body_output, encoding='utf-8')
+        main_body_file = ctx.folders["drafts"] / "02_main_body.md"
+        main_body_file.write_text(ctx.body_output, encoding="utf-8")
 
         logger.info(f"[CHAPTER 2/4] \u2705 Merged into {main_body_file}")
 
@@ -539,13 +612,17 @@ def _merge_body_sections(ctx: DraftContext) -> None:
 def _write_conclusion(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    conclusion_target = ctx.word_targets['conclusion']
+    conclusion_target = ctx.word_targets["conclusion"]
     logger.info("[CHAPTER 3/4] Starting Conclusion")
     chapter_start = time.time()
 
     try:
         if ctx.tracker:
-            ctx.tracker.log_activity("\u270d\ufe0f Writing Conclusion chapter...", event_type="writing", phase="writing")
+            ctx.tracker.log_activity(
+                "\u270d\ufe0f Writing Conclusion chapter...",
+                event_type="writing",
+                phase="writing",
+            )
 
         ctx.conclusion_output = run_agent(
             model=ctx.model,
@@ -566,7 +643,7 @@ Main findings:
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells
 5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{ctx.language_instruction}""",
-            save_to=ctx.folders['drafts'] / "03_conclusion.md",
+            save_to=ctx.folders["drafts"] / "03_conclusion.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -587,23 +664,33 @@ Main findings:
         ctx.streamer.stream_chapter_complete(
             chapter_num=3,
             chapter_name="Conclusion",
-            chapter_path=ctx.folders['drafts'] / "03_conclusion.md",
+            chapter_path=ctx.folders["drafts"] / "03_conclusion.md",
         )
 
     if ctx.tracker:
-        ctx.tracker.log_activity("\u2705 Conclusion complete", event_type="complete", phase="writing")
-        ctx.tracker.update_phase("writing", progress_percent=70, chapters_count=3, details={"stage": "conclusion_complete", "milestone": "conclusion_complete"})
+        ctx.tracker.log_activity(
+            "\u2705 Conclusion complete", event_type="complete", phase="writing"
+        )
+        ctx.tracker.update_phase(
+            "writing",
+            progress_percent=70,
+            chapters_count=3,
+            details={
+                "stage": "conclusion_complete",
+                "milestone": "conclusion_complete",
+            },
+        )
 
 
 def _write_appendices(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
 
-    appendices_target = ctx.word_targets['appendices']
+    appendices_target = ctx.word_targets["appendices"]
     logger.info("[CHAPTER 4/4] Starting Appendices")
     chapter_start = time.time()
 
     try:
-        if appendices_target == '0':
+        if appendices_target == "0":
             logger.info("  Skipping appendices for research paper format")
             ctx.appendix_output = ""
         else:
@@ -644,7 +731,7 @@ Supplementary references, tools, and resources for further reading.
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells
 5. Each appendix should be standalone and informative{ctx.language_instruction}""",
-                save_to=ctx.folders['drafts'] / "04_appendices.md",
+                save_to=ctx.folders["drafts"] / "04_appendices.md",
                 skip_validation=ctx.skip_validation,
                 verbose=ctx.verbose,
                 token_tracker=ctx.token_tracker,
@@ -655,13 +742,18 @@ Supplementary references, tools, and resources for further reading.
         logger.info(f"[CHAPTER 4/4] \u2705 Complete in {chapter_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.update_phase("writing", progress_percent=75, chapters_count=4, details={"stage": "appendices_complete"})
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=75,
+                chapters_count=4,
+                details={"stage": "appendices_complete"},
+            )
 
-        if ctx.streamer and appendices_target != '0':
+        if ctx.streamer and appendices_target != "0":
             ctx.streamer.stream_chapter_complete(
                 chapter_num=4,
                 chapter_name="Appendices",
-                chapter_path=ctx.folders['drafts'] / "04_appendices.md",
+                chapter_path=ctx.folders["drafts"] / "04_appendices.md",
             )
 
         logger.info("=" * 80)

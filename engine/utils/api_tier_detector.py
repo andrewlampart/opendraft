@@ -36,9 +36,13 @@ class APITierDetector:
             api_key: Gemini API key (uses GOOGLE_API_KEY env var if not provided)
             force_detect: Force fresh detection (ignore cache)
         """
-        self.api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        self.api_key = (
+            api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        )
         if not self.api_key:
-            raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY not found in environment")
+            raise ValueError(
+                "GOOGLE_API_KEY or GEMINI_API_KEY not found in environment"
+            )
 
         self.force_detect = force_detect
         self._cached_result: Optional[Dict] = None
@@ -143,7 +147,7 @@ class APITierDetector:
                 try:
                     # Minimal request to test rate limiting
                     client.models.generate_content(
-                        model='gemini-2.5-flash',
+                        model="gemini-2.5-flash",
                         contents="Say OK",
                         config={"max_output_tokens": 5},
                     )
@@ -159,9 +163,15 @@ class APITierDetector:
                     error_msg = str(e).lower()
 
                     # Check for rate limit error
-                    if "429" in error_msg or "quota" in error_msg or "rate" in error_msg:
+                    if (
+                        "429" in error_msg
+                        or "quota" in error_msg
+                        or "rate" in error_msg
+                    ):
                         if verbose:
-                            print(f"    Request {i+1}/{request_count}: ⚠️  Rate limit hit")
+                            print(
+                                f"    Request {i+1}/{request_count}: ⚠️  Rate limit hit"
+                            )
                         return ("free", 10)  # Definitely free tier
                     else:
                         # Other error - assume free tier to be safe
@@ -195,7 +205,7 @@ class APITierDetector:
             return None
 
         try:
-            with open(self.CACHE_FILE, 'r') as f:
+            with open(self.CACHE_FILE, "r") as f:
                 cached = json.load(f)
 
             # Check if cache is still valid
@@ -227,7 +237,7 @@ class APITierDetector:
         }
 
         try:
-            with open(self.CACHE_FILE, 'w') as f:
+            with open(self.CACHE_FILE, "w") as f:
                 json.dump(cache_data, f, indent=2)
         except Exception as e:
             # Cache write failure is non-critical
@@ -235,7 +245,9 @@ class APITierDetector:
 
 
 # Convenience function for simple usage
-def detect_api_tier(verbose: bool = True, force_detect: bool = False) -> Literal["free", "paid", "custom"]:
+def detect_api_tier(
+    verbose: bool = True, force_detect: bool = False
+) -> Literal["free", "paid", "custom"]:
     """
     Detect Gemini API tier.
 
@@ -287,8 +299,12 @@ if __name__ == "__main__":
     # CLI usage
     import argparse
 
-    parser = argparse.ArgumentParser(description="Detect Gemini API tier and rate limits")
-    parser.add_argument("--force", action="store_true", help="Force fresh detection (ignore cache)")
+    parser = argparse.ArgumentParser(
+        description="Detect Gemini API tier and rate limits"
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Force fresh detection (ignore cache)"
+    )
     parser.add_argument("--quiet", action="store_true", help="Suppress progress output")
 
     args = parser.parse_args()

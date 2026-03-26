@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_formatter_has_url_priority():
     """Test 1: Verify formatter.md has reference URL priority"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Formatter has reference URL priority")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/formatter.md")
 
@@ -53,21 +53,29 @@ def test_formatter_has_url_priority():
 
 def test_formatter_bans_discovery_tools():
     """Test 2: Verify formatter bans discovery tool links"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Formatter bans discovery tool links")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/formatter.md")
 
     checks = [
-        ("Semantic Scholar" in prompt and "semanticscholar.org" in prompt.lower(),
-         "Bans Semantic Scholar links"),
-        ("Google Scholar" in prompt and "scholar.google" in prompt.lower(),
-         "Bans Google Scholar links"),
-        ("ResearchGate" in prompt and "researchgate.net" in prompt.lower(),
-         "Bans ResearchGate links"),
-        ("Academia.edu" in prompt and "academia.edu" in prompt.lower(),
-         "Bans Academia.edu links"),
+        (
+            "Semantic Scholar" in prompt and "semanticscholar.org" in prompt.lower(),
+            "Bans Semantic Scholar links",
+        ),
+        (
+            "Google Scholar" in prompt and "scholar.google" in prompt.lower(),
+            "Bans Google Scholar links",
+        ),
+        (
+            "ResearchGate" in prompt and "researchgate.net" in prompt.lower(),
+            "Bans ResearchGate links",
+        ),
+        (
+            "Academia.edu" in prompt and "academia.edu" in prompt.lower(),
+            "Bans Academia.edu links",
+        ),
         ("discovery tools" in prompt.lower(), "Labels them as discovery tools"),
     ]
 
@@ -85,16 +93,19 @@ def test_formatter_bans_discovery_tools():
 
 def test_formatter_explains_why():
     """Test 3: Verify formatter explains why this matters"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Formatter explains why this matters")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/formatter.md")
 
     checks = [
         ("amateurish" in prompt.lower(), "Explains it looks amateurish"),
-        ("citation destination" in prompt.lower() or "not citation" in prompt.lower(),
-         "Explains these are not citation destinations"),
+        (
+            "citation destination" in prompt.lower()
+            or "not citation" in prompt.lower(),
+            "Explains these are not citation destinations",
+        ),
         ("NEVER use" in prompt, "Uses strong prohibition language"),
     ]
 
@@ -112,9 +123,9 @@ def test_formatter_explains_why():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-008 VALIDATION: Semantic Scholar Links Ban")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "url_priority": test_formatter_has_url_priority(),
@@ -122,9 +133,9 @@ def main():
         "explains_why": test_formatter_explains_why(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

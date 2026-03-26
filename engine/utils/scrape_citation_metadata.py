@@ -42,7 +42,7 @@ def safe_get(obj, key, default=None):
     Returns:
         Value from obj[key] or obj.key, or default if not found
     """
-    if hasattr(obj, 'get'):
+    if hasattr(obj, "get"):
         # Dictionary
         return obj.get(key, default)
     else:
@@ -60,7 +60,7 @@ class MetadataScraper:
         timeout: int = 10,
         user_agent: str = "Academic-Draft-AI/1.0 (Citation Metadata Scraper)",
         rate_limit_delay: float = 1.0,
-        verbose: bool = False
+        verbose: bool = False,
     ):
         """
         Initialize scraper.
@@ -76,10 +76,12 @@ class MetadataScraper:
         self.rate_limit_delay = rate_limit_delay
         self.verbose = verbose
         self.session = requests.Session()
-        self.session.headers.update({'User-Agent': user_agent})
+        self.session.headers.update({"User-Agent": user_agent})
 
     @retry_on_network_error(max_attempts=3, base_delay=2.0, max_delay=30.0)
-    def scrape_publication_date(self, url: str, html_content: Optional[str] = None) -> Optional[int]:
+    def scrape_publication_date(
+        self, url: str, html_content: Optional[str] = None
+    ) -> Optional[int]:
         """
         Scrape publication date from URL.
 
@@ -100,44 +102,46 @@ class MetadataScraper:
         """
         try:
             if html_content:
-                soup = BeautifulSoup(html_content, 'html.parser')
+                soup = BeautifulSoup(html_content, "html.parser")
             else:
                 if self.verbose:
                     logger.info(f"Scraping publication date from: {url[:60]}...")
 
-                response = self.session.get(url, timeout=self.timeout, allow_redirects=True)
+                response = self.session.get(
+                    url, timeout=self.timeout, allow_redirects=True
+                )
                 response.raise_for_status()
-                soup = BeautifulSoup(response.content, 'html.parser')
+                soup = BeautifulSoup(response.content, "html.parser")
 
             # Strategy 1: Open Graph article:published_time
-            og_date = soup.find('meta', property='article:published_time')
-            if og_date and og_date.get('content'):
-                year = self._extract_year(og_date['content'])
+            og_date = soup.find("meta", property="article:published_time")
+            if og_date and og_date.get("content"):
+                year = self._extract_year(og_date["content"])
                 if year:
                     if self.verbose:
                         logger.debug(f"Found Open Graph date: {year}")
                     return year
 
             # Strategy 2: pubdate meta tag
-            pubdate = soup.find('meta', attrs={'name': 'pubdate'})
-            if pubdate and pubdate.get('content'):
-                year = self._extract_year(pubdate['content'])
+            pubdate = soup.find("meta", attrs={"name": "pubdate"})
+            if pubdate and pubdate.get("content"):
+                year = self._extract_year(pubdate["content"])
                 if year:
                     if self.verbose:
                         logger.debug(f"Found pubdate meta tag: {year}")
                     return year
 
             # Strategy 3: Dublin Core date
-            dc_date = soup.find('meta', attrs={'name': 'DC.date'})
-            if dc_date and dc_date.get('content'):
-                year = self._extract_year(dc_date['content'])
+            dc_date = soup.find("meta", attrs={"name": "DC.date"})
+            if dc_date and dc_date.get("content"):
+                year = self._extract_year(dc_date["content"])
                 if year:
                     if self.verbose:
                         logger.debug(f"Found Dublin Core date: {year}")
                     return year
 
             # Strategy 4: JSON-LD structured data
-            json_ld_scripts = soup.find_all('script', type='application/ld+json')
+            json_ld_scripts = soup.find_all("script", type="application/ld+json")
             for script in json_ld_scripts:
                 try:
                     data = json.loads(script.string)
@@ -159,9 +163,9 @@ class MetadataScraper:
                     continue
 
             # Strategy 5: <time> tags
-            time_tags = soup.find_all('time', datetime=True)
+            time_tags = soup.find_all("time", datetime=True)
             for time_tag in time_tags:
-                year = self._extract_year(time_tag['datetime'])
+                year = self._extract_year(time_tag["datetime"])
                 if year:
                     if self.verbose:
                         logger.debug(f"Found time tag date: {year}")
@@ -185,15 +189,22 @@ class MetadataScraper:
             return None
         except requests.exceptions.RequestException as e:
             if self.verbose:
-                logger.warning(f"Request error scraping date from {url[:60]}: {str(e)[:50]}")
+                logger.warning(
+                    f"Request error scraping date from {url[:60]}: {str(e)[:50]}"
+                )
             return None
         except Exception as e:
             if self.verbose:
-                logger.error(f"Unexpected error scraping date from {url[:60]}: {str(e)[:50]}", exc_info=True)
+                logger.error(
+                    f"Unexpected error scraping date from {url[:60]}: {str(e)[:50]}",
+                    exc_info=True,
+                )
             return None
 
     @retry_on_network_error(max_attempts=3, base_delay=2.0, max_delay=30.0)
-    def scrape_authors(self, url: str, html_content: Optional[str] = None) -> Optional[List[str]]:
+    def scrape_authors(
+        self, url: str, html_content: Optional[str] = None
+    ) -> Optional[List[str]]:
         """
         Scrape author names from URL.
 
@@ -213,33 +224,35 @@ class MetadataScraper:
         """
         try:
             if html_content:
-                soup = BeautifulSoup(html_content, 'html.parser')
+                soup = BeautifulSoup(html_content, "html.parser")
             else:
                 if self.verbose:
                     logger.info(f"Scraping authors from: {url[:60]}...")
 
-                response = self.session.get(url, timeout=self.timeout, allow_redirects=True)
+                response = self.session.get(
+                    url, timeout=self.timeout, allow_redirects=True
+                )
                 response.raise_for_status()
-                soup = BeautifulSoup(response.content, 'html.parser')
+                soup = BeautifulSoup(response.content, "html.parser")
 
             authors = []
 
             # Strategy 1: meta name="author"
-            author_tags = soup.find_all('meta', attrs={'name': 'author'})
+            author_tags = soup.find_all("meta", attrs={"name": "author"})
             for tag in author_tags:
-                if tag.get('content'):
-                    author_names = self._parse_author_string(tag['content'])
+                if tag.get("content"):
+                    author_names = self._parse_author_string(tag["content"])
                     authors.extend(author_names)
 
             # Strategy 2: Open Graph article:author
-            og_authors = soup.find_all('meta', property='article:author')
+            og_authors = soup.find_all("meta", property="article:author")
             for tag in og_authors:
-                if tag.get('content'):
-                    author_names = self._parse_author_string(tag['content'])
+                if tag.get("content"):
+                    author_names = self._parse_author_string(tag["content"])
                     authors.extend(author_names)
 
             # Strategy 3: JSON-LD structured data
-            json_ld_scripts = soup.find_all('script', type='application/ld+json')
+            json_ld_scripts = soup.find_all("script", type="application/ld+json")
             for script in json_ld_scripts:
                 try:
                     data = json.loads(script.string)
@@ -257,14 +270,14 @@ class MetadataScraper:
                     continue
 
             # Strategy 4: Dublin Core creator
-            dc_creators = soup.find_all('meta', attrs={'name': 'DC.creator'})
+            dc_creators = soup.find_all("meta", attrs={"name": "DC.creator"})
             for tag in dc_creators:
-                if tag.get('content'):
-                    author_names = self._parse_author_string(tag['content'])
+                if tag.get("content"):
+                    author_names = self._parse_author_string(tag["content"])
                     authors.extend(author_names)
 
             # Strategy 5: rel="author" links
-            author_links = soup.find_all('a', rel='author')
+            author_links = soup.find_all("a", rel="author")
             for link in author_links:
                 if link.get_text():
                     author_names = self._parse_author_string(link.get_text())
@@ -276,7 +289,9 @@ class MetadataScraper:
 
             if authors:
                 if self.verbose:
-                    logger.info(f"Found authors: {', '.join(authors[:3])}{'...' if len(authors) > 3 else ''}")
+                    logger.info(
+                        f"Found authors: {', '.join(authors[:3])}{'...' if len(authors) > 3 else ''}"
+                    )
                 return authors
 
             if self.verbose:
@@ -290,11 +305,16 @@ class MetadataScraper:
             return None
         except requests.exceptions.RequestException as e:
             if self.verbose:
-                logger.warning(f"Request error scraping authors from {url[:60]}: {str(e)[:50]}")
+                logger.warning(
+                    f"Request error scraping authors from {url[:60]}: {str(e)[:50]}"
+                )
             return None
         except Exception as e:
             if self.verbose:
-                logger.error(f"Unexpected error scraping authors from {url[:60]}: {str(e)[:50]}", exc_info=True)
+                logger.error(
+                    f"Unexpected error scraping authors from {url[:60]}: {str(e)[:50]}",
+                    exc_info=True,
+                )
             return None
 
     def scrape_metadata(self, url: str) -> Tuple[Optional[int], Optional[List[str]]]:
@@ -315,7 +335,7 @@ class MetadataScraper:
 
             response = self.session.get(url, timeout=self.timeout, allow_redirects=True)
             response.raise_for_status()
-            html_content = response.content.decode('utf-8', errors='ignore')
+            html_content = response.content.decode("utf-8", errors="ignore")
 
             # Extract both date and authors from same HTML
             year = self.scrape_publication_date(url, html_content)
@@ -325,13 +345,14 @@ class MetadataScraper:
 
         except Exception as e:
             if self.verbose:
-                logger.error(f"Metadata scraping failed for {url[:60]}: {str(e)[:50]}", exc_info=True)
+                logger.error(
+                    f"Metadata scraping failed for {url[:60]}: {str(e)[:50]}",
+                    exc_info=True,
+                )
             return None, None
 
     def scrape_citations(
-        self,
-        citations: List[Dict],
-        filter_condition: Optional[callable] = None
+        self, citations: List[Dict], filter_condition: Optional[callable] = None
     ) -> Tuple[int, int]:
         """
         Scrape metadata for multiple citations.
@@ -348,20 +369,22 @@ class MetadataScraper:
             # Default: Gemini Grounded with domain-name authors or year == 2025
             def default_filter(c):
                 # Handle both dict and Citation object using module-level safe_get
-                api_source = safe_get(c, 'api_source')
-                if api_source != 'Gemini Grounded':
+                api_source = safe_get(c, "api_source")
+                if api_source != "Gemini Grounded":
                     return False
 
                 # Check for domain-name authors
-                authors = safe_get(c, 'authors', [])
+                authors = safe_get(c, "authors", [])
                 if authors and len(authors) > 0:
                     first_author = authors[0]
                     # Domain pattern: xxx.com, xxx.org, etc.
-                    if re.match(r'^[\w\-]+\.(com|org|edu|gov|net|io|ai)$', first_author.lower()):
+                    if re.match(
+                        r"^[\w\-]+\.(com|org|edu|gov|net|io|ai)$", first_author.lower()
+                    ):
                         return True
 
                 # Check for suspicious year (current year = likely placeholder)
-                year = safe_get(c, 'year')
+                year = safe_get(c, "year")
                 current_year = datetime.now().year
                 if year == current_year:
                     return True
@@ -385,17 +408,19 @@ class MetadataScraper:
 
         for i, citation in enumerate(to_scrape, 1):
             # Handle both dict and Citation object using safe_get
-            url = safe_get(citation, 'url')
+            url = safe_get(citation, "url")
             if not url:
                 fail_count += 1
                 continue
 
-            citation_id = safe_get(citation, 'id', 'unknown')
-            old_year = safe_get(citation, 'year', 'N/A')
-            old_authors = safe_get(citation, 'authors', ['N/A'])
+            citation_id = safe_get(citation, "id", "unknown")
+            old_year = safe_get(citation, "year", "N/A")
+            old_authors = safe_get(citation, "authors", ["N/A"])
 
             if self.verbose:
-                logger.info(f"Processing citation [{i}/{len(to_scrape)}]: {citation_id}")
+                logger.info(
+                    f"Processing citation [{i}/{len(to_scrape)}]: {citation_id}"
+                )
                 logger.debug(f"Old metadata: {old_year} - {old_authors}")
 
             # Scrape metadata
@@ -404,25 +429,27 @@ class MetadataScraper:
             # Update citation if we found new metadata
             updated = False
             if year and year != old_year:
-                if hasattr(citation, 'year'):
+                if hasattr(citation, "year"):
                     citation.year = year
                 else:
-                    citation['year'] = year
+                    citation["year"] = year
                 updated = True
 
             if authors and authors != old_authors:
-                if hasattr(citation, 'authors'):
+                if hasattr(citation, "authors"):
                     citation.authors = authors
                 else:
-                    citation['authors'] = authors
+                    citation["authors"] = authors
                 updated = True
 
             if updated:
                 success_count += 1
                 if self.verbose:
-                    new_year = safe_get(citation, 'year', 'N/A')
-                    new_authors = safe_get(citation, 'authors', ['N/A'])
-                    logger.info(f"Successfully updated metadata: {new_year} - {new_authors[:3]}")
+                    new_year = safe_get(citation, "year", "N/A")
+                    new_authors = safe_get(citation, "authors", ["N/A"])
+                    logger.info(
+                        f"Successfully updated metadata: {new_year} - {new_authors[:3]}"
+                    )
             else:
                 fail_count += 1
                 if self.verbose:
@@ -440,7 +467,7 @@ class MetadataScraper:
             return None
 
         # Try to find 4-digit year
-        match = re.search(r'(19|20)\d{2}', date_string)
+        match = re.search(r"(19|20)\d{2}", date_string)
         if match:
             year = int(match.group())
             # Validate year is reasonable (1990-2030)
@@ -452,9 +479,9 @@ class MetadataScraper:
     def _extract_year_from_url(self, url: str) -> Optional[int]:
         """Extract year from URL path (e.g., /2024/03/article)."""
         # Look for /YYYY/ pattern
-        match = re.search(r'/(19|20)\d{2}/', url)
+        match = re.search(r"/(19|20)\d{2}/", url)
         if match:
-            year = int(match.group().strip('/'))
+            year = int(match.group().strip("/"))
             if 1990 <= year <= 2030:
                 return year
         return None
@@ -462,7 +489,7 @@ class MetadataScraper:
     def _extract_year_from_jsonld(self, data: Dict) -> Optional[int]:
         """Extract year from JSON-LD structured data."""
         # Look for datePublished or dateCreated
-        for field in ['datePublished', 'dateCreated', 'dateModified']:
+        for field in ["datePublished", "dateCreated", "dateModified"]:
             if field in data:
                 year = self._extract_year(str(data[field]))
                 if year:
@@ -471,24 +498,24 @@ class MetadataScraper:
 
     def _extract_authors_from_jsonld(self, data: Dict) -> Optional[List[str]]:
         """Extract authors from JSON-LD structured data."""
-        if 'author' not in data:
+        if "author" not in data:
             return None
 
-        author_data = data['author']
+        author_data = data["author"]
         authors = []
 
         # Handle different author formats
         if isinstance(author_data, str):
             authors.extend(self._parse_author_string(author_data))
         elif isinstance(author_data, dict):
-            if 'name' in author_data:
-                authors.extend(self._parse_author_string(author_data['name']))
+            if "name" in author_data:
+                authors.extend(self._parse_author_string(author_data["name"]))
         elif isinstance(author_data, list):
             for author in author_data:
                 if isinstance(author, str):
                     authors.extend(self._parse_author_string(author))
-                elif isinstance(author, dict) and 'name' in author:
-                    authors.extend(self._parse_author_string(author['name']))
+                elif isinstance(author, dict) and "name" in author:
+                    authors.extend(self._parse_author_string(author["name"]))
 
         return authors if authors else None
 
@@ -502,7 +529,7 @@ class MetadataScraper:
 
         # Split by common separators
         # Handle: "John Doe, Jane Smith" or "John Doe and Jane Smith"
-        separators = [' and ', ', ', '; ', ' & ']
+        separators = [" and ", ", ", "; ", " & "]
         for sep in separators:
             if sep in author_str:
                 return [name.strip() for name in author_str.split(sep) if name.strip()]
@@ -516,15 +543,19 @@ class MetadataScraper:
             return False
 
         # Reject URLs (http://, https://, or starts with www.)
-        if author.startswith('http://') or author.startswith('https://') or author.startswith('www.'):
+        if (
+            author.startswith("http://")
+            or author.startswith("https://")
+            or author.startswith("www.")
+        ):
             return False
 
         # Reject domain names
-        if re.match(r'^[\w\-]+\.(com|org|edu|gov|net|io|ai)$', author.lower()):
+        if re.match(r"^[\w\-]+\.(com|org|edu|gov|net|io|ai)$", author.lower()):
             return False
 
         # Reject generic/placeholder names
-        generic = {'unknown', 'n/a', 'anonymous', 'author', 'staff', 'admin', 'editor'}
+        generic = {"unknown", "n/a", "anonymous", "author", "staff", "admin", "editor"}
         if author.lower() in generic:
             return False
 
@@ -533,22 +564,32 @@ class MetadataScraper:
             return False
 
         # Reject Facebook/social media links
-        if 'facebook.com' in author.lower() or 'twitter.com' in author.lower() or 'linkedin.com' in author.lower():
+        if (
+            "facebook.com" in author.lower()
+            or "twitter.com" in author.lower()
+            or "linkedin.com" in author.lower()
+        ):
             return False
 
         return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     import argparse
     from pathlib import Path
 
-    parser = argparse.ArgumentParser(description='Scrape metadata for Gemini Grounded citations')
-    parser.add_argument('database', help='Path to citation_database.json')
-    parser.add_argument('-o', '--output', help='Output path (default: overwrite original)')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
-    parser.add_argument('--all', action='store_true', help='Scrape all citations (not just Gemini)')
+    parser = argparse.ArgumentParser(
+        description="Scrape metadata for Gemini Grounded citations"
+    )
+    parser.add_argument("database", help="Path to citation_database.json")
+    parser.add_argument(
+        "-o", "--output", help="Output path (default: overwrite original)"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    parser.add_argument(
+        "--all", action="store_true", help="Scrape all citations (not just Gemini)"
+    )
 
     args = parser.parse_args()
 
@@ -566,8 +607,7 @@ if __name__ == '__main__':
     scraper = MetadataScraper(verbose=args.verbose)
     filter_fn = None if args.all else None  # Use default filter
     success_count, fail_count = scraper.scrape_citations(
-        citation_database.citations,
-        filter_condition=filter_fn
+        citation_database.citations, filter_condition=filter_fn
     )
 
     # Save updated database

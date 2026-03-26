@@ -22,7 +22,9 @@ def run_validate_phase(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent, rate_limit_delay
 
     logger.info("=" * 80)
-    logger.info("PHASE 3.5: QUALITY ASSURANCE - Narrative consistency & voice unification")
+    logger.info(
+        "PHASE 3.5: QUALITY ASSURANCE - Narrative consistency & voice unification"
+    )
     logger.info("=" * 80)
 
     if ctx.verbose:
@@ -64,9 +66,9 @@ def _build_qa_content(ctx: DraftContext) -> str:
             ("02_3_analysis_results.md", "results"),
             ("02_4_discussion.md", "discussion"),
         ]:
-            fpath = ctx.folders['drafts'] / name
+            fpath = ctx.folders["drafts"] / name
             if fpath.exists():
-                content = fpath.read_text(encoding='utf-8')
+                content = fpath.read_text(encoding="utf-8")
                 if var == "lit_review":
                     lit_review_content = content
                 elif var == "methodology":
@@ -150,7 +152,7 @@ def _run_thread(ctx: DraftContext, qa_content: str) -> None:
 - Do they reference each other properly?
 - Is there narrative continuity?
 - Are research gaps from 2.1 addressed in 2.4?""",
-            save_to=ctx.folders['drafts'] / "qa_narrative_consistency.md",
+            save_to=ctx.folders["drafts"] / "qa_narrative_consistency.md",
             skip_validation=True,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -161,7 +163,12 @@ def _run_thread(ctx: DraftContext, qa_content: str) -> None:
         logger.info(f"[QA 1/3] \u2705 Thread agent complete in {thread_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.update_phase("writing", progress_percent=78, chapters_count=4, details={"stage": "qa_narrative_complete"})
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=78,
+                chapters_count=4,
+                details={"stage": "qa_narrative_complete"},
+            )
 
     except Exception as e:
         logger.warning(f"[QA 1/3] \u26a0\ufe0f  Thread agent failed: {e}")
@@ -192,7 +199,7 @@ def _run_narrator(ctx: DraftContext, qa_content: str) -> None:
 
 **Target:** Academic {ctx.academic_level}-level draft
 **Citation style:** {ctx.citation_database.citation_style}""",
-            save_to=ctx.folders['drafts'] / "qa_voice_unification.md",
+            save_to=ctx.folders["drafts"] / "qa_voice_unification.md",
             skip_validation=True,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -203,7 +210,12 @@ def _run_narrator(ctx: DraftContext, qa_content: str) -> None:
         logger.info(f"[QA 2/3] \u2705 Narrator agent complete in {narrator_time:.1f}s")
 
         if ctx.tracker:
-            ctx.tracker.update_phase("writing", progress_percent=79, chapters_count=4, details={"stage": "qa_narrator_complete"})
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=79,
+                chapters_count=4,
+                details={"stage": "qa_narrator_complete"},
+            )
 
     except Exception as e:
         logger.warning(f"[QA 2/3] \u26a0\ufe0f  Narrator agent failed: {e}")
@@ -214,9 +226,16 @@ def _run_factcheck(ctx: DraftContext, qa_content: str) -> None:
     from utils.agent_runner import run_agent
 
     if not ctx.config.validation.enable_factcheck:
-        logger.info("[QA 3/3] FactCheck disabled (enable_factcheck=False) \u2014 skipping")
+        logger.info(
+            "[QA 3/3] FactCheck disabled (enable_factcheck=False) \u2014 skipping"
+        )
         if ctx.tracker:
-            ctx.tracker.update_phase("writing", progress_percent=80, chapters_count=4, details={"stage": "qa_complete"})
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=80,
+                chapters_count=4,
+                details={"stage": "qa_complete"},
+            )
         return
 
     try:
@@ -239,21 +258,27 @@ def _run_factcheck(ctx: DraftContext, qa_content: str) -> None:
         from pydantic import TypeAdapter
 
         claims_adapter = TypeAdapter(list[FactCheckClaim])
-        validated_claims = claims_adapter.validate_json(strip_json_fences(extraction_output))
+        validated_claims = claims_adapter.validate_json(
+            strip_json_fences(extraction_output)
+        )
         claims = [c.model_dump() for c in validated_claims]
         logger.info(f"[QA 3/3] Extracted {len(claims)} factual claims for verification")
 
         if claims:
             from utils.factcheck_verifier import FactCheckVerifier
 
-            verifier = FactCheckVerifier(api_key=ctx.config.google_api_key, model=ctx.model)
+            verifier = FactCheckVerifier(
+                api_key=ctx.config.google_api_key, model=ctx.model
+            )
             results = verifier.verify_claims(claims)
 
             factcheck_report = verifier.format_report(results)
-            factcheck_path = ctx.folders['drafts'] / "qa_factcheck.md"
-            factcheck_path.write_text(factcheck_report, encoding='utf-8')
+            factcheck_path = ctx.folders["drafts"] / "qa_factcheck.md"
+            factcheck_path.write_text(factcheck_report, encoding="utf-8")
 
-            contradicted_count = sum(1 for r in results if r["verdict"] == "CONTRADICTED")
+            contradicted_count = sum(
+                1 for r in results if r["verdict"] == "CONTRADICTED"
+            )
             supported_count = sum(1 for r in results if r["verdict"] == "SUPPORTED")
 
             factcheck_time = time.time() - qa_start
@@ -263,13 +288,22 @@ def _run_factcheck(ctx: DraftContext, qa_content: str) -> None:
                 f"{contradicted_count} issues found"
             )
         else:
-            logger.info("[QA 3/3] No factual claims extracted \u2014 skipping verification")
+            logger.info(
+                "[QA 3/3] No factual claims extracted \u2014 skipping verification"
+            )
 
         if ctx.tracker:
-            ctx.tracker.update_phase("writing", progress_percent=80, chapters_count=4, details={"stage": "qa_complete"})
+            ctx.tracker.update_phase(
+                "writing",
+                progress_percent=80,
+                chapters_count=4,
+                details={"stage": "qa_complete"},
+            )
 
     except json.JSONDecodeError as e:
-        logger.warning(f"[QA 3/3] \u26a0\ufe0f  FactCheck claim extraction returned invalid JSON: {e}")
+        logger.warning(
+            f"[QA 3/3] \u26a0\ufe0f  FactCheck claim extraction returned invalid JSON: {e}"
+        )
         logger.warning("Continuing without fact-check verification...")
     except Exception as e:
         logger.warning(f"[QA 3/3] \u26a0\ufe0f  FactCheck agent failed: {e}")

@@ -48,7 +48,9 @@ def generate_script(
     try:
         from google import genai
     except ImportError:
-        raise ImportError("google-genai required. Install with: pip install google-genai")
+        raise ImportError(
+            "google-genai required. Install with: pip install google-genai"
+        )
 
     document_path = Path(document_path)
     content = read_document(document_path, max_chars=max_chars)
@@ -92,21 +94,21 @@ Generate a 150-180 word narration script. Output ONLY the script text, nothing e
 def _clean_script(script: str) -> str:
     """Clean script for TTS."""
     # Remove markdown formatting
-    script = re.sub(r'\*\*([^*]+)\*\*', r'\1', script)  # bold
-    script = re.sub(r'\*([^*]+)\*', r'\1', script)  # italic
-    script = re.sub(r'`([^`]+)`', r'\1', script)  # code
+    script = re.sub(r"\*\*([^*]+)\*\*", r"\1", script)  # bold
+    script = re.sub(r"\*([^*]+)\*", r"\1", script)  # italic
+    script = re.sub(r"`([^`]+)`", r"\1", script)  # code
 
     # Remove any headers
-    script = re.sub(r'^#+\s+.*$', '', script, flags=re.MULTILINE)
+    script = re.sub(r"^#+\s+.*$", "", script, flags=re.MULTILINE)
 
     # Remove citations (Author Year pattern only, not general parentheticals)
     # Matches: (Smith 2020), (Smith et al., 2020), (Smith & Jones 2019)
     # Does NOT match: (about 3000 participants), (2019-2020), (circa 1985)
-    script = re.sub(r'\([A-Z][a-zA-Z\s&.,]+(?:19|20)\d{2}[^)]*\)', '', script)
-    script = re.sub(r'\[[^\]]+\]', '', script)
+    script = re.sub(r"\([A-Z][a-zA-Z\s&.,]+(?:19|20)\d{2}[^)]*\)", "", script)
+    script = re.sub(r"\[[^\]]+\]", "", script)
 
     # Clean whitespace
-    script = re.sub(r'\s+', ' ', script)
+    script = re.sub(r"\s+", " ", script)
     return script.strip()
 
 
@@ -178,17 +180,13 @@ def main():
         "--voice",
         default="rachel",
         choices=["rachel", "adam", "josh", "elli", "bella"],
-        help="ElevenLabs voice (default: rachel)"
+        help="ElevenLabs voice (default: rachel)",
     )
-    parser.add_argument(
-        "--no-audio",
-        action="store_true",
-        help="Skip audio generation"
-    )
+    parser.add_argument("--no-audio", action="store_true", help="Skip audio generation")
     parser.add_argument(
         "--model",
         default="gemini-3-flash-preview",
-        help="Gemini model (default: gemini-3-flash-preview)"
+        help="Gemini model (default: gemini-3-flash-preview)",
     )
 
     args = parser.parse_args()

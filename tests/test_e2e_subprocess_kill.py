@@ -176,7 +176,9 @@ class TestTrueE2ESubprocessKill:
         script_path.write_text(MOCK_PIPELINE_SCRIPT)
         return script_path
 
-    def _wait_for_phase(self, output_dir: Path, phase: str, timeout: float = 10.0) -> bool:
+    def _wait_for_phase(
+        self, output_dir: Path, phase: str, timeout: float = 10.0
+    ) -> bool:
         """Wait for a phase to start (marker file appears)."""
         marker = output_dir / f".phase_{phase}_started"
         start = time.time()
@@ -186,7 +188,9 @@ class TestTrueE2ESubprocessKill:
             time.sleep(0.05)
         return False
 
-    def _wait_for_phase_complete(self, output_dir: Path, phase: str, timeout: float = 10.0) -> bool:
+    def _wait_for_phase_complete(
+        self, output_dir: Path, phase: str, timeout: float = 10.0
+    ) -> bool:
         """Wait for a phase to complete."""
         marker = output_dir / f".phase_{phase}_complete"
         start = time.time()
@@ -214,7 +218,9 @@ class TestTrueE2ESubprocessKill:
 
         try:
             # Wait for research to start
-            assert self._wait_for_phase(output_dir, "research", timeout=5), "Research never started"
+            assert self._wait_for_phase(
+                output_dir, "research", timeout=5
+            ), "Research never started"
 
             # Kill immediately (before checkpoint is saved)
             time.sleep(0.1)  # Let it start but not finish
@@ -262,7 +268,9 @@ class TestTrueE2ESubprocessKill:
 
         try:
             # Wait for research to complete
-            assert self._wait_for_phase_complete(output_dir, "research", timeout=10), "Research never completed"
+            assert self._wait_for_phase_complete(
+                output_dir, "research", timeout=10
+            ), "Research never completed"
 
             # Kill before structure completes
             time.sleep(0.1)
@@ -283,9 +291,12 @@ class TestTrueE2ESubprocessKill:
         # Resume should continue from structure
         proc2 = subprocess.Popen(
             [
-                sys.executable, str(mock_script),
-                "--output-dir", str(output_dir),
-                "--resume-from", str(checkpoint_path),
+                sys.executable,
+                str(mock_script),
+                "--output-dir",
+                str(output_dir),
+                "--resume-from",
+                str(checkpoint_path),
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -317,7 +328,9 @@ class TestTrueE2ESubprocessKill:
 
         try:
             # Wait for compose to complete
-            assert self._wait_for_phase_complete(output_dir, "compose", timeout=20), "Compose never completed"
+            assert self._wait_for_phase_complete(
+                output_dir, "compose", timeout=20
+            ), "Compose never completed"
 
             # Kill after compose
             time.sleep(0.1)
@@ -340,9 +353,12 @@ class TestTrueE2ESubprocessKill:
         # Resume
         proc2 = subprocess.Popen(
             [
-                sys.executable, str(mock_script),
-                "--output-dir", str(output_dir),
-                "--resume-from", str(checkpoint_path),
+                sys.executable,
+                str(mock_script),
+                "--output-dir",
+                str(output_dir),
+                "--resume-from",
+                str(checkpoint_path),
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -402,10 +418,15 @@ class TestTrueE2ESubprocessKill:
         checkpoint_path = output_dir / "checkpoint.json"
 
         for attempt in range(max_attempts):
-            resume_arg = ["--resume-from", str(checkpoint_path)] if checkpoint_path.exists() else []
+            resume_arg = (
+                ["--resume-from", str(checkpoint_path)]
+                if checkpoint_path.exists()
+                else []
+            )
 
             proc = subprocess.Popen(
-                [sys.executable, str(mock_script), "--output-dir", str(output_dir)] + resume_arg,
+                [sys.executable, str(mock_script), "--output-dir", str(output_dir)]
+                + resume_arg,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -435,9 +456,12 @@ class TestTrueE2ESubprocessKill:
         # Final run to completion
         proc = subprocess.Popen(
             [
-                sys.executable, str(mock_script),
-                "--output-dir", str(output_dir),
-                "--resume-from", str(checkpoint_path),
+                sys.executable,
+                str(mock_script),
+                "--output-dir",
+                str(output_dir),
+                "--resume-from",
+                str(checkpoint_path),
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -456,7 +480,7 @@ class TestConcurrentCheckpointWrites:
         """Rapid saves should not corrupt checkpoint file."""
         ctx = DraftContext()
         ctx.topic = "Rapid Save Test"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Rapid saves
         for i in range(100):
@@ -480,7 +504,7 @@ class TestConcurrentCheckpointWrites:
                 for i in range(iterations):
                     ctx = DraftContext()
                     ctx.topic = f"Writer {writer_id} iteration {i}"
-                    ctx.folders = {'root': output_dir}
+                    ctx.folders = {"root": output_dir}
                     ctx.scout_output = f"Writer {writer_id} content"
                     save_checkpoint(ctx, "research", output_dir)
                     time.sleep(0.01)
@@ -517,7 +541,7 @@ class TestEdgeCaseSerialization:
     def test_unicode_edge_cases(self, tmp_path):
         """Test various unicode edge cases."""
         ctx = DraftContext()
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Various unicode
         ctx.topic = "Unicode: 日本語 العربية עברית 中文 한국어 Ελληνικά кириллица"
@@ -538,7 +562,7 @@ class TestEdgeCaseSerialization:
     def test_very_long_strings(self, tmp_path):
         """Test with very long strings (>1MB)."""
         ctx = DraftContext()
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         ctx.topic = "Long String Test"
 
         # Create 2MB of content
@@ -555,9 +579,9 @@ class TestEdgeCaseSerialization:
     def test_special_json_characters(self, tmp_path):
         """Test characters that need JSON escaping."""
         ctx = DraftContext()
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
-        ctx.topic = 'Quotes: "double" and \'single\''
+        ctx.topic = "Quotes: \"double\" and 'single'"
         ctx.scout_output = "Backslash: \\ and newline: \n and tab: \t"
         ctx.architect_output = "Control chars: \x00\x01\x02 (null, soh, stx)"
         ctx.intro_output = '{"json": "inside", "nested": {"key": "value"}}'
@@ -575,7 +599,7 @@ class TestEdgeCaseSerialization:
     def test_empty_and_none_fields(self, tmp_path):
         """Test empty strings and None values."""
         ctx = DraftContext()
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         ctx.topic = "Empty Fields Test"
 
         ctx.scout_output = ""
@@ -602,10 +626,16 @@ class TestFlakyDetection:
 
         ctx = DraftContext()
         ctx.academic_level = "research_paper"
-        ctx.word_targets = {'min_citations': 10}
-        ctx.intro_output = "# Introduction\n\n" + "Content word here. " * 100 + "{cite_001}"
-        ctx.body_output = "## Body\n\n" + "Body content word. " * 300 + "{cite_002} {cite_003}"
-        ctx.conclusion_output = "## Conclusion\n\n" + "Final word here. " * 80 + "{cite_004}"
+        ctx.word_targets = {"min_citations": 10}
+        ctx.intro_output = (
+            "# Introduction\n\n" + "Content word here. " * 100 + "{cite_001}"
+        )
+        ctx.body_output = (
+            "## Body\n\n" + "Body content word. " * 300 + "{cite_002} {cite_003}"
+        )
+        ctx.conclusion_output = (
+            "## Conclusion\n\n" + "Final word here. " * 80 + "{cite_004}"
+        )
         ctx.lit_review_output = "Literature review. " * 50
         ctx.methodology_output = "Methods. " * 50
         ctx.results_output = "Results. " * 50
@@ -618,14 +648,16 @@ class TestFlakyDetection:
 
         # All scores should be identical
         unique_scores = set(scores)
-        assert len(unique_scores) == 1, f"Non-deterministic! Got {len(unique_scores)} unique scores: {unique_scores}"
+        assert (
+            len(unique_scores) == 1
+        ), f"Non-deterministic! Got {len(unique_scores)} unique scores: {unique_scores}"
 
     def test_checkpoint_roundtrip_100_runs(self, tmp_path):
         """Checkpoint roundtrip 100 times should be consistent."""
         original_ctx = DraftContext()
         original_ctx.topic = "Consistency Test"
         original_ctx.scout_output = "Test content " * 100
-        original_ctx.folders = {'root': tmp_path}
+        original_ctx.folders = {"root": tmp_path}
 
         for i in range(100):
             save_checkpoint(original_ctx, "research", tmp_path)

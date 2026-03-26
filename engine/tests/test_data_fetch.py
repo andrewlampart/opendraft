@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from utils.data_fetch import DataFetcher, fetch_data, SDMX_PROVIDERS
@@ -37,8 +38,9 @@ class TestDataFetcher:
         """Test SDMX_PROVIDERS has required fields."""
         required_fields = {"name", "url", "description"}
         for key, provider in SDMX_PROVIDERS.items():
-            assert all(field in provider for field in required_fields), \
-                f"Provider {key} missing required fields"
+            assert all(
+                field in provider for field in required_fields
+            ), f"Provider {key} missing required fields"
 
 
 class TestWorldBankSearch:
@@ -75,10 +77,7 @@ class TestWorldBankFetch:
         with tempfile.TemporaryDirectory() as tmpdir:
             fetcher = DataFetcher(Path(tmpdir), timeout=30)
             result = fetcher.fetch_worldbank(
-                "NY.GDP.MKTP.CD",
-                countries="USA",
-                start_year=2020,
-                end_year=2023
+                "NY.GDP.MKTP.CD", countries="USA", start_year=2020, end_year=2023
             )
 
             assert result["status"] == "success"
@@ -91,9 +90,7 @@ class TestWorldBankFetch:
         with tempfile.TemporaryDirectory() as tmpdir:
             fetcher = DataFetcher(Path(tmpdir), timeout=30)
             result = fetcher.fetch_worldbank(
-                "SP.POP.TOTL",
-                countries="DEU",
-                start_year=2020
+                "SP.POP.TOTL", countries="DEU", start_year=2020
             )
 
             if result["status"] == "success":
@@ -145,7 +142,7 @@ class TestFetchDataConvenience:
                 "NY.GDP.MKTP.CD",
                 Path(tmpdir),
                 countries="USA",
-                start_year=2022
+                start_year=2022,
             )
             assert result["status"] == "success"
 

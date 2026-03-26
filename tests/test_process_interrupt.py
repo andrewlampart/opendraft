@@ -31,7 +31,9 @@ from utils.citation_database import Citation
 from phases.context import DraftContext
 
 
-def _simulate_long_running_phase(output_dir: Path, phase: str, duration_secs: float = 2.0):
+def _simulate_long_running_phase(
+    output_dir: Path, phase: str, duration_secs: float = 2.0
+):
     """
     Simulate a long-running phase that saves checkpoint at the end.
     This function runs in a subprocess.
@@ -41,7 +43,7 @@ def _simulate_long_running_phase(output_dir: Path, phase: str, duration_secs: fl
     ctx.topic = "Process Interrupt Test Topic"
     ctx.language = "en"
     ctx.academic_level = "research_paper"
-    ctx.folders = {'root': output_dir}
+    ctx.folders = {"root": output_dir}
 
     # Add phase-specific outputs
     if phase == "research":
@@ -73,7 +75,7 @@ def _simulate_long_running_phase(output_dir: Path, phase: str, duration_secs: fl
 
     # Write completion marker
     marker = output_dir / f".phase_{phase}_complete"
-    marker.write_text("done", encoding='utf-8')
+    marker.write_text("done", encoding="utf-8")
 
 
 def _subprocess_runner(output_dir: str, phase: str, duration: float):
@@ -92,7 +94,7 @@ class TestProcessInterrupt:
         # Start subprocess that will save checkpoint
         proc = Process(
             target=_subprocess_runner,
-            args=(str(tmp_path), "research", 5.0)  # Long enough to kill
+            args=(str(tmp_path), "research", 5.0),  # Long enough to kill
         )
         proc.start()
 
@@ -120,7 +122,7 @@ class TestProcessInterrupt:
         ctx.topic = "Pre-existing Checkpoint Topic"
         ctx.language = "en"
         ctx.academic_level = "research_paper"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         ctx.scout_output = "Research output that must survive"
         ctx.scout_result = {
             "citations": [
@@ -143,7 +145,7 @@ class TestProcessInterrupt:
         # Start subprocess that simulates "structure" phase
         proc = Process(
             target=_subprocess_runner,
-            args=(str(tmp_path), "structure", 10.0)  # Long duration
+            args=(str(tmp_path), "structure", 10.0),  # Long duration
         )
         proc.start()
 
@@ -151,7 +153,7 @@ class TestProcessInterrupt:
         time.sleep(0.5)
 
         # Send SIGKILL (hard kill - no cleanup)
-        if hasattr(signal, 'SIGKILL'):
+        if hasattr(signal, "SIGKILL"):
             os.kill(proc.pid, signal.SIGKILL)
         else:
             proc.kill()
@@ -186,7 +188,7 @@ class TestProcessInterrupt:
         ctx.topic = "Crash Recovery Test"
         ctx.language = "en"
         ctx.academic_level = "research_paper"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         ctx.scout_output = "Research completed successfully"
         ctx.scout_result = {
             "citations": [
@@ -244,7 +246,7 @@ class TestMultipleInterrupts:
         ctx.topic = "Multi-Interrupt Test"
         ctx.language = "en"
         ctx.academic_level = "master"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Cycle 1: research phase
         ctx.scout_output = "Cycle 1 research"
@@ -292,11 +294,11 @@ class TestMultipleInterrupts:
         ctx = DraftContext()
         ctx.topic = "Atomicity Test"
         ctx.scout_output = "Original content"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         save_checkpoint(ctx, "research", tmp_path)
 
         checkpoint_path = tmp_path / "checkpoint.json"
-        original_content = checkpoint_path.read_text(encoding='utf-8')
+        original_content = checkpoint_path.read_text(encoding="utf-8")
         original_size = len(original_content)
 
         # Verify original is valid JSON
@@ -304,15 +306,15 @@ class TestMultipleInterrupts:
 
         # Simulate partial write (truncate to 50%)
         # This simulates what would happen with SIGKILL during write
-        truncated_content = original_content[:original_size // 2]
+        truncated_content = original_content[: original_size // 2]
 
         # Write truncated content (simulating interrupted write)
         backup_path = tmp_path / "checkpoint_backup.json"
-        backup_path.write_text(truncated_content, encoding='utf-8')
+        backup_path.write_text(truncated_content, encoding="utf-8")
 
         # Verify truncated file is invalid JSON
         with pytest.raises(json.JSONDecodeError):
-            json.loads(backup_path.read_text(encoding='utf-8'))
+            json.loads(backup_path.read_text(encoding="utf-8"))
 
         # Original file should still be valid (atomic writes)
         data, _ = load_checkpoint(checkpoint_path)
@@ -326,7 +328,7 @@ class TestConcurrentCheckpoints:
         """Verify only one checkpoint.json exists regardless of phase."""
         ctx = DraftContext()
         ctx.topic = "Single File Test"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Save multiple phases
         for phase in PHASES[:4]:  # research, structure, citations, compose
@@ -360,7 +362,7 @@ class TestCheckpointIntegrity:
         ctx.topic = "Large Context Test"
         ctx.language = "en"
         ctx.academic_level = "phd"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
 
         # Create large outputs (simulate PhD thesis)
         large_text = "This is a substantial paragraph of academic content. " * 500

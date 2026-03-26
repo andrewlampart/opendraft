@@ -11,6 +11,7 @@ from .base import PDFEngine, PDFGenerationOptions, EngineResult
 
 try:
     from weasyprint import HTML, CSS
+
     WEASYPRINT_AVAILABLE = True
 except ImportError:
     WEASYPRINT_AVAILABLE = False
@@ -47,10 +48,7 @@ class WeasyPrintEngine(PDFEngine):
         return WEASYPRINT_AVAILABLE
 
     def generate(
-        self,
-        md_file: Path,
-        output_pdf: Path,
-        options: PDFGenerationOptions
+        self, md_file: Path, output_pdf: Path, options: PDFGenerationOptions
     ) -> EngineResult:
         """
         Generate PDF using WeasyPrint.
@@ -67,21 +65,23 @@ class WeasyPrintEngine(PDFEngine):
         error = self.validate_inputs(md_file, output_pdf)
         if error:
             return EngineResult(
-                success=False,
-                engine_name=self.get_name(),
-                error_message=error
+                success=False, engine_name=self.get_name(), error_message=error
             )
 
         try:
             # Read markdown
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, "r", encoding="utf-8") as f:
                 md_content = f.read()
 
+            # Strip YAML frontmatter (fallback path; Pandoc handles this natively)
+            stripped = md_content.strip()
+            if stripped.startswith("---"):
+                parts = md_content.split("---", 2)
+                if len(parts) >= 3:
+                    md_content = parts[2]
+
             # Convert to HTML
-            html_content = markdown.markdown(
-                md_content,
-                extensions=['extra', 'nl2br']
-            )
+            html_content = markdown.markdown(md_content, extensions=["extra", "nl2br"])
 
             # Generate CSS from options
             css_content = self._generate_css(options)
@@ -94,21 +94,21 @@ class WeasyPrintEngine(PDFEngine):
             warnings = [
                 "WeasyPrint has known font rendering limitations",
                 "Visual OCR may misread 'AI' as 'Al' in serif fonts",
-                "Consider using LibreOffice or Pandoc engines for better quality"
+                "Consider using LibreOffice or Pandoc engines for better quality",
             ]
 
             return EngineResult(
                 success=True,
                 engine_name=self.get_name(),
                 output_path=output_pdf,
-                warnings=warnings
+                warnings=warnings,
             )
 
         except Exception as e:
             return EngineResult(
                 success=False,
                 engine_name=self.get_name(),
-                error_message=f"PDF generation failed: {str(e)}"
+                error_message=f"PDF generation failed: {str(e)}",
             )
 
     def _generate_css(self, options: PDFGenerationOptions) -> str:
@@ -204,12 +204,12 @@ class WeasyPrintEngine(PDFEngine):
         # Add page numbers if requested
         if options.page_numbers:
             position = options.page_number_position
-            if 'center' in position:
-                alignment = 'center'
-            elif 'right' in position:
-                alignment = 'right'
+            if "center" in position:
+                alignment = "center"
+            elif "right" in position:
+                alignment = "right"
             else:
-                alignment = 'left'
+                alignment = "left"
 
             css += f"""
         @page {{

@@ -22,7 +22,7 @@ class TestReviseCommand:
             [sys.executable, "-m", "opendraft.cli", "revise", "--help"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent
+            cwd=Path(__file__).parent.parent,
         )
         assert result.returncode == 0
         assert "Revise an existing draft" in result.stdout
@@ -34,7 +34,7 @@ class TestReviseCommand:
             [sys.executable, "-m", "opendraft.cli", "revise"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent
+            cwd=Path(__file__).parent.parent,
         )
         assert result.returncode != 0
         assert "required" in result.stderr.lower() or "error" in result.stderr.lower()
@@ -42,13 +42,22 @@ class TestReviseCommand:
     def test_revise_nonexistent_path(self):
         """Test that nonexistent path shows error."""
         result = subprocess.run(
-            [sys.executable, "-m", "opendraft.cli", "revise", "/nonexistent/path", "instructions"],
+            [
+                sys.executable,
+                "-m",
+                "opendraft.cli",
+                "revise",
+                "/nonexistent/path",
+                "instructions",
+            ],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent
+            cwd=Path(__file__).parent.parent,
         )
         assert result.returncode == 1
-        assert "not found" in result.stdout.lower() or "not found" in result.stderr.lower()
+        assert (
+            "not found" in result.stdout.lower() or "not found" in result.stderr.lower()
+        )
 
 
 class TestDataCommand:
@@ -60,7 +69,7 @@ class TestDataCommand:
             [sys.executable, "-m", "opendraft.cli", "data", "list"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent
+            cwd=Path(__file__).parent.parent,
         )
         assert result.returncode == 0
         assert "World Bank" in result.stdout
@@ -73,7 +82,7 @@ class TestDataCommand:
             [sys.executable, "-m", "opendraft.cli", "data", "worldbank"],
             capture_output=True,
             text=True,
-            cwd=Path(__file__).parent.parent
+            cwd=Path(__file__).parent.parent,
         )
         assert result.returncode == 1
         assert "required" in result.stdout.lower() or "query" in result.stdout.lower()
@@ -85,7 +94,7 @@ class TestDataCommand:
             capture_output=True,
             text=True,
             cwd=Path(__file__).parent.parent,
-            timeout=60
+            timeout=60,
         )
         # Should either succeed or fail gracefully (network issues)
         assert result.returncode in [0, 1]
@@ -135,11 +144,12 @@ class TestReviseRetryLogic:
     def test_has_circuit_breaker_import(self):
         """Test that circuit breaker is imported."""
         from utils.revise import get_gemini_circuit_breaker
+
         cb = get_gemini_circuit_breaker()
         assert cb is not None
-        assert hasattr(cb, 'allow_request')
-        assert hasattr(cb, 'record_success')
-        assert hasattr(cb, 'record_failure')
+        assert hasattr(cb, "allow_request")
+        assert hasattr(cb, "record_success")
+        assert hasattr(cb, "record_failure")
 
     def test_call_gemini_revise_has_retry_param(self):
         """Test that call_gemini_revise accepts max_retries."""
@@ -147,7 +157,7 @@ class TestReviseRetryLogic:
         from utils.revise import call_gemini_revise
 
         sig = inspect.signature(call_gemini_revise)
-        assert 'max_retries' in sig.parameters
+        assert "max_retries" in sig.parameters
 
 
 if __name__ == "__main__":

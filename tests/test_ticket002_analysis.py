@@ -20,26 +20,38 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_crafter_has_analysis_requirements():
     """Test 1: Verify crafter.md contains analysis requirements"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Crafter prompt has analysis requirements")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
     checks = [
-        ("ANALYSIS SECTIONS MUST CONTAIN ACTUAL ANALYSIS" in prompt, "Has analysis section header"),
+        (
+            "ANALYSIS SECTIONS MUST CONTAIN ACTUAL ANALYSIS" in prompt,
+            "Has analysis section header",
+        ),
         ("QUANTITATIVE COMPARISONS" in prompt, "Requires quantitative comparisons"),
         ("EFFECT SIZE REPORTING" in prompt, "Requires effect size reporting"),
-        ("HETEROGENEITY ACKNOWLEDGMENT" in prompt, "Requires heterogeneity acknowledgment"),
-        ("SYNTHESIS" in prompt and "Not Just Summary" in prompt, "Distinguishes synthesis from summary"),
+        (
+            "HETEROGENEITY ACKNOWLEDGMENT" in prompt,
+            "Requires heterogeneity acknowledgment",
+        ),
+        (
+            "SYNTHESIS" in prompt and "Not Just Summary" in prompt,
+            "Distinguishes synthesis from summary",
+        ),
         ("comparison table" in prompt.lower(), "Mentions comparison tables"),
-        ("HR, AUC" in prompt or "effect size" in prompt.lower(), "Lists specific metrics"),
+        (
+            "HR, AUC" in prompt or "effect size" in prompt.lower(),
+            "Lists specific metrics",
+        ),
         ("Self-Check Before Submitting Analysis" in prompt, "Has self-check checklist"),
     ]
 
@@ -57,17 +69,23 @@ def test_crafter_has_analysis_requirements():
 
 def test_crafter_shows_bad_vs_good_examples():
     """Test 2: Verify crafter shows bad vs good analysis examples"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Crafter shows bad vs good analysis examples")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
     checks = [
         ("BAD (Summary dressed as analysis)" in prompt, "Shows BAD example"),
         ("GOOD (Actual analysis with data)" in prompt, "Shows GOOD example"),
-        ("Studies show that" in prompt and "❌" in prompt, "Flags vague language as bad"),
-        ("HR = " in prompt or "HR per SD" in prompt, "Shows specific metrics in good example"),
+        (
+            "Studies show that" in prompt and "❌" in prompt,
+            "Flags vague language as bad",
+        ),
+        (
+            "HR = " in prompt or "HR per SD" in prompt,
+            "Shows specific metrics in good example",
+        ),
         ("95% CI" in prompt, "Shows confidence intervals in good example"),
     ]
 
@@ -85,16 +103,19 @@ def test_crafter_shows_bad_vs_good_examples():
 
 def test_architect_requires_synthesis_table():
     """Test 3: Verify architect.md requires synthesis table in results"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Architect prompt requires synthesis table")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
     checks = [
         ("Results/Analysis" in prompt, "Results section renamed to Results/Analysis"),
         ("Synthesis Table (REQUIRED)" in prompt, "Synthesis table is required"),
-        ("MUST contain actual quantitative analysis" in prompt, "Emphasizes quantitative analysis"),
+        (
+            "MUST contain actual quantitative analysis" in prompt,
+            "Emphasizes quantitative analysis",
+        ),
         ("Effect Size" in prompt, "Mentions effect sizes in template"),
         ("Analysis Section Checklist" in prompt, "Has checklist for crafter"),
         ("comparison table" in prompt.lower(), "Requires comparison table"),
@@ -114,9 +135,9 @@ def test_architect_requires_synthesis_table():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-002 VALIDATION: Analysis Sections With Actual Analysis")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "crafter_analysis_requirements": test_crafter_has_analysis_requirements(),
@@ -124,9 +145,9 @@ def main():
         "architect_synthesis_table": test_architect_requires_synthesis_table(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

@@ -10,9 +10,14 @@ import os
 import sys
 from typing import Optional, Dict, Any, Tuple, List, Callable
 from pathlib import Path
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeoutError
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    as_completed,
+    TimeoutError as FuturesTimeoutError,
+)
 
 from pydantic import ValidationError
+
 
 # Safe print function that handles broken pipes (worker runs with stdio: 'ignore')
 def safe_print(*args, **kwargs):
@@ -25,13 +30,14 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except (BrokenPipeError, OSError):
         # Pipe is closed (worker running with stdio: 'ignore'), use logger instead
-        message = ' '.join(str(arg) for arg in args)
+        message = " ".join(str(arg) for arg in args)
         logger.debug(message)
         # Prevent further broken pipe errors by redirecting stdout
         try:
-            sys.stdout = open(os.devnull, 'w')
+            sys.stdout = open(os.devnull, "w")
         except:
             pass
+
 
 from .crossref import CrossrefClient
 from .openalex import OpenAlexClient
@@ -49,14 +55,15 @@ from ..models import strip_markdown_json, LLMCitationResponse
 
 # DOI prefixes that indicate preprints (not peer-reviewed)
 PREPRINT_DOI_PREFIXES = [
-    '10.2139/ssrn',       # SSRN
-    '10.48550/arxiv',     # arXiv
-    '10.1101/',           # bioRxiv/medRxiv
-    '10.20944/preprints', # Preprints.org
-    '10.31219/osf',       # OSF Preprints
-    '10.21203/rs',        # Research Square
-    '10.26434/chemrxiv',  # ChemRxiv
+    "10.2139/ssrn",  # SSRN
+    "10.48550/arxiv",  # arXiv
+    "10.1101/",  # bioRxiv/medRxiv
+    "10.20944/preprints",  # Preprints.org
+    "10.31219/osf",  # OSF Preprints
+    "10.21203/rs",  # Research Square
+    "10.26434/chemrxiv",  # ChemRxiv
 ]
+
 
 def is_preprint_doi(doi: str) -> bool:
     """Check if DOI indicates a preprint (not peer-reviewed)."""
@@ -64,6 +71,7 @@ def is_preprint_doi(doi: str) -> bool:
         return False
     doi_lower = doi.lower()
     return any(doi_lower.startswith(prefix) for prefix in PREPRINT_DOI_PREFIXES)
+
 
 # Import existing Citation dataclass
 import sys
@@ -176,7 +184,7 @@ class CitationResearcher:
         self.enable_smart_routing = enable_smart_routing
         # Auto-detect Serper from env if not explicitly set
         if use_serper is None:
-            self.use_serper = os.getenv('USE_SERPER', 'false').lower() == 'true'
+            self.use_serper = os.getenv("USE_SERPER", "false").lower() == "true"
         else:
             self.use_serper = use_serper
         self.verbose = verbose
@@ -197,9 +205,14 @@ class CitationResearcher:
                         validate_urls=False,  # Disable URL validation for speed
                         timeout=15,
                     )
-                    logger.info("Using Serper.dev for web search (replaces Gemini Grounded)")
+                    logger.info(
+                        "Using Serper.dev for web search (replaces Gemini Grounded)"
+                    )
                 except Exception as e:
-                    logger.warning(f"Serper client unavailable: {e}, falling back to Gemini Grounded")
+                    logger.info(
+                        "Serper unavailable (%s); using Gemini Grounded",
+                        e,
+                    )
                     self.use_serper = False
                     self._init_gemini_grounded()
             else:
@@ -226,7 +239,7 @@ class CitationResearcher:
         try:
             self.gemini_grounded = GeminiGroundedClient(
                 validate_urls=False,  # Disable URL validation to prevent timeouts
-                timeout=30  # Reduced timeout for fast gemini-2.5-flash
+                timeout=30,  # Reduced timeout for fast gemini-2.5-flash
             )
         except Exception as e:
             logger.warning(f"Gemini Grounded client unavailable: {e}")
@@ -252,25 +265,39 @@ class CitationResearcher:
             return {}
 
         try:
-            with open(self.CACHE_FILE, 'r', encoding='utf-8') as f:
+            with open(self.CACHE_FILE, "r", encoding="utf-8") as f:
                 cache_data = json.load(f)
 
-            logger.info(f"Loaded {len(cache_data)} cached citations from {self.CACHE_FILE}")
+            logger.info(
+                f"Loaded {len(cache_data)} cached citations from {self.CACHE_FILE}"
+            )
 
             # Convert JSON back to cache format
             cache = {}
             for topic, value in cache_data.items():
                 if value is None:
                     cache[topic] = None
-                elif isinstance(value, list) and len(value) == 2 and isinstance(value[0], dict):
+                elif (
+                    isinstance(value, list)
+                    and len(value) == 2
+                    and isinstance(value[0], dict)
+                ):
                     # Old format: [metadata_dict, source_string] - single citation
                     cache[topic] = (value[0], value[1])
-                elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], list):
+                elif (
+                    isinstance(value, list)
+                    and len(value) > 0
+                    and isinstance(value[0], list)
+                ):
                     # New format: [[metadata1, source1], [metadata2, source2], ...] - multiple citations
                     cache[topic] = [(item[0], item[1]) for item in value]
                 else:
                     # Fallback for unexpected format
-                    cache[topic] = (value[0], value[1]) if isinstance(value, list) and len(value) >= 2 else None
+                    cache[topic] = (
+                        (value[0], value[1])
+                        if isinstance(value, list) and len(value) >= 2
+                        else None
+                    )
 
             return cache
         except Exception as e:
@@ -295,10 +322,14 @@ class CitationResearcher:
                         cache_data[topic] = None
                     elif isinstance(value[0], tuple):
                         # List of (metadata, source) tuples - convert to list of [metadata, source] lists
-                        cache_data[topic] = [[metadata, source] for metadata, source in value]
+                        cache_data[topic] = [
+                            [metadata, source] for metadata, source in value
+                        ]
                     else:
                         # Unexpected format - skip
-                        logger.warning(f"Unexpected cache format for topic '{topic}': {type(value[0])}")
+                        logger.warning(
+                            f"Unexpected cache format for topic '{topic}': {type(value[0])}"
+                        )
                         cache_data[topic] = None
                 elif isinstance(value, tuple) and len(value) == 2:
                     # Single (metadata, source) tuple - for backward compatibility
@@ -306,13 +337,17 @@ class CitationResearcher:
                     cache_data[topic] = [metadata, source]
                 else:
                     # Unexpected format - skip
-                    logger.warning(f"Unexpected cache format for topic '{topic}': {type(value)}")
+                    logger.warning(
+                        f"Unexpected cache format for topic '{topic}': {type(value)}"
+                    )
                     cache_data[topic] = None
 
-            with open(self.CACHE_FILE, 'w', encoding='utf-8') as f:
+            with open(self.CACHE_FILE, "w", encoding="utf-8") as f:
                 json.dump(cache_data, f, indent=2, ensure_ascii=False)
 
-            logger.debug(f"Saved {len(cache_data)} citations to cache file {self.CACHE_FILE}")
+            logger.debug(
+                f"Saved {len(cache_data)} citations to cache file {self.CACHE_FILE}"
+            )
         except Exception as e:
             logger.error(f"Failed to save cache to {self.CACHE_FILE}: {e}")
 
@@ -350,9 +385,10 @@ class CitationResearcher:
                     citations.append(citation)
             return citations
 
-
         if self.verbose:
-                    safe_print(f"  🔍 Researching: {topic[:70]}{'...' if len(topic) > 70 else ''}")
+            safe_print(
+                f"  🔍 Researching: {topic[:70]}{'...' if len(topic) > 70 else ''}"
+            )
 
         # Classify query and determine API chain
         api_chain = None
@@ -360,21 +396,23 @@ class CitationResearcher:
             classification = self.query_router.classify_and_route(topic)
             api_chain = classification.api_chain
             if self.verbose:
-                safe_print(f"    📊 Query type: {classification.query_type} (confidence: {classification.confidence:.2f})")
+                safe_print(
+                    f"    📊 Query type: {classification.query_type} (confidence: {classification.confidence:.2f})"
+                )
         else:
             # Use original fallback chain if smart routing disabled
-            api_chain = ['crossref', 'openalex', 'semantic_scholar', 'gemini_grounded']
+            api_chain = ["crossref", "openalex", "semantic_scholar", "gemini_grounded"]
 
         # Filter out disabled APIs from chain (Day 1 Fix)
         enabled_chain = []
         for api_name in api_chain:
-            if api_name == 'crossref' and not self.enable_crossref:
+            if api_name == "crossref" and not self.enable_crossref:
                 continue
-            if api_name == 'openalex' and not self.enable_openalex:
+            if api_name == "openalex" and not self.enable_openalex:
                 continue
-            if api_name == 'semantic_scholar' and not self.enable_semantic_scholar:
+            if api_name == "semantic_scholar" and not self.enable_semantic_scholar:
                 continue
-            if api_name == 'gemini_grounded' and not self.enable_gemini_grounded:
+            if api_name == "gemini_grounded" and not self.enable_gemini_grounded:
                 continue
             enabled_chain.append(api_name)
 
@@ -383,36 +421,37 @@ class CitationResearcher:
         if self.verbose and api_chain:
             safe_print(f"    🔀 API chain: {' → '.join(api_chain)}")
 
-
         # Collect ALL valid results from API chain
         valid_results: List[Tuple[Dict[str, Any], str]] = []
-
 
         # Determine if we should use parallel queries
         # Use parallel for academic/journal queries where multiple academic APIs are in chain
         use_parallel = (
-            'crossref' in api_chain
-            and ('openalex' in api_chain or 'semantic_scholar' in api_chain)
+            "crossref" in api_chain
+            and ("openalex" in api_chain or "semantic_scholar" in api_chain)
             and self.enable_crossref
         )
 
         if use_parallel:
             # Query ALL academic APIs in parallel for maximum source diversity
-            parallel_apis = ['crossref']
+            parallel_apis = ["crossref"]
             if self.enable_openalex:
-                parallel_apis.append('openalex')
+                parallel_apis.append("openalex")
             if self.enable_semantic_scholar:
-                parallel_apis.append('semantic_scholar')
+                parallel_apis.append("semantic_scholar")
             if self.enable_gemini_grounded:
-                parallel_apis.append('gemini_grounded')
-
+                parallel_apis.append("gemini_grounded")
 
             # Report progress for parallel search
             self._report_progress("Querying academic APIs in parallel...", "search")
 
             if self.verbose:
-                apis_str = " + ".join([a.replace("_", " ").title() for a in parallel_apis])
-                safe_print(f"    → Querying {apis_str} in parallel...", end=" ", flush=True)
+                apis_str = " + ".join(
+                    [a.replace("_", " ").title() for a in parallel_apis]
+                )
+                safe_print(
+                    f"    → Querying {apis_str} in parallel...", end=" ", flush=True
+                )
             results: List[Tuple[Optional[Dict[str, Any]], str]] = []
 
             with ThreadPoolExecutor(max_workers=4) as executor:
@@ -421,7 +460,9 @@ class CitationResearcher:
                     for api in parallel_apis
                 }
                 try:
-                    for future in as_completed(futures, timeout=30):  # 30s timeout - balanced for Gemini
+                    for future in as_completed(
+                        futures, timeout=30
+                    ):  # 30s timeout - balanced for Gemini
                         try:
                             result = future.result()
                             results.append(result)
@@ -431,7 +472,9 @@ class CitationResearcher:
                             results.append((None, api))
                 except (TimeoutError, FuturesTimeoutError):
                     # Graceful degradation: use whatever results we have
-                    logger.warning(f"Parallel query timeout - {len(results)} of {len(futures)} APIs responded")
+                    logger.warning(
+                        f"Parallel query timeout - {len(results)} of {len(futures)} APIs responded"
+                    )
                     # Collect any completed futures
                     for future, api in futures.items():
                         if future.done():
@@ -444,11 +487,14 @@ class CitationResearcher:
 
             # Collect ALL valid results (not just best one)
             for result_metadata, result_source in results:
-                if result_metadata and (result_metadata.get('doi') or result_metadata.get('url')):
+                if result_metadata and (
+                    result_metadata.get("doi") or result_metadata.get("url")
+                ):
                     valid_results.append((result_metadata, result_source))
                     # Update source usage count for logging
-                    self.source_usage_count[result_source] = self.source_usage_count.get(result_source, 0) + 1
-
+                    self.source_usage_count[result_source] = (
+                        self.source_usage_count.get(result_source, 0) + 1
+                    )
 
             if valid_results:
                 if self.verbose:
@@ -460,15 +506,19 @@ class CitationResearcher:
         else:
             # Sequential fallback for industry queries or when parallel not applicable
             for api_name in api_chain:
-                if api_name == 'crossref' and self.enable_crossref:
-                    self._report_progress("Querying Crossref for peer-reviewed papers...", "search")
+                if api_name == "crossref" and self.enable_crossref:
+                    self._report_progress(
+                        "Querying Crossref for peer-reviewed papers...", "search"
+                    )
                     if self.verbose:
                         safe_print(f"    → Trying Crossref API...", end=" ", flush=True)
                     try:
                         metadata = self.crossref.search_paper(topic)
-                        if metadata and (metadata.get('doi') or metadata.get('url')):
+                        if metadata and (metadata.get("doi") or metadata.get("url")):
                             valid_results.append((metadata, "Crossref"))
-                            self.source_usage_count["Crossref"] = self.source_usage_count.get("Crossref", 0) + 1
+                            self.source_usage_count["Crossref"] = (
+                                self.source_usage_count.get("Crossref", 0) + 1
+                            )
                             if self.verbose:
                                 safe_print(f"✓")
                         else:
@@ -479,15 +529,19 @@ class CitationResearcher:
                             safe_print(f"✗ Error: {e}")
                         logger.error(f"Crossref error: {e}")
 
-                elif api_name == 'openalex' and self.enable_openalex:
-                    self._report_progress("Searching OpenAlex (250M+ works)...", "search")
+                elif api_name == "openalex" and self.enable_openalex:
+                    self._report_progress(
+                        "Searching OpenAlex (250M+ works)...", "search"
+                    )
                     if self.verbose:
                         safe_print(f"    → Trying OpenAlex API...", end=" ", flush=True)
                     try:
                         metadata = self.openalex.search_paper(topic)
-                        if metadata and (metadata.get('doi') or metadata.get('url')):
+                        if metadata and (metadata.get("doi") or metadata.get("url")):
                             valid_results.append((metadata, "OpenAlex"))
-                            self.source_usage_count["OpenAlex"] = self.source_usage_count.get("OpenAlex", 0) + 1
+                            self.source_usage_count["OpenAlex"] = (
+                                self.source_usage_count.get("OpenAlex", 0) + 1
+                            )
                             if self.verbose:
                                 safe_print(f"✓")
                         else:
@@ -498,15 +552,21 @@ class CitationResearcher:
                             safe_print(f"✗ Error: {e}")
                         logger.error(f"OpenAlex error: {e}")
 
-                elif api_name == 'semantic_scholar' and self.enable_semantic_scholar:
-                    self._report_progress("Searching Semantic Scholar (200M+ papers)...", "search")
+                elif api_name == "semantic_scholar" and self.enable_semantic_scholar:
+                    self._report_progress(
+                        "Searching Semantic Scholar (200M+ papers)...", "search"
+                    )
                     if self.verbose:
-                        safe_print(f"    → Trying Semantic Scholar API...", end=" ", flush=True)
+                        safe_print(
+                            f"    → Trying Semantic Scholar API...", end=" ", flush=True
+                        )
                     try:
                         metadata = self.semantic_scholar.search_paper(topic)
-                        if metadata and (metadata.get('doi') or metadata.get('url')):
+                        if metadata and (metadata.get("doi") or metadata.get("url")):
                             valid_results.append((metadata, "Semantic Scholar"))
-                            self.source_usage_count["Semantic Scholar"] = self.source_usage_count.get("Semantic Scholar", 0) + 1
+                            self.source_usage_count["Semantic Scholar"] = (
+                                self.source_usage_count.get("Semantic Scholar", 0) + 1
+                            )
                             if self.verbose:
                                 safe_print(f"✓")
                         else:
@@ -517,17 +577,27 @@ class CitationResearcher:
                             safe_print(f"✗ Error: {e}")
                         logger.error(f"Semantic Scholar error: {e}")
 
-                elif api_name == 'gemini_grounded' and self.enable_gemini_grounded:
+                elif api_name == "gemini_grounded" and self.enable_gemini_grounded:
                     self._report_progress("AI-powered academic search...", "search")
                     if self.verbose:
-                        search_name = "Serper" if self.use_serper else "Gemini Grounded (Google Search)"
-                        safe_print(f"    → Trying {search_name}...", end=" ", flush=True)
+                        search_name = (
+                            "Serper"
+                            if self.use_serper
+                            else "Gemini Grounded (Google Search)"
+                        )
+                        safe_print(
+                            f"    → Trying {search_name}...", end=" ", flush=True
+                        )
                     try:
                         metadata = self.gemini_grounded.search_paper(topic)
-                        if metadata and (metadata.get('doi') or metadata.get('url')):
-                            source_name = "Serper" if self.use_serper else "Gemini Grounded"
+                        if metadata and (metadata.get("doi") or metadata.get("url")):
+                            source_name = (
+                                "Serper" if self.use_serper else "Gemini Grounded"
+                            )
                             valid_results.append((metadata, source_name))
-                            self.source_usage_count[source_name] = self.source_usage_count.get(source_name, 0) + 1
+                            self.source_usage_count[source_name] = (
+                                self.source_usage_count.get(source_name, 0) + 1
+                            )
                             if self.verbose:
                                 safe_print(f"✓")
                         else:
@@ -544,7 +614,7 @@ class CitationResearcher:
                 safe_print(f"    → Trying Gemini LLM fallback...", end=" ", flush=True)
             try:
                 metadata = self._llm_research(topic)
-                if metadata and (metadata.get('doi') or metadata.get('url')):
+                if metadata and (metadata.get("doi") or metadata.get("url")):
                     valid_results.append((metadata, "Gemini LLM"))
                     if self.verbose:
                         safe_print(f"✓")
@@ -574,8 +644,14 @@ class CitationResearcher:
                     citations.append(citation)
                     if self.verbose:
                         # Check if preprint and show visible marker (Fix 3)
-                        preprint_marker = " ⚠️ [PREPRINT]" if citation.source_type == "preprint" else ""
-                        safe_print(f"    ✓ Found: {citation.authors[0]} et al. ({citation.year}) [from {source}]{preprint_marker}")
+                        preprint_marker = (
+                            " ⚠️ [PREPRINT]"
+                            if citation.source_type == "preprint"
+                            else ""
+                        )
+                        safe_print(
+                            f"    ✓ Found: {citation.authors[0]} et al. ({citation.year}) [from {source}]{preprint_marker}"
+                        )
                         if citation.doi:
                             safe_print(f"      DOI: {citation.doi}")
                         elif citation.url:
@@ -586,7 +662,9 @@ class CitationResearcher:
 
         return citations
 
-    def _create_citation(self, metadata: Dict[str, Any], source: Optional[str] = None) -> Optional[Citation]:
+    def _create_citation(
+        self, metadata: Dict[str, Any], source: Optional[str] = None
+    ) -> Optional[Citation]:
         """
         Create Citation object from metadata.
 
@@ -601,7 +679,9 @@ class CitationResearcher:
             # Validate required fields
             # For web sources (Gemini Grounded), only title and URL are required
             # Academic sources need authors and year
-            is_web_source = source == "Gemini Grounded" or metadata.get("source_type") == "website"
+            is_web_source = (
+                source == "Gemini Grounded" or metadata.get("source_type") == "website"
+            )
 
             if is_web_source:
                 # Web sources: require title + (URL or DOI)
@@ -617,119 +697,130 @@ class CitationResearcher:
                     url = metadata.get("url", "")
                     if url:
                         from urllib.parse import urlparse
-                        domain = urlparse(url).netloc.lower().replace('www.', '')
-                        
+
+                        domain = urlparse(url).netloc.lower().replace("www.", "")
+
                         # Map known domains to proper organization names
                         DOMAIN_TO_ORG = {
                             # Consulting firms
-                            'mckinsey.com': 'McKinsey & Company',
-                            'bcg.com': 'Boston Consulting Group',
-                            'bain.com': 'Bain & Company',
-                            'deloitte.com': 'Deloitte',
-                            'pwc.com': 'PwC',
-                            'kpmg.com': 'KPMG',
-                            'ey.com': 'Ernst & Young',
-                            'accenture.com': 'Accenture',
+                            "mckinsey.com": "McKinsey & Company",
+                            "bcg.com": "Boston Consulting Group",
+                            "bain.com": "Bain & Company",
+                            "deloitte.com": "Deloitte",
+                            "pwc.com": "PwC",
+                            "kpmg.com": "KPMG",
+                            "ey.com": "Ernst & Young",
+                            "accenture.com": "Accenture",
                             # Industry analysts
-                            'gartner.com': 'Gartner',
-                            'forrester.com': 'Forrester',
-                            'idc.com': 'IDC',
-                            'statista.com': 'Statista',
+                            "gartner.com": "Gartner",
+                            "forrester.com": "Forrester",
+                            "idc.com": "IDC",
+                            "statista.com": "Statista",
                             # International organizations
-                            'who.int': 'World Health Organization',
-                            'oecd.org': 'OECD',
-                            'worldbank.org': 'World Bank',
-                            'un.org': 'United Nations',
-                            'imf.org': 'IMF',
-                            'wto.org': 'World Trade Organization',
-                            'unesco.org': 'UNESCO',
+                            "who.int": "World Health Organization",
+                            "oecd.org": "OECD",
+                            "worldbank.org": "World Bank",
+                            "un.org": "United Nations",
+                            "imf.org": "IMF",
+                            "wto.org": "World Trade Organization",
+                            "unesco.org": "UNESCO",
                             # US Government agencies
-                            'nist.gov': 'NIST',
-                            'nih.gov': 'NIH',
-                            'cdc.gov': 'CDC',
-                            'fda.gov': 'FDA',
-                            'epa.gov': 'EPA',
-                            'nasa.gov': 'NASA',
-                            'nsf.gov': 'NSF',
-                            'energy.gov': 'U.S. Department of Energy',
-                            'state.gov': 'U.S. Department of State',
-                            'whitehouse.gov': 'White House',
-                            'congress.gov': 'U.S. Congress',
-                            'gao.gov': 'GAO',
-                            'cbo.gov': 'CBO',
+                            "nist.gov": "NIST",
+                            "nih.gov": "NIH",
+                            "cdc.gov": "CDC",
+                            "fda.gov": "FDA",
+                            "epa.gov": "EPA",
+                            "nasa.gov": "NASA",
+                            "nsf.gov": "NSF",
+                            "energy.gov": "U.S. Department of Energy",
+                            "state.gov": "U.S. Department of State",
+                            "whitehouse.gov": "White House",
+                            "congress.gov": "U.S. Congress",
+                            "gao.gov": "GAO",
+                            "cbo.gov": "CBO",
                             # EU institutions
-                            'europa.eu': 'European Commission',
-                            'europarl.europa.eu': 'European Parliament',
-                            'ecb.europa.eu': 'European Central Bank',
+                            "europa.eu": "European Commission",
+                            "europarl.europa.eu": "European Parliament",
+                            "ecb.europa.eu": "European Central Bank",
                             # Think tanks & research institutes
-                            'brookings.edu': 'Brookings Institution',
-                            'rand.org': 'RAND Corporation',
-                            'cfr.org': 'Council on Foreign Relations',
-                            'carnegieendowment.org': 'Carnegie Endowment',
-                            'csis.org': 'CSIS',
-                            'heritage.org': 'Heritage Foundation',
-                            'aei.org': 'American Enterprise Institute',
-                            'pewresearch.org': 'Pew Research Center',
-                            'urban.org': 'Urban Institute',
-                            'cato.org': 'Cato Institute',
+                            "brookings.edu": "Brookings Institution",
+                            "rand.org": "RAND Corporation",
+                            "cfr.org": "Council on Foreign Relations",
+                            "carnegieendowment.org": "Carnegie Endowment",
+                            "csis.org": "CSIS",
+                            "heritage.org": "Heritage Foundation",
+                            "aei.org": "American Enterprise Institute",
+                            "pewresearch.org": "Pew Research Center",
+                            "urban.org": "Urban Institute",
+                            "cato.org": "Cato Institute",
                             # AI research centers
-                            'cset.georgetown.edu': 'Georgetown CSET',
-                            'hai.stanford.edu': 'Stanford HAI',
-                            'ainowinstitute.org': 'AI Now Institute',
+                            "cset.georgetown.edu": "Georgetown CSET",
+                            "hai.stanford.edu": "Stanford HAI",
+                            "ainowinstitute.org": "AI Now Institute",
                             # Top universities (research centers)
-                            'mit.edu': 'MIT',
-                            'stanford.edu': 'Stanford University',
-                            'harvard.edu': 'Harvard University',
-                            'berkeley.edu': 'UC Berkeley',
-                            'ox.ac.uk': 'University of Oxford',
-                            'cam.ac.uk': 'University of Cambridge',
-                            'princeton.edu': 'Princeton University',
-                            'yale.edu': 'Yale University',
-                            'columbia.edu': 'Columbia University',
-                            'cmu.edu': 'Carnegie Mellon University',
+                            "mit.edu": "MIT",
+                            "stanford.edu": "Stanford University",
+                            "harvard.edu": "Harvard University",
+                            "berkeley.edu": "UC Berkeley",
+                            "ox.ac.uk": "University of Oxford",
+                            "cam.ac.uk": "University of Cambridge",
+                            "princeton.edu": "Princeton University",
+                            "yale.edu": "Yale University",
+                            "columbia.edu": "Columbia University",
+                            "cmu.edu": "Carnegie Mellon University",
                             # News & journalism
-                            'reuters.com': 'Reuters',
-                            'bbc.com': 'BBC',
-                            'nytimes.com': 'New York Times',
-                            'ft.com': 'Financial Times',
-                            'economist.com': 'The Economist',
-                            'wsj.com': 'Wall Street Journal',
+                            "reuters.com": "Reuters",
+                            "bbc.com": "BBC",
+                            "nytimes.com": "New York Times",
+                            "ft.com": "Financial Times",
+                            "economist.com": "The Economist",
+                            "wsj.com": "Wall Street Journal",
                             # Tech giants (official research)
-                            'openai.com': 'OpenAI',
-                            'deepmind.com': 'DeepMind',
-                            'anthropic.com': 'Anthropic',
-                            'research.google': 'Google Research',
-                            'ai.google': 'Google AI',
-                            'research.microsoft.com': 'Microsoft Research',
-                            'research.ibm.com': 'IBM Research',
-                            'research.facebook.com': 'Meta AI',
+                            "openai.com": "OpenAI",
+                            "deepmind.com": "DeepMind",
+                            "anthropic.com": "Anthropic",
+                            "research.google": "Google Research",
+                            "ai.google": "Google AI",
+                            "research.microsoft.com": "Microsoft Research",
+                            "research.ibm.com": "IBM Research",
+                            "research.facebook.com": "Meta AI",
                         }
-                        
+
                         # Try exact match first, then suffix match for subdomains
                         org_name = DOMAIN_TO_ORG.get(domain)
                         if not org_name:
                             # Suffix match: energy.ec.europa.eu -> europa.eu -> European Commission
                             for known_domain, org in DOMAIN_TO_ORG.items():
-                                if domain.endswith('.' + known_domain) or domain == known_domain:
+                                if (
+                                    domain.endswith("." + known_domain)
+                                    or domain == known_domain
+                                ):
                                     org_name = org
                                     break
-                        
+
                         if org_name:
                             metadata["authors"] = [org_name]
                         else:
                             # REJECT unknown domains - don't use domain as author
                             # This prevents "issuu.com et al." citations
-                            logger.debug(f"Rejecting web source: unknown org for domain '{domain}'")
+                            logger.debug(
+                                f"Rejecting web source: unknown org for domain '{domain}'"
+                            )
                             return None
                     else:
                         metadata["authors"] = ["Web Source"]
                 if not metadata.get("year"):
                     # Use current year for undated web sources
                     from datetime import datetime
+
                     metadata["year"] = datetime.now().year
             else:
                 # Academic sources: require title + authors + year
-                if not metadata.get("title") or not metadata.get("authors") or not metadata.get("year"):
+                if (
+                    not metadata.get("title")
+                    or not metadata.get("authors")
+                    or not metadata.get("year")
+                ):
                     logger.debug(f"Invalid metadata: missing required fields")
                     return None
 
@@ -738,27 +829,31 @@ class CitationResearcher:
             if year:
                 is_valid_year, year_reason, is_recent = validate_publication_year(year)
                 if not is_valid_year:
-                    logger.debug(f"Rejecting citation: invalid year {year} ({year_reason})")
+                    logger.debug(
+                        f"Rejecting citation: invalid year {year} ({year_reason})"
+                    )
                     return None
-            
+
             # Fix 7: Validate author names for ALL sources (catches single-letter and generic names)
             authors = metadata.get("authors", [])
             if authors:
                 first_author = authors[0] if authors else ""
                 is_valid_author, author_reason = validate_author_name(first_author)
                 if not is_valid_author:
-                    logger.debug(f"Rejecting citation: invalid author '{first_author}' ({author_reason})")
+                    logger.debug(
+                        f"Rejecting citation: invalid author '{first_author}' ({author_reason})"
+                    )
                     return None
-            
+
             # Check if this is a preprint (Fix 3)
             doi = metadata.get("doi", "")
             is_preprint = is_preprint_doi(doi)
-            
+
             # Determine source_type (preprint overrides other types)
             source_type = metadata.get("source_type", "website")
             if is_preprint:
                 source_type = "preprint"
-            
+
             # Extract abstract/snippet (Gemini returns "snippet", others return "abstract")
             abstract = metadata.get("abstract") or metadata.get("snippet")
 
@@ -786,7 +881,10 @@ class CitationResearcher:
         except Exception as e:
             logger.error(f"Error creating citation: {e}")
             return None
-    def _search_api(self, api_name: str, topic: str) -> Tuple[Optional[Dict[str, Any]], str]:
+
+    def _search_api(
+        self, api_name: str, topic: str
+    ) -> Tuple[Optional[Dict[str, Any]], str]:
         """
         Search a single API for citations.
 
@@ -800,7 +898,7 @@ class CitationResearcher:
         try:
             logger.info(f"🔍 [{api_name.upper()}] Starting search for: {topic[:80]}...")
 
-            if api_name == 'crossref' and self.enable_crossref:
+            if api_name == "crossref" and self.enable_crossref:
                 logger.debug(f"  → Calling Crossref API...")
                 metadata = self.crossref.search_paper(topic)
                 if metadata:
@@ -810,7 +908,7 @@ class CitationResearcher:
                     return (metadata, "Crossref")
                 else:
                     logger.debug(f"  ✗ Crossref returned no results")
-            elif api_name == 'openalex' and self.enable_openalex:
+            elif api_name == "openalex" and self.enable_openalex:
                 logger.debug(f"  → Calling OpenAlex API...")
                 metadata = self.openalex.search_paper(topic)
                 if metadata:
@@ -820,7 +918,7 @@ class CitationResearcher:
                     return (metadata, "OpenAlex")
                 else:
                     logger.debug(f"  ✗ OpenAlex returned no results")
-            elif api_name == 'semantic_scholar' and self.enable_semantic_scholar:
+            elif api_name == "semantic_scholar" and self.enable_semantic_scholar:
                 logger.debug(f"  → Calling Semantic Scholar API...")
                 metadata = self.semantic_scholar.search_paper(topic)
                 if metadata:
@@ -830,8 +928,10 @@ class CitationResearcher:
                     return (metadata, "Semantic Scholar")
                 else:
                     logger.debug(f"  ✗ Semantic Scholar returned no results")
-            elif api_name == 'gemini_grounded' and self.enable_gemini_grounded:
-                logger.debug(f"  → Applying rate limiting before Gemini Grounded call...")
+            elif api_name == "gemini_grounded" and self.enable_gemini_grounded:
+                logger.debug(
+                    f"  → Applying rate limiting before Gemini Grounded call..."
+                )
                 rate_limiter = get_gemini_rate_limiter()
                 rate_limiter.wait_if_needed()
                 logger.debug(f"  → Calling Gemini Grounded API...")
@@ -855,59 +955,54 @@ class CitationResearcher:
             return (None, api_name)
 
     def _pick_best_result(
-        self, 
-        results: List[Tuple[Optional[Dict[str, Any]], str]]
+        self, results: List[Tuple[Optional[Dict[str, Any]], str]]
     ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         """
         Pick the best result from multiple API responses with source variety.
-        
+
         Uses round-robin source selection to ensure variety:
         - If multiple sources return valid results, prefer the least-used source
         - Still requires minimum quality (DOI or URL)
-        
+
         Args:
             results: List of (metadata, source) tuples
-            
+
         Returns:
             Best (metadata, source) tuple, or (None, None) if all failed
         """
         valid_results = [(m, s) for m, s in results if m is not None]
-        
+
         if not valid_results:
             return (None, None)
-        
+
         if len(valid_results) == 1:
             # Update usage count
             _, source = valid_results[0]
             self.source_usage_count[source] = self.source_usage_count.get(source, 0) + 1
             return valid_results[0]
-        
+
         # Filter to only results with acceptable quality (DOI or URL)
         quality_results = [
-            (m, s) for m, s in valid_results 
-            if m.get('doi') or m.get('url')
+            (m, s) for m, s in valid_results if m.get("doi") or m.get("url")
         ]
-        
+
         # If no quality results, fall back to any valid result
         if not quality_results:
             quality_results = valid_results
-        
+
         # Sort by source usage count (ascending) to prefer least-used sources
         # This creates round-robin variety across all sources
         sorted_by_variety = sorted(
-            quality_results,
-            key=lambda x: self.source_usage_count.get(x[1], 0)
+            quality_results, key=lambda x: self.source_usage_count.get(x[1], 0)
         )
-        
+
         # Pick the least-used source
         metadata, source = sorted_by_variety[0]
-        
+
         # Update usage count
         self.source_usage_count[source] = self.source_usage_count.get(source, 0) + 1
-        
+
         return (metadata, source)
-
-
 
     def _llm_research(self, topic: str) -> Optional[Dict[str, Any]]:
         """
@@ -985,11 +1080,16 @@ Return a JSON object with this structure:
 
             # Check if response was blocked by safety filter
             if not response.candidates:
-                logger.warning(f"LLM response blocked (no candidates) for topic: {topic[:50]}...")
+                logger.warning(
+                    f"LLM response blocked (no candidates) for topic: {topic[:50]}..."
+                )
                 return None
 
             candidate = response.candidates[0]
-            if candidate.finish_reason not in [1, 0]:  # 1 = STOP (normal), 0 = UNSPECIFIED
+            if candidate.finish_reason not in [
+                1,
+                0,
+            ]:  # 1 = STOP (normal), 0 = UNSPECIFIED
                 logger.warning(
                     f"LLM response blocked (finish_reason={candidate.finish_reason}) for topic: {topic[:50]}..."
                 )
@@ -1000,7 +1100,9 @@ Return a JSON object with this structure:
                 response_text = response.text.strip()
             except ValueError as e:
                 # response.text raises ValueError if no valid part exists
-                logger.warning(f"LLM response has no valid text (safety filter likely) for topic: {topic[:50]}...")
+                logger.warning(
+                    f"LLM response has no valid text (safety filter likely) for topic: {topic[:50]}..."
+                )
                 return None
 
             # Remove markdown code blocks if present
@@ -1010,20 +1112,26 @@ Return a JSON object with this structure:
             try:
                 raw_data = json.loads(response_text)
             except json.JSONDecodeError as e:
-                logger.warning(f"LLM returned invalid JSON for topic '{topic[:50]}...': {e}")
+                logger.warning(
+                    f"LLM returned invalid JSON for topic '{topic[:50]}...': {e}"
+                )
                 logger.debug(f"Raw response: {response_text[:200]}...")
                 return None
 
             # Check for error before validation
             if "error" in raw_data:
-                logger.debug(f"LLM returned error response for topic '{topic[:50]}...': {raw_data['error']}")
+                logger.debug(
+                    f"LLM returned error response for topic '{topic[:50]}...': {raw_data['error']}"
+                )
                 return None
 
             # Validate with Pydantic
             try:
                 data = LLMCitationResponse.model_validate(raw_data)
             except ValidationError as e:
-                logger.warning(f"LLM returned invalid citation for topic '{topic[:50]}...': {e}")
+                logger.warning(
+                    f"LLM returned invalid citation for topic '{topic[:50]}...': {e}"
+                )
                 return None
 
             # Convert validated model to dict for existing pipeline

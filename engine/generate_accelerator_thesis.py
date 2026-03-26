@@ -36,7 +36,9 @@ Key areas to cover:
 """
 
 print(f"Topic: Entrepreneurial Accelerator Programmes")
-print(f"Research Question: Design characteristics of university-based accelerator programmes...")
+print(
+    f"Research Question: Design characteristics of university-based accelerator programmes..."
+)
 print("\nStarting generation...")
 
 pdf_path, docx_path = generate_draft(
@@ -45,7 +47,7 @@ pdf_path, docx_path = generate_draft(
     academic_level="master",
     output_dir=OUTPUT_DIR,
     skip_validation=True,
-    verbose=True
+    verbose=True,
 )
 
 print("\nGeneration complete!")
@@ -54,7 +56,7 @@ print(f"DOCX: {docx_path}")
 
 # Create ZIP with both files
 zip_path = OUTPUT_DIR / "thesis_6_accelerator_programmes.zip"
-with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     if pdf_path.exists():
         zipf.write(pdf_path, pdf_path.name)
     if docx_path.exists():

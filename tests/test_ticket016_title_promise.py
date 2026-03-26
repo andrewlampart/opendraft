@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_architect_has_title_promise_section():
     """Test 1: Verify architect.md has title promise fulfillment section"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Architect has title promise fulfillment section")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
@@ -51,16 +51,25 @@ def test_architect_has_title_promise_section():
 
 def test_architect_has_keyword_table():
     """Test 2: Verify architect has title keyword analysis table"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Architect has title keyword analysis table")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
     checks = [
-        ("Title Keyword" in prompt or "If Title Contains" in prompt, "Has keyword table"),
-        ('"Evaluation"' in prompt or "'Evaluation'" in prompt, "Lists Evaluation keyword"),
-        ('"Comparison"' in prompt or "'Comparison'" in prompt, "Lists Comparison keyword"),
+        (
+            "Title Keyword" in prompt or "If Title Contains" in prompt,
+            "Has keyword table",
+        ),
+        (
+            '"Evaluation"' in prompt or "'Evaluation'" in prompt,
+            "Lists Evaluation keyword",
+        ),
+        (
+            '"Comparison"' in prompt or "'Comparison'" in prompt,
+            "Lists Comparison keyword",
+        ),
         ('"Systematic Review"' in prompt, "Lists Systematic Review keyword"),
         ('"Framework"' in prompt or "'Framework'" in prompt, "Lists Framework keyword"),
     ]
@@ -79,14 +88,17 @@ def test_architect_has_keyword_table():
 
 def test_architect_has_evaluation_framework():
     """Test 3: Verify architect has evaluation framework requirements"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Architect has evaluation framework requirements")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
     checks = [
-        ("Evaluation Framework Requirements" in prompt, "Has evaluation framework section"),
+        (
+            "Evaluation Framework Requirements" in prompt,
+            "Has evaluation framework section",
+        ),
         ("Analytical Validity" in prompt, "Lists analytical validity"),
         ("Clinical" in prompt and "Validity" in prompt, "Lists clinical validity"),
         ("Utility" in prompt, "Lists utility"),
@@ -107,9 +119,9 @@ def test_architect_has_evaluation_framework():
 
 def test_architect_shows_audit_example():
     """Test 4: Verify architect shows title-content audit example"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Architect shows title-content audit example")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
@@ -133,9 +145,9 @@ def test_architect_shows_audit_example():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-016 VALIDATION: Title Promise Fulfillment")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "title_promise_section": test_architect_has_title_promise_section(),
@@ -144,9 +156,9 @@ def main():
         "audit_example": test_architect_shows_audit_example(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

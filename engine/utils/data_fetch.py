@@ -68,9 +68,11 @@ def _set_cache(cache_key: str, data: Dict[str, Any]) -> None:
     except Exception as e:
         logger.warning(f"Failed to cache: {e}")
 
+
 # Try to import pandas, but make it optional
 try:
     import pandas as pd
+
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
@@ -106,8 +108,14 @@ class DataFetcher:
         self.timeout = timeout
         self.use_cache = use_cache
 
-    @retry(max_attempts=3, base_delay=2.0, exceptions=(requests.exceptions.RequestException,))
-    def _request_with_retry(self, url: str, params: Optional[Dict] = None) -> requests.Response:
+    @retry(
+        max_attempts=3,
+        base_delay=2.0,
+        exceptions=(requests.exceptions.RequestException,),
+    )
+    def _request_with_retry(
+        self, url: str, params: Optional[Dict] = None
+    ) -> requests.Response:
         """Make HTTP request with retry on transient errors."""
         response = requests.get(url, params=params, timeout=self.timeout)
         response.raise_for_status()
@@ -121,7 +129,9 @@ class DataFetcher:
         for key, info in SDMX_PROVIDERS.items():
             lines.append(f"| {key} | {info['name']} | {info['description']} |")
         lines.append("")
-        lines.append("Use `fetch_worldbank`, `fetch_eurostat`, or `fetch_owid` to retrieve data.")
+        lines.append(
+            "Use `fetch_worldbank`, `fetch_eurostat`, or `fetch_owid` to retrieve data."
+        )
         return "\n".join(lines)
 
     def fetch_worldbank(
@@ -144,7 +154,9 @@ class DataFetcher:
             Dict with status, message, data, and file_path
         """
         # Check cache first
-        cache_key = _get_cache_key("worldbank", indicator, countries=countries, start=start_year, end=end_year)
+        cache_key = _get_cache_key(
+            "worldbank", indicator, countries=countries, start=start_year, end=end_year
+        )
         if self.use_cache:
             cached = _get_cached(cache_key)
             if cached and cached.get("status") == "success":
@@ -154,6 +166,7 @@ class DataFetcher:
                 filepath = self.workspace_dir / filename
                 if cached.get("data") and HAS_PANDAS:
                     import pandas as pd
+
                     pd.DataFrame(cached["data"]).to_csv(filepath, index=False)
                     cached["file_path"] = str(filepath)
                 return cached
@@ -174,21 +187,31 @@ class DataFetcher:
 
             # World Bank returns [metadata, data]
             if len(data) < 2 or not data[1]:
-                return {"status": "error", "message": f"No data found for indicator {indicator}"}
+                return {
+                    "status": "error",
+                    "message": f"No data found for indicator {indicator}",
+                }
 
             records = data[1]
 
             # Parse records
-            parsed = [{
-                "country": r["country"]["value"],
-                "country_code": r["countryiso3code"],
-                "year": r["date"],
-                "value": r["value"],
-                "indicator": r["indicator"]["value"],
-            } for r in records if r.get("value") is not None]
+            parsed = [
+                {
+                    "country": r["country"]["value"],
+                    "country_code": r["countryiso3code"],
+                    "year": r["date"],
+                    "value": r["value"],
+                    "indicator": r["indicator"]["value"],
+                }
+                for r in records
+                if r.get("value") is not None
+            ]
 
             if not parsed:
-                return {"status": "error", "message": f"No non-null data found for indicator {indicator}"}
+                return {
+                    "status": "error",
+                    "message": f"No non-null data found for indicator {indicator}",
+                }
 
             # Save to workspace
             filename = f"worldbank_{indicator.replace('.', '_')}.csv"
@@ -197,17 +220,18 @@ class DataFetcher:
             if HAS_PANDAS:
                 df = pd.DataFrame(parsed)
                 df.to_csv(filepath, index=False)
-                countries_count = df['country'].nunique()
-                years_count = df['year'].nunique()
+                countries_count = df["country"].nunique()
+                years_count = df["year"].nunique()
             else:
                 # Fallback: write CSV manually
                 import csv
-                with open(filepath, 'w', newline='', encoding='utf-8') as f:
+
+                with open(filepath, "w", newline="", encoding="utf-8") as f:
                     writer = csv.DictWriter(f, fieldnames=parsed[0].keys())
                     writer.writeheader()
                     writer.writerows(parsed)
-                countries_count = len(set(r['country'] for r in parsed))
-                years_count = len(set(r['year'] for r in parsed))
+                countries_count = len(set(r["country"] for r in parsed))
+                years_count = len(set(r["year"] for r in parsed))
 
             result = {
                 "status": "success",
@@ -227,7 +251,10 @@ class DataFetcher:
             return result
 
         except requests.exceptions.HTTPError as e:
-            return {"status": "error", "message": f"HTTP error: {e.response.status_code}"}
+            return {
+                "status": "error",
+                "message": f"HTTP error: {e.response.status_code}",
+            }
         except requests.exceptions.RequestException as e:
             return {"status": "error", "message": f"Connection error: {str(e)}"}
         except Exception as e:
@@ -267,9 +294,11 @@ class DataFetcher:
             matches = [
                 {"code": ind["id"], "name": ind["name"]}
                 for ind in data[1]
-                if (query_lower in ind["name"].lower() or
-                    query_lower in ind.get("sourceNote", "").lower() or
-                    query_lower in ind["id"].lower())
+                if (
+                    query_lower in ind["name"].lower()
+                    or query_lower in ind.get("sourceNote", "").lower()
+                    or query_lower in ind["id"].lower()
+                )
             ]
 
             if not matches:
@@ -278,24 +307,39 @@ class DataFetcher:
                     "gdp": [
                         {"code": "NY.GDP.MKTP.CD", "name": "GDP (current US$)"},
                         {"code": "NY.GDP.MKTP.KD.ZG", "name": "GDP growth (annual %)"},
-                        {"code": "NY.GDP.PCAP.CD", "name": "GDP per capita (current US$)"},
+                        {
+                            "code": "NY.GDP.PCAP.CD",
+                            "name": "GDP per capita (current US$)",
+                        },
                     ],
                     "population": [
                         {"code": "SP.POP.TOTL", "name": "Population, total"},
                         {"code": "SP.POP.GROW", "name": "Population growth (annual %)"},
                     ],
                     "life expectancy": [
-                        {"code": "SP.DYN.LE00.IN", "name": "Life expectancy at birth, total (years)"},
+                        {
+                            "code": "SP.DYN.LE00.IN",
+                            "name": "Life expectancy at birth, total (years)",
+                        },
                     ],
                     "education": [
-                        {"code": "SE.XPD.TOTL.GD.ZS", "name": "Government expenditure on education (% of GDP)"},
-                        {"code": "SE.ADT.LITR.ZS", "name": "Literacy rate, adult total (% of people ages 15+)"},
+                        {
+                            "code": "SE.XPD.TOTL.GD.ZS",
+                            "name": "Government expenditure on education (% of GDP)",
+                        },
+                        {
+                            "code": "SE.ADT.LITR.ZS",
+                            "name": "Literacy rate, adult total (% of people ages 15+)",
+                        },
                     ],
                 }
                 matches = common_indicators.get(query_lower, [])
 
             if not matches:
-                return {"status": "error", "message": f"No indicators matching '{query}'. Try: gdp, population, education, life expectancy"}
+                return {
+                    "status": "error",
+                    "message": f"No indicators matching '{query}'. Try: gdp, population, education, life expectancy",
+                }
 
             result = {
                 "status": "success",
@@ -356,8 +400,8 @@ class DataFetcher:
                         rows = len(df)
                         columns = list(df.columns)[:5]
                     else:
-                        rows = response.text.count('\n')
-                        columns = response.text.split('\n')[0].split(',')[:5]
+                        rows = response.text.count("\n")
+                        columns = response.text.split("\n")[0].split(",")[:5]
 
                     result = {
                         "status": "success",
@@ -368,7 +412,9 @@ class DataFetcher:
                     }
 
                     if self.use_cache:
-                        cache_result = {k: v for k, v in result.items() if k != "file_path"}
+                        cache_result = {
+                            k: v for k, v in result.items() if k != "file_path"
+                        }
                         _set_cache(cache_key, cache_result)
 
                     return result
@@ -400,7 +446,9 @@ class DataFetcher:
             Dict with status, message, and data
         """
         # Check cache first
-        cache_key = _get_cache_key("eurostat", dataset_id, filters=filters, start=start_period, end=end_period)
+        cache_key = _get_cache_key(
+            "eurostat", dataset_id, filters=filters, start=start_period, end=end_period
+        )
         if self.use_cache:
             cached = _get_cached(cache_key)
             if cached:
@@ -408,7 +456,9 @@ class DataFetcher:
                 return cached
 
         base_url = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data"
-        filter_str = "all" if not filters else ".".join(filters.get(k, "") for k in filters)
+        filter_str = (
+            "all" if not filters else ".".join(filters.get(k, "") for k in filters)
+        )
         url = f"{base_url}/{dataset_id}/{filter_str}"
 
         params = {"format": "SDMX-JSON", "compressed": "false"}
@@ -438,7 +488,8 @@ class DataFetcher:
             else:
                 # df is a list of dicts
                 import csv
-                with open(filepath, 'w', newline='', encoding='utf-8') as f:
+
+                with open(filepath, "w", newline="", encoding="utf-8") as f:
                     writer = csv.DictWriter(f, fieldnames=df[0].keys())
                     writer.writeheader()
                     writer.writerows(df)
@@ -460,7 +511,10 @@ class DataFetcher:
             return result
 
         except requests.exceptions.HTTPError as e:
-            return {"status": "error", "message": f"HTTP error: {e.response.status_code}"}
+            return {
+                "status": "error",
+                "message": f"HTTP error: {e.response.status_code}",
+            }
         except Exception as e:
             return {"status": "error", "message": f"Error: {str(e)}"}
 
@@ -488,7 +542,9 @@ class DataFetcher:
                             idx = int(key_parts[i])
                             values = dim_meta.get("values", [])
                             if idx < len(values):
-                                row[dim_id] = values[idx].get("name", values[idx].get("id"))
+                                row[dim_id] = values[idx].get(
+                                    "name", values[idx].get("id")
+                                )
 
                     obs = series_data.get("observations", {})
                     for time_idx, values in obs.items():
@@ -512,10 +568,7 @@ class DataFetcher:
 
 # Convenience function for CLI
 def fetch_data(
-    provider: str,
-    query: str,
-    workspace_dir: Path,
-    **kwargs
+    provider: str, query: str, workspace_dir: Path, **kwargs
 ) -> Dict[str, Any]:
     """
     Fetch data from a provider.

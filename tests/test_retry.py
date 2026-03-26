@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 import pytest
 
 # Add engine directory to path so utils can be imported
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'engine'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 
 from utils.retry import retry, retry_on_network_error, exponential_backoff_with_jitter
 
@@ -19,6 +19,7 @@ from utils.retry import retry, retry_on_network_error, exponential_backoff_with_
 # =========================================================================
 # exponential_backoff_with_jitter tests
 # =========================================================================
+
 
 class TestExponentialBackoffWithJitter:
     """Tests for the exponential_backoff_with_jitter utility function."""
@@ -32,7 +33,9 @@ class TestExponentialBackoffWithJitter:
 
     def test_respects_max_delay(self):
         """Delay should never exceed max_delay."""
-        delay = exponential_backoff_with_jitter(10, base_delay=1.0, max_delay=30.0, jitter=False)
+        delay = exponential_backoff_with_jitter(
+            10, base_delay=1.0, max_delay=30.0, jitter=False
+        )
         assert delay == 30.0
 
     def test_with_jitter_stays_in_range(self):
@@ -45,7 +48,9 @@ class TestExponentialBackoffWithJitter:
     def test_non_negative(self):
         """Delay should always be non-negative."""
         for attempt in range(10):
-            delay = exponential_backoff_with_jitter(attempt, base_delay=0.01, jitter=True)
+            delay = exponential_backoff_with_jitter(
+                attempt, base_delay=0.01, jitter=True
+            )
             assert delay >= 0.0
 
     def test_custom_base_delay(self):
@@ -59,11 +64,13 @@ class TestExponentialBackoffWithJitter:
 # retry decorator tests
 # =========================================================================
 
+
 class TestRetryDecorator:
     """Tests for the retry() decorator."""
 
     def test_succeeds_on_first_attempt(self):
         """Function that succeeds immediately should return normally."""
+
         @retry(max_attempts=3, base_delay=0.01)
         def always_works():
             return "ok"
@@ -139,6 +146,7 @@ class TestRetryDecorator:
 
     def test_preserves_function_metadata(self):
         """Decorated function should preserve __name__ and __doc__."""
+
         @retry(max_attempts=2, base_delay=0.01)
         def my_function():
             """My docstring."""
@@ -152,12 +160,14 @@ class TestRetryDecorator:
 # retry_on_network_error decorator tests
 # =========================================================================
 
+
 class TestRetryOnNetworkError:
     """Tests for the retry_on_network_error() decorator."""
 
     def test_retries_on_timeout(self):
         """Should retry on requests.Timeout."""
         import requests
+
         call_count = 0
 
         @retry_on_network_error(max_attempts=3, base_delay=0.01)
@@ -174,6 +184,7 @@ class TestRetryOnNetworkError:
     def test_retries_on_connection_error(self):
         """Should retry on requests.ConnectionError."""
         import requests
+
         call_count = 0
 
         @retry_on_network_error(max_attempts=3, base_delay=0.01)
@@ -190,6 +201,7 @@ class TestRetryOnNetworkError:
     def test_retries_on_5xx_http_error(self):
         """Should retry on 5xx HTTPError."""
         import requests
+
         call_count = 0
 
         @retry_on_network_error(max_attempts=3, base_delay=0.01)
@@ -208,6 +220,7 @@ class TestRetryOnNetworkError:
     def test_does_not_retry_on_4xx_http_error(self):
         """Should NOT retry on 4xx HTTPError (client error)."""
         import requests
+
         call_count = 0
 
         @retry_on_network_error(max_attempts=3, base_delay=0.01)
@@ -239,6 +252,7 @@ class TestRetryOnNetworkError:
 
     def test_preserves_function_metadata(self):
         """Decorated function should preserve __name__ and __doc__."""
+
         @retry_on_network_error(max_attempts=2, base_delay=0.01)
         def my_network_function():
             """Fetches stuff."""

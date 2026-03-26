@@ -25,6 +25,7 @@ from utils.text_utils import clean_agent_output
 # Pass A — Planning preamble stripping (Ticket 017)
 # ---------------------------------------------------------------------------
 
+
 class TestStripPreamble:
     def test_strip_preamble_okay_i_understand(self):
         text = (
@@ -166,6 +167,7 @@ class TestStripPreamble:
 # Pass B — Metadata stripping (Ticket 018)
 # ---------------------------------------------------------------------------
 
+
 class TestStripMetadata:
     def test_strip_metadata_section_line(self):
         text = (
@@ -279,7 +281,9 @@ class TestStripMetadata:
         assert "Creswell (2014)" in result
 
     def test_strip_metadata_key_points(self):
-        text = "**Key Points:** Main argument and supporting evidence\n\nThe data shows..."
+        text = (
+            "**Key Points:** Main argument and supporting evidence\n\nThe data shows..."
+        )
         result = clean_agent_output(text)
         assert "**Key Points:**" not in result
         assert "The data shows..." in result
@@ -345,9 +349,12 @@ class TestStripMetadata:
 # Pass C — cite_MISSING stripping (Ticket 019)
 # ---------------------------------------------------------------------------
 
+
 class TestStripCiteMissing:
     def test_strip_cite_missing_basic(self):
-        text = "Recent studies {cite_MISSING: housing affordability 2023} show a decline."
+        text = (
+            "Recent studies {cite_MISSING: housing affordability 2023} show a decline."
+        )
         result = clean_agent_output(text)
         assert "{cite_MISSING" not in result
         assert "Recent studies show a decline." in result
@@ -399,6 +406,7 @@ class TestStripCiteMissing:
 # ---------------------------------------------------------------------------
 # Combined pass
 # ---------------------------------------------------------------------------
+
 
 class TestCleanAgentOutputCombined:
     def test_clean_agent_output_combined(self):

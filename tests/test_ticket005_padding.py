@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_skeptic_has_reference_quality():
     """Test 1: Verify skeptic.md has reference quality assessment"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Skeptic has reference quality assessment")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/skeptic.md")
 
@@ -54,9 +54,9 @@ def test_skeptic_has_reference_quality():
 
 def test_skeptic_shows_red_flags():
     """Test 2: Verify skeptic shows red flags for padding"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Skeptic shows red flags for padding citations")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/skeptic.md")
 
@@ -64,7 +64,10 @@ def test_skeptic_shows_red_flags():
         ("Analogy from unrelated field" in prompt, "Flags cross-field analogies"),
         ("Generic claim support" in prompt, "Flags generic claims"),
         ("cybersecurity" in prompt.lower(), "Uses cybersecurity example"),
-        ("Indonesia" in prompt or "digital transformation" in prompt.lower(), "Uses real example from ticket"),
+        (
+            "Indonesia" in prompt or "digital transformation" in prompt.lower(),
+            "Uses real example from ticket",
+        ),
         ("REMOVE" in prompt, "Recommends removal action"),
     ]
 
@@ -82,9 +85,9 @@ def test_skeptic_shows_red_flags():
 
 def test_crafter_has_no_padding_warning():
     """Test 3: Verify crafter.md warns against padding"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Crafter has no-padding warning")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -111,9 +114,9 @@ def test_crafter_has_no_padding_warning():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-005 VALIDATION: Filter Irrelevant/Low-Value References")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "skeptic_reference_quality": test_skeptic_has_reference_quality(),
@@ -121,9 +124,9 @@ def main():
         "crafter_no_padding": test_crafter_has_no_padding_warning(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

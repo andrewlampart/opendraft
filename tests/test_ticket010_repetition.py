@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_polish_has_repetition_detection():
     """Test 1: Verify polish.md has repetition detection"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Polish has repetition detection")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/05_refine/polish.md")
 
@@ -51,9 +51,9 @@ def test_polish_has_repetition_detection():
 
 def test_polish_lists_overused_words():
     """Test 2: Verify polish lists commonly overused words"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Polish lists commonly overused words")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/05_refine/polish.md")
 
@@ -78,9 +78,9 @@ def test_polish_lists_overused_words():
 
 def test_polish_shows_variation_suggestions():
     """Test 3: Verify polish shows how to vary vocabulary"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Polish shows variation suggestions")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/05_refine/polish.md")
 
@@ -105,9 +105,9 @@ def test_polish_shows_variation_suggestions():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-010 VALIDATION: Repeated Phrases Detection")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "repetition_detection": test_polish_has_repetition_detection(),
@@ -115,9 +115,9 @@ def main():
         "variation_suggestions": test_polish_shows_variation_suggestions(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

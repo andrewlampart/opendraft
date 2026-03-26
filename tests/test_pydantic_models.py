@@ -35,6 +35,7 @@ from pydantic import TypeAdapter, ValidationError
 # strip_markdown_json
 # ---------------------------------------------------------------------------
 
+
 class TestStripMarkdownJson:
     def test_raw_json(self):
         raw = '{"queries": ["q1"], "outline": "o", "strategy": "s"}'
@@ -52,6 +53,7 @@ class TestStripMarkdownJson:
 # ---------------------------------------------------------------------------
 # ResearchPlan
 # ---------------------------------------------------------------------------
+
 
 class TestResearchPlan:
     def test_valid_plan(self):
@@ -96,6 +98,7 @@ class TestResearchPlan:
 # LLMCitationResponse
 # ---------------------------------------------------------------------------
 
+
 class TestLLMCitationResponse:
     def test_valid_citation(self):
         data = {
@@ -114,6 +117,7 @@ class TestLLMCitationResponse:
     def test_year_coercion_from_string(self):
         """Pydantic should coerce '2023' -> 2023 via json.loads + model_validate."""
         import json
+
         raw = '{"authors": ["A"], "year": "2023", "title": "T"}'
         data = json.loads(raw)
         citation = LLMCitationResponse.model_validate(data)
@@ -162,6 +166,7 @@ class TestLLMCitationResponse:
 # CitationDatabaseSchema
 # ---------------------------------------------------------------------------
 
+
 class TestCitationDatabaseSchema:
     def test_valid_database(self):
         data = {
@@ -197,6 +202,7 @@ class TestCitationDatabaseSchema:
 # ---------------------------------------------------------------------------
 # FactCheckJudgeVerdict
 # ---------------------------------------------------------------------------
+
 
 class TestFactCheckJudgeVerdict:
     def test_valid_supported(self):
@@ -283,6 +289,7 @@ class TestFactCheckJudgeVerdict:
 # FactCheckClaim
 # ---------------------------------------------------------------------------
 
+
 class TestFactCheckClaim:
     def test_valid_claim(self):
         data = {
@@ -291,7 +298,9 @@ class TestFactCheckClaim:
             "line": "paragraph 2",
         }
         c = FactCheckClaim.model_validate(data)
-        assert c.claim == "Global temperatures rose by 1.1°C since pre-industrial times."
+        assert (
+            c.claim == "Global temperatures rose by 1.1°C since pre-industrial times."
+        )
         assert c.section == "Introduction"
         assert c.line == "paragraph 2"
 

@@ -39,20 +39,24 @@ class OpenAlexClient(BaseAPIClient):
             max_retries: Maximum retry attempts
         """
         # Use provided key or fall back to environment variable
-        self.openalex_key = api_key or os.getenv('OPENALEX_API_KEY')
+        self.openalex_key = api_key or os.getenv("OPENALEX_API_KEY")
 
         # Build headers
         headers = {}
         if self.openalex_key:
-            headers['api_key'] = self.openalex_key
-            rate_limit_per_second = min(rate_limit_per_second, 50.0)  # With key: up to 100/sec
+            headers["api_key"] = self.openalex_key
+            rate_limit_per_second = min(
+                rate_limit_per_second, 50.0
+            )  # With key: up to 100/sec
             logger.info("OpenAlex: Using API key for higher rate limits")
         else:
-            rate_limit_per_second = min(rate_limit_per_second, 10.0)  # Without key: 10/sec
+            rate_limit_per_second = min(
+                rate_limit_per_second, 10.0
+            )  # Without key: 10/sec
             logger.debug("OpenAlex: No API key, using polite pool (10 req/sec)")
 
         # OpenAlex asks for email in User-Agent for polite pool
-        polite_email = os.getenv('OPENALEX_EMAIL', 'opendraft@users.noreply.github.com')
+        polite_email = os.getenv("OPENALEX_EMAIL", "opendraft@users.noreply.github.com")
 
         super().__init__(
             base_url="https://api.openalex.org",
@@ -62,11 +66,13 @@ class OpenAlexClient(BaseAPIClient):
         )
 
         # Override default headers with polite user-agent
-        self.session.headers.update({
-            'User-Agent': f'OpenDraft/1.7 (mailto:{polite_email})',
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": f"OpenDraft/1.7 (mailto:{polite_email})",
+            }
+        )
         if self.openalex_key:
-            self.session.headers['api_key'] = self.openalex_key
+            self.session.headers["api_key"] = self.openalex_key
 
     def search_paper(self, query: str) -> Optional[Dict[str, Any]]:
         """
@@ -242,7 +248,7 @@ class OpenAlexClient(BaseAPIClient):
                 has_doi=bool(doi),
                 has_journal=bool(journal),
                 citation_count=citation_count,
-                author_count=len(authors)
+                author_count=len(authors),
             )
 
             return {
@@ -266,7 +272,9 @@ class OpenAlexClient(BaseAPIClient):
             logger.error(f"OpenAlex: Error extracting metadata: {e}")
             return None
 
-    def _reconstruct_abstract(self, inverted_index: Optional[Dict[str, List[int]]]) -> Optional[str]:
+    def _reconstruct_abstract(
+        self, inverted_index: Optional[Dict[str, List[int]]]
+    ) -> Optional[str]:
         """
         Reconstruct abstract from OpenAlex inverted index format.
 
@@ -315,11 +323,7 @@ class OpenAlexClient(BaseAPIClient):
         return type_mapping.get(work_type, "journal")
 
     def _calculate_confidence(
-        self,
-        has_doi: bool,
-        has_journal: bool,
-        citation_count: int,
-        author_count: int
+        self, has_doi: bool, has_journal: bool, citation_count: int, author_count: int
     ) -> float:
         """
         Calculate confidence score for paper metadata.

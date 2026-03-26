@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_crafter_has_precision_section():
     """Test 1: Verify crafter.md has technical precision section"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Crafter has technical precision section")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -52,9 +52,9 @@ def test_crafter_has_precision_section():
 
 def test_crafter_has_dunedinpace_example():
     """Test 2: Verify crafter shows DunedinPACE example"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Crafter shows DunedinPACE example")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -62,7 +62,10 @@ def test_crafter_has_dunedinpace_example():
         ("DunedinPACE" in prompt, "Shows DunedinPACE example"),
         ("Pace of Aging" in prompt, "Mentions Pace of Aging phenotype"),
         ("longitudinal" in prompt.lower(), "Mentions longitudinal tracking"),
-        ("IMPRECISE" in prompt or "PRECISE" in prompt, "Shows imprecise vs precise examples"),
+        (
+            "IMPRECISE" in prompt or "PRECISE" in prompt,
+            "Shows imprecise vs precise examples",
+        ),
     ]
 
     all_passed = True
@@ -79,16 +82,19 @@ def test_crafter_has_dunedinpace_example():
 
 def test_crafter_has_precision_rules():
     """Test 3: Verify crafter has precision rules"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Crafter has precision rules")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
     checks = [
         ("Distinguish training target" in prompt, "Rule about training vs measurement"),
-        ("chain of derivation" in prompt.lower() or "derivation chain" in prompt.lower(),
-         "Rule about derivation chain"),
+        (
+            "chain of derivation" in prompt.lower()
+            or "derivation chain" in prompt.lower(),
+            "Rule about derivation chain",
+        ),
         ("domain expert" in prompt.lower(), "Mentions domain expert check"),
         ("Horvath" in prompt or "GrimAge" in prompt, "Shows epigenetic clock examples"),
     ]
@@ -107,9 +113,9 @@ def test_crafter_has_precision_rules():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-009 VALIDATION: Technical Precision for Named Methods")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "precision_section": test_crafter_has_precision_section(),
@@ -117,9 +123,9 @@ def main():
         "precision_rules": test_crafter_has_precision_rules(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

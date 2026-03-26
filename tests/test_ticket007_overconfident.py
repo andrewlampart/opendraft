@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_polish_has_claim_calibration():
     """Test 1: Verify polish.md has claim calibration"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Polish has claim calibration")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/05_refine/polish.md")
 
@@ -54,9 +54,9 @@ def test_polish_has_claim_calibration():
 
 def test_polish_has_replacement_table():
     """Test 2: Verify polish shows banned → replacement table"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Polish has replacement table")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/05_refine/polish.md")
 
@@ -64,8 +64,11 @@ def test_polish_has_replacement_table():
         ('"proves"' in prompt or "'proves'" in prompt, "Bans 'proves'"),
         ('"the best"' in prompt or "'the best'" in prompt, "Bans 'the best'"),
         ('"always"' in prompt, "Bans 'always'"),
-        ("among the strongest" in prompt.lower() or "among the few" in prompt.lower(),
-         "Shows calibrated replacement"),
+        (
+            "among the strongest" in prompt.lower()
+            or "among the few" in prompt.lower(),
+            "Shows calibrated replacement",
+        ),
     ]
 
     all_passed = True
@@ -82,9 +85,9 @@ def test_polish_has_replacement_table():
 
 def test_crafter_has_claim_calibration():
     """Test 3: Verify crafter.md has claim calibration"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Crafter has claim calibration")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -110,9 +113,9 @@ def test_crafter_has_claim_calibration():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-007 VALIDATION: Overconfident Claims Calibration")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "polish_calibration": test_polish_has_claim_calibration(),
@@ -120,9 +123,9 @@ def main():
         "crafter_calibration": test_crafter_has_claim_calibration(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

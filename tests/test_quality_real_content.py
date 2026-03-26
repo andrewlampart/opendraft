@@ -15,6 +15,7 @@ import pytest
 from pathlib import Path
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from utils.quality_gate import (
@@ -272,16 +273,18 @@ demand for interpretable, trustworthy models will only intensify.
 class TestRealAcademicContent:
     """Test quality gate with real academic writing patterns."""
 
-    def _create_real_content_context(self, academic_level: str = "research_paper") -> DraftContext:
+    def _create_real_content_context(
+        self, academic_level: str = "research_paper"
+    ) -> DraftContext:
         """Create context with realistic academic content."""
         ctx = DraftContext()
         ctx.academic_level = academic_level
         ctx.word_targets = {
-            'research_paper': {'min_citations': 10},
-            'bachelor': {'min_citations': 20},
-            'master': {'min_citations': 40},
-            'phd': {'min_citations': 80},
-        }.get(academic_level, {'min_citations': 10})
+            "research_paper": {"min_citations": 10},
+            "bachelor": {"min_citations": 20},
+            "master": {"min_citations": 40},
+            "phd": {"min_citations": 80},
+        }.get(academic_level, {"min_citations": 10})
 
         ctx.intro_output = REAL_INTRO_SAMPLE
         ctx.lit_review_output = REAL_LIT_REVIEW_SAMPLE
@@ -289,7 +292,12 @@ class TestRealAcademicContent:
         ctx.results_output = REAL_RESULTS_SAMPLE
         ctx.discussion_output = REAL_DISCUSSION_SAMPLE
         ctx.conclusion_output = REAL_CONCLUSION_SAMPLE
-        ctx.body_output = REAL_LIT_REVIEW_SAMPLE + REAL_METHODOLOGY_SAMPLE + REAL_RESULTS_SAMPLE + REAL_DISCUSSION_SAMPLE
+        ctx.body_output = (
+            REAL_LIT_REVIEW_SAMPLE
+            + REAL_METHODOLOGY_SAMPLE
+            + REAL_RESULTS_SAMPLE
+            + REAL_DISCUSSION_SAMPLE
+        )
 
         return ctx
 
@@ -298,7 +306,9 @@ class TestRealAcademicContent:
         ctx = self._create_real_content_context("research_paper")
         result = score_draft_quality(ctx)
 
-        assert result.passed, f"Real paper should pass. Score: {result.total_score}, Issues: {result.issues}"
+        assert (
+            result.passed
+        ), f"Real paper should pass. Score: {result.total_score}, Issues: {result.issues}"
         assert result.total_score >= 60, f"Expected 60+, got {result.total_score}"
 
     def test_real_content_word_count_accuracy(self):
@@ -328,7 +338,9 @@ class TestRealAcademicContent:
 
         # Well-structured content should score high
         assert score >= 15, f"Structure score too low: {score}"
-        assert "header" not in " ".join(issues).lower(), f"Should have headers: {issues}"
+        assert (
+            "header" not in " ".join(issues).lower()
+        ), f"Should have headers: {issues}"
 
     def test_real_content_completeness(self):
         """Verify completeness scoring on full academic content."""
@@ -349,16 +361,26 @@ class TestRealAcademicContent:
         # Synthetic content (same word counts)
         synth_ctx = DraftContext()
         synth_ctx.academic_level = "research_paper"
-        synth_ctx.word_targets = {'min_citations': 10}
+        synth_ctx.word_targets = {"min_citations": 10}
 
         intro_words = _count_words(REAL_INTRO_SAMPLE)
-        body_words = _count_words(REAL_LIT_REVIEW_SAMPLE + REAL_METHODOLOGY_SAMPLE +
-                                  REAL_RESULTS_SAMPLE + REAL_DISCUSSION_SAMPLE)
+        body_words = _count_words(
+            REAL_LIT_REVIEW_SAMPLE
+            + REAL_METHODOLOGY_SAMPLE
+            + REAL_RESULTS_SAMPLE
+            + REAL_DISCUSSION_SAMPLE
+        )
         conclusion_words = _count_words(REAL_CONCLUSION_SAMPLE)
 
-        synth_ctx.intro_output = "# Introduction\n\n" + "word " * intro_words + "{cite_001} {cite_002}"
-        synth_ctx.body_output = "## Body\n\n" + "word " * body_words + "{cite_003} {cite_004} {cite_005}"
-        synth_ctx.conclusion_output = "## Conclusion\n\n" + "word " * conclusion_words + "{cite_006}"
+        synth_ctx.intro_output = (
+            "# Introduction\n\n" + "word " * intro_words + "{cite_001} {cite_002}"
+        )
+        synth_ctx.body_output = (
+            "## Body\n\n" + "word " * body_words + "{cite_003} {cite_004} {cite_005}"
+        )
+        synth_ctx.conclusion_output = (
+            "## Conclusion\n\n" + "word " * conclusion_words + "{cite_006}"
+        )
         synth_ctx.lit_review_output = "Review. " * 200
         synth_ctx.methodology_output = "Method. " * 200
         synth_ctx.results_output = "Result. " * 200
@@ -368,8 +390,9 @@ class TestRealAcademicContent:
 
         # Real content should score higher due to better structure
         # (headers, paragraphs, proper formatting)
-        assert real_result.structure_score >= synth_result.structure_score, \
-            f"Real should have better structure: {real_result.structure_score} vs {synth_result.structure_score}"
+        assert (
+            real_result.structure_score >= synth_result.structure_score
+        ), f"Real should have better structure: {real_result.structure_score} vs {synth_result.structure_score}"
 
 
 class TestPoorQualityDetection:
@@ -379,23 +402,31 @@ class TestPoorQualityDetection:
         """Should detect TODO, INSERT, and other placeholders."""
         ctx = DraftContext()
         ctx.academic_level = "research_paper"
-        ctx.word_targets = {'min_citations': 10}
+        ctx.word_targets = {"min_citations": 10}
 
-        ctx.intro_output = "# Introduction\n\nTODO: Write introduction here.\n\n" + "word " * 400
-        ctx.body_output = "## Methods\n\n[INSERT methodology section]\n\n" + "word " * 1500
-        ctx.conclusion_output = "## Conclusion\n\nLorem ipsum dolor sit amet.\n\n" + "word " * 300
+        ctx.intro_output = (
+            "# Introduction\n\nTODO: Write introduction here.\n\n" + "word " * 400
+        )
+        ctx.body_output = (
+            "## Methods\n\n[INSERT methodology section]\n\n" + "word " * 1500
+        )
+        ctx.conclusion_output = (
+            "## Conclusion\n\nLorem ipsum dolor sit amet.\n\n" + "word " * 300
+        )
 
         result = score_draft_quality(ctx)
 
         # Should detect placeholders
         issues_text = " ".join(result.issues)
-        assert "TODO" in issues_text or "INSERT" in issues_text or "Lorem" in issues_text
+        assert (
+            "TODO" in issues_text or "INSERT" in issues_text or "Lorem" in issues_text
+        )
 
     def test_detects_missing_citations(self):
         """Should detect when citations are missing."""
         ctx = DraftContext()
         ctx.academic_level = "research_paper"
-        ctx.word_targets = {'min_citations': 10}
+        ctx.word_targets = {"min_citations": 10}
 
         # Good word counts but NO citations
         ctx.intro_output = "# Introduction\n\n" + "word " * 500
@@ -404,14 +435,16 @@ class TestPoorQualityDetection:
 
         result = score_draft_quality(ctx)
 
-        assert result.citation_score < 10, f"Should score low on citations: {result.citation_score}"
+        assert (
+            result.citation_score < 10
+        ), f"Should score low on citations: {result.citation_score}"
         assert "citation" in " ".join(result.issues).lower()
 
     def test_detects_shallow_content(self):
         """Should detect very short/shallow content."""
         ctx = DraftContext()
         ctx.academic_level = "master"  # Higher requirements
-        ctx.word_targets = {'min_citations': 40}
+        ctx.word_targets = {"min_citations": 40}
 
         # Very short for master level
         ctx.intro_output = "Short intro."
@@ -421,7 +454,9 @@ class TestPoorQualityDetection:
         result = score_draft_quality(ctx)
 
         assert not result.passed, "Shallow master thesis should fail"
-        assert result.word_count_score < 10, f"Word count should be very low: {result.word_count_score}"
+        assert (
+            result.word_count_score < 10
+        ), f"Word count should be very low: {result.word_count_score}"
 
 
 class TestAcademicLevelScaling:
@@ -440,10 +475,10 @@ class TestAcademicLevelScaling:
             ctx = DraftContext()
             ctx.academic_level = level
             ctx.word_targets = {
-                'research_paper': {'min_citations': 10},
-                'bachelor': {'min_citations': 20},
-                'master': {'min_citations': 40},
-                'phd': {'min_citations': 80},
+                "research_paper": {"min_citations": 10},
+                "bachelor": {"min_citations": 20},
+                "master": {"min_citations": 40},
+                "phd": {"min_citations": 80},
             }[level]
 
             ctx.intro_output = base_intro
@@ -458,25 +493,31 @@ class TestAcademicLevelScaling:
             scores[level] = result.total_score
 
         # Research paper should score highest, PhD lowest (for same content)
-        assert scores["research_paper"] >= scores["bachelor"], \
-            f"Research paper should score >= bachelor: {scores}"
-        assert scores["bachelor"] >= scores["master"], \
-            f"Bachelor should score >= master: {scores}"
+        assert (
+            scores["research_paper"] >= scores["bachelor"]
+        ), f"Research paper should score >= bachelor: {scores}"
+        assert (
+            scores["bachelor"] >= scores["master"]
+        ), f"Bachelor should score >= master: {scores}"
 
     def test_phd_requires_more_citations(self):
         """PhD level should require more citations than research paper."""
         ctx_phd = DraftContext()
         ctx_phd.academic_level = "phd"
-        ctx_phd.word_targets = {'min_citations': 80}
+        ctx_phd.word_targets = {"min_citations": 80}
 
         ctx_paper = DraftContext()
         ctx_paper.academic_level = "research_paper"
-        ctx_paper.word_targets = {'min_citations': 10}
+        ctx_paper.word_targets = {"min_citations": 10}
 
         # Same content with 15 citations (good for paper, inadequate for PhD)
         content_with_15_citations = REAL_INTRO_SAMPLE  # Has 4 citations
-        content_with_15_citations += " {cite_016} {cite_017} {cite_018} {cite_019} {cite_020}"
-        content_with_15_citations += " {cite_021} {cite_022} {cite_023} {cite_024} {cite_025}"
+        content_with_15_citations += (
+            " {cite_016} {cite_017} {cite_018} {cite_019} {cite_020}"
+        )
+        content_with_15_citations += (
+            " {cite_021} {cite_022} {cite_023} {cite_024} {cite_025}"
+        )
 
         for ctx in [ctx_phd, ctx_paper]:
             ctx.intro_output = content_with_15_citations

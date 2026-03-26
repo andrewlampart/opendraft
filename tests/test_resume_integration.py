@@ -13,6 +13,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "engine"))
 
 from utils.checkpoint import (
@@ -39,7 +40,7 @@ class TestRealResumeWorkflow:
         ctx.citation_style = "apa"
         ctx.skip_validation = True
         ctx.verbose = False
-        ctx.word_targets = {'min_citations': 10, 'total': '3000-5000'}
+        ctx.word_targets = {"min_citations": 10, "total": "3000-5000"}
         ctx.language_name = "English"
         ctx.language_instruction = "Write in English"
 
@@ -50,18 +51,24 @@ class TestRealResumeWorkflow:
         drafts_dir.mkdir(parents=True)
 
         ctx.folders = {
-            'root': tmp_path,
-            'research': research_dir,
-            'papers': research_dir / 'papers',
-            'drafts': drafts_dir,
-            'exports': tmp_path / 'exports',
+            "root": tmp_path,
+            "research": research_dir,
+            "papers": research_dir / "papers",
+            "drafts": drafts_dir,
+            "exports": tmp_path / "exports",
         }
 
         # Add phase outputs based on how far we got
-        if completed_phase in PHASES[PHASES.index("research"):]:
-            ctx.scout_output = "# Research Summary\n\nFound 15 relevant papers on ML in healthcare."
-            ctx.scribe_output = "## Paper Summaries\n\n1. Deep Learning for Diagnosis..."
-            ctx.signal_output = "## Research Gaps\n\n- Need more interpretability studies"
+        if completed_phase in PHASES[PHASES.index("research") :]:
+            ctx.scout_output = (
+                "# Research Summary\n\nFound 15 relevant papers on ML in healthcare."
+            )
+            ctx.scribe_output = (
+                "## Paper Summaries\n\n1. Deep Learning for Diagnosis..."
+            )
+            ctx.signal_output = (
+                "## Research Gaps\n\n- Need more interpretability studies"
+            )
             ctx.scout_result = {
                 "citations": [
                     Citation(
@@ -76,11 +83,15 @@ class TestRealResumeWorkflow:
                 "raw_output": "Research output...",
             }
 
-        if completed_phase in PHASES[PHASES.index("structure"):]:
-            ctx.architect_output = "# Thesis Outline\n\n## 1. Introduction\n## 2. Literature Review"
-            ctx.formatter_output = "# Machine Learning in Healthcare\n\n## Introduction\n..."
+        if completed_phase in PHASES[PHASES.index("structure") :]:
+            ctx.architect_output = (
+                "# Thesis Outline\n\n## 1. Introduction\n## 2. Literature Review"
+            )
+            ctx.formatter_output = (
+                "# Machine Learning in Healthcare\n\n## Introduction\n..."
+            )
 
-        if completed_phase in PHASES[PHASES.index("citations"):]:
+        if completed_phase in PHASES[PHASES.index("citations") :]:
             ctx.citation_summary = "10 citations organized by theme"
             # Save bibliography.json
             citations_list = [
@@ -95,16 +106,30 @@ class TestRealResumeWorkflow:
             ]
             db = CitationDatabase(citations=citations_list)
             bibliography_path = research_dir / "bibliography.json"
-            bibliography_path.write_text(json.dumps(db.to_dict(), indent=2), encoding='utf-8')
+            bibliography_path.write_text(
+                json.dumps(db.to_dict(), indent=2), encoding="utf-8"
+            )
 
-        if completed_phase in PHASES[PHASES.index("compose"):]:
-            ctx.intro_output = "# Introduction\n\n" + "ML in healthcare content. " * 100 + "{cite_001}"
-            ctx.body_output = "## Methods\n\n" + "Research methodology. " * 200 + "{cite_002} {cite_003}"
-            ctx.lit_review_output = "## Literature Review\n\n" + "Prior work shows. " * 100
+        if completed_phase in PHASES[PHASES.index("compose") :]:
+            ctx.intro_output = (
+                "# Introduction\n\n" + "ML in healthcare content. " * 100 + "{cite_001}"
+            )
+            ctx.body_output = (
+                "## Methods\n\n"
+                + "Research methodology. " * 200
+                + "{cite_002} {cite_003}"
+            )
+            ctx.lit_review_output = (
+                "## Literature Review\n\n" + "Prior work shows. " * 100
+            )
             ctx.methodology_output = "## Methodology\n\n" + "We employed. " * 100
             ctx.results_output = "## Results\n\n" + "Our findings indicate. " * 100
-            ctx.discussion_output = "## Discussion\n\n" + "These results suggest. " * 100
-            ctx.conclusion_output = "## Conclusion\n\n" + "In summary. " * 50 + "{cite_004}"
+            ctx.discussion_output = (
+                "## Discussion\n\n" + "These results suggest. " * 100
+            )
+            ctx.conclusion_output = (
+                "## Conclusion\n\n" + "In summary. " * 50 + "{cite_004}"
+            )
 
         # Save checkpoint
         checkpoint_path = save_checkpoint(ctx, completed_phase, tmp_path)
@@ -177,7 +202,7 @@ class TestRealResumeWorkflow:
         # Create and save a full context
         original = DraftContext()
         original.topic = "Test Resume Topic"
-        original.language = "de"
+        original.language = "pl"
         original.academic_level = "master"
         original.author_name = "Test Author"
         original.institution = "Test University"
@@ -185,12 +210,12 @@ class TestRealResumeWorkflow:
         original.architect_output = "Original architect output"
         original.intro_output = "Original intro with {cite_001}"
         original.folders = {
-            'root': tmp_path,
-            'research': tmp_path / 'research',
+            "root": tmp_path,
+            "research": tmp_path / "research",
         }
 
         # Ensure directories exist
-        (tmp_path / 'research').mkdir(exist_ok=True)
+        (tmp_path / "research").mkdir(exist_ok=True)
 
         save_checkpoint(original, "structure", tmp_path)
 
@@ -255,7 +280,7 @@ class TestRealResumeWorkflow:
         """Resuming from validate means only compile is left."""
         ctx = DraftContext()
         ctx.topic = "Final Phase Test"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         (tmp_path).mkdir(exist_ok=True)
 
         save_checkpoint(ctx, "validate", tmp_path)
@@ -270,7 +295,7 @@ class TestRealResumeWorkflow:
         """Resuming from compile means pipeline is complete."""
         ctx = DraftContext()
         ctx.topic = "Complete Pipeline Test"
-        ctx.folders = {'root': tmp_path}
+        ctx.folders = {"root": tmp_path}
         (tmp_path).mkdir(exist_ok=True)
 
         save_checkpoint(ctx, "compile", tmp_path)
@@ -290,15 +315,19 @@ class TestLoadWithVariousTopics:
         """Create a base context for topic testing."""
         ctx = DraftContext()
         ctx.academic_level = "research_paper"
-        ctx.word_targets = {'min_citations': 10}
-        ctx.folders = {'root': tmp_path}
+        ctx.word_targets = {"min_citations": 10}
+        ctx.folders = {"root": tmp_path}
         tmp_path.mkdir(exist_ok=True)
         return ctx
 
     def test_technical_topic(self, base_context, tmp_path):
         """Test with technical/scientific topic."""
-        base_context.topic = "Quantum Computing Applications in Cryptography: A Systematic Review"
-        base_context.scout_output = "# Research on Quantum Cryptography\n\nShor's algorithm..."
+        base_context.topic = (
+            "Quantum Computing Applications in Cryptography: A Systematic Review"
+        )
+        base_context.scout_output = (
+            "# Research on Quantum Cryptography\n\nShor's algorithm..."
+        )
 
         save_checkpoint(base_context, "research", tmp_path)
         data, _ = load_checkpoint(tmp_path / "checkpoint.json")
@@ -318,7 +347,7 @@ class TestLoadWithVariousTopics:
     def test_german_topic(self, base_context, tmp_path):
         """Test with German language topic."""
         base_context.topic = "Künstliche Intelligenz in der deutschen Industrie 4.0"
-        base_context.language = "de"
+        base_context.language = "pl"
         base_context.language_name = "German"
         base_context.scout_output = "# Forschung über KI\n\nDie Auswirkungen..."
 
@@ -326,7 +355,7 @@ class TestLoadWithVariousTopics:
         data, _ = load_checkpoint(tmp_path / "checkpoint.json")
 
         assert "Künstliche" in data["topic"]
-        assert data["language"] == "de"
+        assert data["language"] == "pl"
 
     def test_chinese_topic(self, base_context, tmp_path):
         """Test with Chinese characters in topic."""
@@ -358,7 +387,9 @@ class TestLoadWithVariousTopics:
 
     def test_special_characters_in_topic(self, base_context, tmp_path):
         """Test topic with special characters."""
-        base_context.topic = "C++ vs Rust: A Performance Analysis of Memory-Safe Languages (2024)"
+        base_context.topic = (
+            "C++ vs Rust: A Performance Analysis of Memory-Safe Languages (2024)"
+        )
 
         save_checkpoint(base_context, "research", tmp_path)
         data, _ = load_checkpoint(tmp_path / "checkpoint.json")

@@ -5,10 +5,10 @@ import sys
 import os
 
 # Add engine to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'engine'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "engine"))
 
 # Change to engine directory for proper .env loading
-os.chdir(os.path.join(os.path.dirname(__file__), 'engine'))
+os.chdir(os.path.join(os.path.dirname(__file__), "engine"))
 
 from opendraft.draft_generator import generate_draft
 
@@ -27,7 +27,9 @@ Key areas to cover:
 8. Recommendations for accelerator programme design and policy implications
 """
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'output_accelerator_thesis')
+OUTPUT_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "output_accelerator_thesis"
+)
 
 if __name__ == "__main__":
     print(f"Generating thesis on: Entrepreneurial Accelerator Programmes")
@@ -35,10 +37,7 @@ if __name__ == "__main__":
     print("-" * 50)
 
     result = generate_draft(
-        topic=THESIS_TOPIC,
-        output_dir=OUTPUT_DIR,
-        academic_level="master",
-        verbose=True
+        topic=THESIS_TOPIC, output_dir=OUTPUT_DIR, academic_level="master", verbose=True
     )
 
     print("-" * 50)

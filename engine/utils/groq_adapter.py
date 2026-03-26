@@ -20,6 +20,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 @dataclass
 class UsageMetadata:
     """Mimics Gemini's usage_metadata structure"""
+
     prompt_token_count: int
     candidates_token_count: int
     total_token_count: int
@@ -28,6 +29,7 @@ class UsageMetadata:
 @dataclass
 class Part:
     """Mimics Gemini's Part structure"""
+
     text: str
     function_call: Optional[object] = None
 
@@ -35,16 +37,18 @@ class Part:
 @dataclass
 class Content:
     """Mimics Gemini's Content structure"""
+
     parts: list
 
     @classmethod
-    def from_text(cls, text: str) -> 'Content':
+    def from_text(cls, text: str) -> "Content":
         return cls(parts=[Part(text=text)])
 
 
 @dataclass
 class Candidate:
     """Mimics Gemini's Candidate structure"""
+
     content: Content
     finish_reason: str = "STOP"
 
@@ -52,6 +56,7 @@ class Candidate:
 @dataclass
 class GroqResponse:
     """Mimics Gemini's response structure for full compatibility"""
+
     text: str
     usage_metadata: UsageMetadata
     candidates: list = None
@@ -60,10 +65,7 @@ class GroqResponse:
         # Create candidates list matching Gemini format if not provided
         if self.candidates is None:
             self.candidates = [
-                Candidate(
-                    content=Content.from_text(self.text),
-                    finish_reason="STOP"
-                )
+                Candidate(content=Content.from_text(self.text), finish_reason="STOP")
             ]
 
 
@@ -142,17 +144,21 @@ class GroqModel:
         # Truncate and add notice
         truncated = prompt[:max_chars]
         # Find last complete sentence or paragraph
-        last_period = truncated.rfind('.')
-        last_newline = truncated.rfind('\n')
+        last_period = truncated.rfind(".")
+        last_newline = truncated.rfind("\n")
         cut_point = max(last_period, last_newline)
         if cut_point > max_chars * 0.8:  # Only use if we keep most of the content
-            truncated = truncated[:cut_point + 1]
+            truncated = truncated[: cut_point + 1]
 
-        logger.warning(f"Prompt truncated from {len(prompt):,} to {len(truncated):,} chars (context limit: {self.context_limit:,} tokens)")
+        logger.warning(
+            f"Prompt truncated from {len(prompt):,} to {len(truncated):,} chars (context limit: {self.context_limit:,} tokens)"
+        )
 
         return truncated + "\n\n[Note: Input was truncated to fit context window]"
 
-    def generate_content(self, prompt: str, generation_config: dict = None) -> GroqResponse:
+    def generate_content(
+        self, prompt: str, generation_config: dict = None
+    ) -> GroqResponse:
         """
         Generate content using Groq API.
         Mimics Gemini's generate_content interface.
@@ -171,7 +177,7 @@ class GroqModel:
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         data = {
@@ -190,7 +196,7 @@ class GroqModel:
                     self.api_url,
                     headers=headers,
                     json=data,
-                    timeout=300  # 5 min timeout for long generations
+                    timeout=300,  # 5 min timeout for long generations
                 )
                 response.raise_for_status()
                 result = response.json()
@@ -205,7 +211,9 @@ class GroqModel:
                     total_token_count=usage.get("total_tokens", 0),
                 )
 
-                logger.debug(f"Groq response: {usage_metadata.total_token_count} tokens")
+                logger.debug(
+                    f"Groq response: {usage_metadata.total_token_count} tokens"
+                )
 
                 # Add small delay to avoid rate limits (2 req/min is safe for free tier)
                 time.sleep(2)
@@ -213,7 +221,9 @@ class GroqModel:
                 return GroqResponse(text=text, usage_metadata=usage_metadata)
 
             except requests.exceptions.Timeout:
-                raise Exception(f"Groq API timeout after 300s for model {self.model_name}")
+                raise Exception(
+                    f"Groq API timeout after 300s for model {self.model_name}"
+                )
             except requests.exceptions.HTTPError as e:
                 # Handle rate limiting (429)
                 if e.response is not None and e.response.status_code == 429:
@@ -221,11 +231,15 @@ class GroqModel:
                     if attempt < max_retries - 1:
                         # Longer exponential backoff for Groq free tier limits
                         # 10s, 20s, 40s, 60s, 60s, 60s, 60s = up to 5 min total
-                        wait_time = min(60, (2 ** attempt) * 10)
-                        logger.warning(f"Rate limited (429) (attempt {attempt + 1}/{max_retries}), waiting {wait_time}s...")
+                        wait_time = min(60, (2**attempt) * 10)
+                        logger.warning(
+                            f"Rate limited (429) (attempt {attempt + 1}/{max_retries}), waiting {wait_time}s..."
+                        )
                         time.sleep(wait_time)
                         continue
-                    raise Exception(f"Groq API rate limited after {max_retries} retries: {e}")
+                    raise Exception(
+                        f"Groq API rate limited after {max_retries} retries: {e}"
+                    )
                 # Handle payload too large (413) - retry with smaller prompt
                 if e.response is not None and e.response.status_code == 413:
                     last_error = e
@@ -235,23 +249,34 @@ class GroqModel:
                         new_len = int(current_len * 0.7)
                         truncated = data["messages"][0]["content"][:new_len]
                         # Find clean break point
-                        last_break = max(truncated.rfind('\n\n'), truncated.rfind('. '))
+                        last_break = max(truncated.rfind("\n\n"), truncated.rfind(". "))
                         if last_break > new_len * 0.7:
-                            truncated = truncated[:last_break + 1]
-                        data["messages"][0]["content"] = truncated + "\n\n[Content truncated to fit API limits. Focus on the key points provided.]"
-                        logger.warning(f"Payload too large (413), truncating from {current_len:,} to {len(data['messages'][0]['content']):,} chars (attempt {attempt + 1})")
+                            truncated = truncated[: last_break + 1]
+                        data["messages"][0]["content"] = (
+                            truncated
+                            + "\n\n[Content truncated to fit API limits. Focus on the key points provided.]"
+                        )
+                        logger.warning(
+                            f"Payload too large (413), truncating from {current_len:,} to {len(data['messages'][0]['content']):,} chars (attempt {attempt + 1})"
+                        )
                         continue
-                    raise Exception(f"Groq API payload too large after {max_retries} truncation attempts: {e}")
+                    raise Exception(
+                        f"Groq API payload too large after {max_retries} truncation attempts: {e}"
+                    )
                 raise Exception(f"Groq API error: {e}")
             except (requests.exceptions.ConnectionError, ConnectionResetError) as e:
                 # Retry on connection errors with longer backoff
                 last_error = e
                 if attempt < max_retries - 1:
-                    wait_time = (2 ** attempt) * 2  # Exponential backoff: 2s, 4s, 8s, 16s
-                    logger.warning(f"Connection error (attempt {attempt + 1}/{max_retries}), retrying in {wait_time}s: {e}")
+                    wait_time = (2**attempt) * 2  # Exponential backoff: 2s, 4s, 8s, 16s
+                    logger.warning(
+                        f"Connection error (attempt {attempt + 1}/{max_retries}), retrying in {wait_time}s: {e}"
+                    )
                     time.sleep(wait_time)
                     continue
-                raise Exception(f"Groq API connection error after {max_retries} retries: {e}")
+                raise Exception(
+                    f"Groq API connection error after {max_retries} retries: {e}"
+                )
             except requests.exceptions.RequestException as e:
                 raise Exception(f"Groq API error: {e}")
             except KeyError as e:
@@ -284,6 +309,8 @@ def setup_groq_model(
 if __name__ == "__main__":
     print("Testing Groq adapter...")
     model = GroqModel("llama-4-maverick")
-    response = model.generate_content("Say 'Hello, I am Llama 4 Maverick!' in one sentence.")
+    response = model.generate_content(
+        "Say 'Hello, I am Llama 4 Maverick!' in one sentence."
+    )
     print(f"Response: {response.text}")
     print(f"Tokens: {response.usage_metadata.total_token_count}")

@@ -21,8 +21,9 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
+
 
 # FORBIDDEN phrases that indicate fake systematic review claims
 FORBIDDEN_PHRASES = [
@@ -50,9 +51,9 @@ EXPECTED_PHRASES = [
 
 def test_prompt_contains_honesty_rules():
     """Test 1: Verify crafter.md contains methodology honesty rules"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Prompt contains methodology honesty rules")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -61,7 +62,10 @@ def test_prompt_contains_honesty_rules():
         ("narrative literature review" in prompt, "Mentions narrative review"),
         ("FORBIDDEN Claims" in prompt, "Has forbidden claims section"),
         ("PRISMA" in prompt, "References PRISMA as forbidden"),
-        ("systematic review" in prompt.lower(), "Mentions systematic review (to forbid it)"),
+        (
+            "systematic review" in prompt.lower(),
+            "Mentions systematic review (to forbid it)",
+        ),
     ]
 
     all_passed = True
@@ -78,9 +82,9 @@ def test_prompt_contains_honesty_rules():
 
 def test_architect_has_review_types():
     """Test 2: Verify architect.md has review type classification"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Architect prompt has review type classification")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/02_structure/architect.md")
 
@@ -105,9 +109,9 @@ def test_architect_has_review_types():
 
 def test_deep_research_not_systematic():
     """Test 3: Verify deep_research.md doesn't claim 'systematic'"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Deep research prompt renamed to COMPREHENSIVE")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/01_research/deep_research.md")
 
@@ -133,23 +137,25 @@ def test_deep_research_not_systematic():
 
 def test_crafter_output_live(skip_if_no_key=True):
     """Test 4: Actually run crafter and check output (requires full engine setup)"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Live crafter output check")
-    print("="*60)
+    print("=" * 60)
 
     # This test requires full engine setup which is complex
     # For isolated testing, we verify the prompt rules are in place (tests 1-3)
     # Full integration testing happens via generate_draft workflow
     print("  ⏭️  SKIPPED: Requires full draft generation pipeline")
-    print("  Run full integration test with: python engine/draft_generator.py --topic 'test'")
+    print(
+        "  Run full integration test with: python engine/draft_generator.py --topic 'test'"
+    )
     return None
 
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-001 VALIDATION: Methodology Section Honesty")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "prompt_honesty_rules": test_prompt_contains_honesty_rules(),
@@ -158,9 +164,9 @@ def main():
         "live_output": test_crafter_output_live(skip_if_no_key=True),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

@@ -39,7 +39,7 @@ def safe_get(obj, key, default=None):
     Returns:
         Value from obj[key] or obj.key, or default if not found
     """
-    if hasattr(obj, 'get'):
+    if hasattr(obj, "get"):
         # Dictionary
         return obj.get(key, default)
     else:
@@ -57,7 +57,7 @@ class TitleScraper:
         timeout: int = 10,
         user_agent: str = "Academic-Draft-AI/1.0 (Citation Metadata Scraper)",
         rate_limit_delay: float = 1.0,
-        verbose: bool = False
+        verbose: bool = False,
     ):
         """
         Initialize scraper.
@@ -73,7 +73,7 @@ class TitleScraper:
         self.rate_limit_delay = rate_limit_delay
         self.verbose = verbose
         self.session = requests.Session()
-        self.session.headers.update({'User-Agent': user_agent})
+        self.session.headers.update({"User-Agent": user_agent})
 
     @retry_on_network_error(max_attempts=3, base_delay=2.0, max_delay=30.0)
     def scrape_title(self, url: str) -> Optional[str]:
@@ -100,10 +100,10 @@ class TitleScraper:
             response = self.session.get(url, timeout=self.timeout, allow_redirects=True)
             response.raise_for_status()
 
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(response.content, "html.parser")
 
             # Strategy 1: <title> tag
-            title_tag = soup.find('title')
+            title_tag = soup.find("title")
             if title_tag and title_tag.string:
                 title = title_tag.string.strip()
                 if self._is_valid_title(title):
@@ -112,25 +112,25 @@ class TitleScraper:
                     return self._clean_title(title)
 
             # Strategy 2: Open Graph title
-            og_title = soup.find('meta', property='og:title')
-            if og_title and og_title.get('content'):
-                title = og_title['content'].strip()
+            og_title = soup.find("meta", property="og:title")
+            if og_title and og_title.get("content"):
+                title = og_title["content"].strip()
                 if self._is_valid_title(title):
                     if self.verbose:
                         logger.debug(f"Found Open Graph title: {title[:60]}...")
                     return self._clean_title(title)
 
             # Strategy 3: Twitter Card title
-            twitter_title = soup.find('meta', attrs={'name': 'twitter:title'})
-            if twitter_title and twitter_title.get('content'):
-                title = twitter_title['content'].strip()
+            twitter_title = soup.find("meta", attrs={"name": "twitter:title"})
+            if twitter_title and twitter_title.get("content"):
+                title = twitter_title["content"].strip()
                 if self._is_valid_title(title):
                     if self.verbose:
                         logger.debug(f"Found Twitter Card title: {title[:60]}...")
                     return self._clean_title(title)
 
             # Strategy 4: First <h1> tag
-            h1_tag = soup.find('h1')
+            h1_tag = soup.find("h1")
             if h1_tag:
                 title = h1_tag.get_text().strip()
                 if self._is_valid_title(title):
@@ -140,9 +140,9 @@ class TitleScraper:
 
             # Strategy 5: URL path (last resort)
             parsed = urlparse(url)
-            path_title = parsed.path.rstrip('/').split('/')[-1]
+            path_title = parsed.path.rstrip("/").split("/")[-1]
             if path_title and len(path_title) > 3:
-                title = path_title.replace('-', ' ').replace('_', ' ').title()
+                title = path_title.replace("-", " ").replace("_", " ").title()
                 if self.verbose:
                     logger.warning(f"Using URL fallback title: {title[:60]}...")
                 return self._clean_title(title)
@@ -162,7 +162,10 @@ class TitleScraper:
             return None
         except Exception as e:
             if self.verbose:
-                logger.error(f"Unexpected error scraping {url[:60]}: {str(e)[:50]}", exc_info=True)
+                logger.error(
+                    f"Unexpected error scraping {url[:60]}: {str(e)[:50]}",
+                    exc_info=True,
+                )
             return None
 
     def _is_valid_title(self, title: str) -> bool:
@@ -179,11 +182,11 @@ class TitleScraper:
             return False
 
         # Reject if it's just a domain name
-        if re.match(r'^[\w\-]+\.(com|org|edu|gov|net|io|ai)$', title.lower()):
+        if re.match(r"^[\w\-]+\.(com|org|edu|gov|net|io|ai)$", title.lower()):
             return False
 
         # Reject common generic titles
-        generic = {'home', 'index', 'main', 'page', 'untitled', 'document', 'website'}
+        generic = {"home", "index", "main", "page", "untitled", "document", "website"}
         if title.lower() in generic:
             return False
 
@@ -201,36 +204,34 @@ class TitleScraper:
         """
         # Remove common suffixes
         suffixes = [
-            ' | McKinsey',
-            ' - McKinsey',
-            ' | BCG',
-            ' - BCG',
-            ' | OECD',
-            ' - OECD',
-            ' | World Bank',
-            ' - World Bank',
-            ' - YouTube',
-            ' | Gartner',
-            ' - Gartner',
+            " | McKinsey",
+            " - McKinsey",
+            " | BCG",
+            " - BCG",
+            " | OECD",
+            " - OECD",
+            " | World Bank",
+            " - World Bank",
+            " - YouTube",
+            " | Gartner",
+            " - Gartner",
         ]
 
         for suffix in suffixes:
             if title.endswith(suffix):
-                title = title[:-len(suffix)].strip()
+                title = title[: -len(suffix)].strip()
 
         # Collapse whitespace
-        title = re.sub(r'\s+', ' ', title)
+        title = re.sub(r"\s+", " ", title)
 
         # Limit length
         if len(title) > 200:
-            title = title[:197] + '...'
+            title = title[:197] + "..."
 
         return title
 
     def scrape_citations(
-        self,
-        citations: List[Dict],
-        filter_condition: Optional[callable] = None
+        self, citations: List[Dict], filter_condition: Optional[callable] = None
     ) -> Tuple[int, int]:
         """
         Scrape titles for multiple citations.
@@ -246,21 +247,22 @@ class TitleScraper:
         if filter_condition is None:
             # Default: Gemini Grounded with domain-name titles
             def default_filter(c):
-                if safe_get(c, 'api_source') != 'Gemini Grounded':
+                if safe_get(c, "api_source") != "Gemini Grounded":
                     return False
-                title = safe_get(c, 'title', '')
+                title = safe_get(c, "title", "")
                 # Bad title indicators
                 return (
-                    title.endswith('.com') or
-                    title.endswith('.org') or
-                    title.endswith('.edu') or
-                    title.endswith('.gov') or
-                    title.endswith('.net') or
-                    title.endswith('.io') or
-                    title.endswith('.ai') or
-                    len(title) < 10 or
-                    title.lower() in ['source', 'website', 'page', 'article']
+                    title.endswith(".com")
+                    or title.endswith(".org")
+                    or title.endswith(".edu")
+                    or title.endswith(".gov")
+                    or title.endswith(".net")
+                    or title.endswith(".io")
+                    or title.endswith(".ai")
+                    or len(title) < 10
+                    or title.lower() in ["source", "website", "page", "article"]
                 )
+
             filter_condition = default_filter
 
         # Filter citations
@@ -277,30 +279,34 @@ class TitleScraper:
         fail_count = 0
 
         for i, citation in enumerate(to_scrape, 1):
-            url = safe_get(citation, 'url')
+            url = safe_get(citation, "url")
             if not url:
                 fail_count += 1
                 continue
 
             if self.verbose:
-                logger.info(f"Processing citation [{i}/{len(to_scrape)}]: {safe_get(citation, 'id')}")
+                logger.info(
+                    f"Processing citation [{i}/{len(to_scrape)}]: {safe_get(citation, 'id')}"
+                )
                 logger.debug(f"Old title: '{safe_get(citation, 'title', 'N/A')}'")
 
             # Scrape title
             new_title = self.scrape_title(url)
 
             if new_title:
-                if hasattr(citation, 'title'):
+                if hasattr(citation, "title"):
                     citation.title = new_title
                 else:
-                    citation['title'] = new_title
+                    citation["title"] = new_title
                 success_count += 1
                 if self.verbose:
                     logger.info(f"Successfully scraped title: '{new_title}'")
             else:
                 fail_count += 1
                 if self.verbose:
-                    logger.warning(f"Failed to scrape title for {safe_get(citation, 'id')}")
+                    logger.warning(
+                        f"Failed to scrape title for {safe_get(citation, 'id')}"
+                    )
 
             # Rate limiting
             if i < len(to_scrape):
@@ -313,7 +319,7 @@ def scrape_citation_database_titles(
     database_path: str,
     output_path: Optional[str] = None,
     filter_condition: Optional[callable] = None,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> Dict:
     """
     Scrape titles for citations in a citation database JSON file.
@@ -336,38 +342,44 @@ def scrape_citation_database_titles(
         raise FileNotFoundError(f"Database not found: {database_path}")
 
     # Load database
-    with open(db_path, 'r', encoding='utf-8') as f:
+    with open(db_path, "r", encoding="utf-8") as f:
         try:
             data = json.load(f)
         except json.JSONDecodeError as e:
             import logging
-            logging.getLogger(__name__).warning(f"Invalid JSON in {database_path}: {e}")
-            return {'total_citations': 0, 'scraped_count': 0, 'successful': 0, 'failed': 0}
 
-    citations = data.get('citations', [])
+            logging.getLogger(__name__).warning(f"Invalid JSON in {database_path}: {e}")
+            return {
+                "total_citations": 0,
+                "scraped_count": 0,
+                "successful": 0,
+                "failed": 0,
+            }
+
+    citations = data.get("citations", [])
 
     # Scrape titles
     scraper = TitleScraper(verbose=verbose)
     success_count, fail_count = scraper.scrape_citations(citations, filter_condition)
 
     # Update database
-    data['citations'] = citations
-    if 'metadata' in data:
-        data['metadata']['title_scraping_applied'] = True
-        data['metadata']['titles_updated'] = success_count
+    data["citations"] = citations
+    if "metadata" in data:
+        data["metadata"]["title_scraping_applied"] = True
+        data["metadata"]["titles_updated"] = success_count
 
     # Save
     if output_path is None:
         output_path = db_path
 
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     stats = {
-        'total_citations': len(citations),
-        'scraped_count': success_count + fail_count,
-        'successful': success_count,
-        'failed': fail_count
+        "total_citations": len(citations),
+        "scraped_count": success_count + fail_count,
+        "successful": success_count,
+        "failed": fail_count,
     }
 
     if verbose:
@@ -376,15 +388,21 @@ def scrape_citation_database_titles(
     return stats
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     import argparse
 
-    parser = argparse.ArgumentParser(description='Scrape titles for Gemini Grounded citations')
-    parser.add_argument('database', help='Path to citation_database.json')
-    parser.add_argument('-o', '--output', help='Output path (default: overwrite original)')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output')
-    parser.add_argument('--all', action='store_true', help='Scrape all citations (not just Gemini)')
+    parser = argparse.ArgumentParser(
+        description="Scrape titles for Gemini Grounded citations"
+    )
+    parser.add_argument("database", help="Path to citation_database.json")
+    parser.add_argument(
+        "-o", "--output", help="Output path (default: overwrite original)"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
+    parser.add_argument(
+        "--all", action="store_true", help="Scrape all citations (not just Gemini)"
+    )
 
     args = parser.parse_args()
 
@@ -394,7 +412,7 @@ if __name__ == '__main__':
         args.database,
         output_path=args.output,
         filter_condition=filter_fn,
-        verbose=args.verbose
+        verbose=args.verbose,
     )
 
     logger.info("Summary:")

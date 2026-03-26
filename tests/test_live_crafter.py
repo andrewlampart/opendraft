@@ -20,6 +20,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Load environment with override to ensure fresh values
 from dotenv import load_dotenv
+
 load_dotenv(PROJECT_ROOT / ".env", override=True)
 load_dotenv(PROJECT_ROOT / ".env.local", override=True)
 
@@ -30,7 +31,7 @@ from engine.utils.gemini_client import GeminiModelWrapper
 def load_prompt(prompt_path: str) -> str:
     """Load prompt file"""
     path = PROJECT_ROOT / prompt_path
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
@@ -50,7 +51,9 @@ def has_api_key():
 def network_ready():
     """Check DNS reachability for Gemini endpoint."""
     try:
-        socket.getaddrinfo("generativelanguage.googleapis.com", 443, proto=socket.IPPROTO_TCP)
+        socket.getaddrinfo(
+            "generativelanguage.googleapis.com", 443, proto=socket.IPPROTO_TCP
+        )
         return True, ""
     except OSError as exc:
         return False, str(exc)
@@ -72,6 +75,7 @@ def is_network_error(exc: Exception) -> bool:
         "[errno 8]",
     ]
     return any(marker in error_text for marker in markers)
+
 
 # TICKET-001: Forbidden methodology phrases
 FORBIDDEN_METHODOLOGY = [
@@ -95,7 +99,7 @@ def run_crafter_test(test_name: str, user_input: str, checks: dict):
     """Run crafter with input and check output"""
     print(f"\n{'='*60}")
     print(f"LIVE TEST: {test_name}")
-    print("="*60)
+    print("=" * 60)
 
     try:
         # Setup model
@@ -134,7 +138,9 @@ def run_crafter_test(test_name: str, user_input: str, checks: dict):
             for phrase_group in checks["required_any"]:
                 found = any(p.lower() in output.lower() for p in phrase_group)
                 if found:
-                    print(f"  ✅ PASS: Found metric/data element from {phrase_group[:3]}...")
+                    print(
+                        f"  ✅ PASS: Found metric/data element from {phrase_group[:3]}..."
+                    )
                 else:
                     print(f"  ❌ FAIL: Missing metrics - need one of {phrase_group}")
                     all_passed = False
@@ -156,14 +162,15 @@ def run_crafter_test(test_name: str, user_input: str, checks: dict):
             return None
         print(f"  ❌ ERROR: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
 
 def main():
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("LIVE CRAFTER TESTS - TICKET-001 & TICKET-002")
-    print("="*60)
+    print("=" * 60)
 
     if not has_api_key():
         print("⏭️  SKIP: No GOOGLE_API_KEY/GEMINI_API_KEY configured")
@@ -190,7 +197,7 @@ def main():
         """,
         checks={
             "forbidden": FORBIDDEN_METHODOLOGY,
-        }
+        },
     )
 
     # Test 2: Analysis section (TICKET-002)
@@ -209,7 +216,7 @@ def main():
         checks={
             "required_any": REQUIRED_ANALYSIS,
             "require_table": True,
-        }
+        },
     )
 
     # Test 3: Preprint preference (TICKET-004)
@@ -230,7 +237,7 @@ def main():
         checks={
             "required_any": [("cite_002", "Nature Communications", "2022")],
             "forbidden": ["cite_001", "bioRxiv", "preprint"],
-        }
+        },
     )
 
     # Test 4: No padding citations (TICKET-005)
@@ -249,8 +256,14 @@ def main():
         """,
         checks={
             "required_any": [("cite_001", "cite_002", "Horvath", "GrimAge")],
-            "forbidden": ["cite_003", "cite_004", "cybersecurity", "Indonesia", "banking"],
-        }
+            "forbidden": [
+                "cite_003",
+                "cite_004",
+                "cybersecurity",
+                "Indonesia",
+                "banking",
+            ],
+        },
     )
 
     # Test 5: Named entity citation (TICKET-003)
@@ -272,13 +285,13 @@ def main():
         """,
         checks={
             "required_any": [("cite_001", "cite_002", "DeepMAge", "GrimAge")],
-        }
+        },
     )
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = sum(1 for r in results.values() if r is True)
     failed = sum(1 for r in results.values() if r is False)

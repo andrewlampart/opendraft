@@ -37,7 +37,7 @@ pdf_path, docx_path = generate_draft(
     academic_level="research_paper",
     output_dir=OUTPUT_DIR,
     skip_validation=True,
-    verbose=True
+    verbose=True,
 )
 
 print("\nGeneration complete!")
@@ -46,7 +46,7 @@ print(f"DOCX: {docx_path}")
 
 # Create ZIP with both files
 zip_path = OUTPUT_DIR / "thesis_cmo_growth_investment.zip"
-with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
     if pdf_path.exists():
         zipf.write(pdf_path, pdf_path.name)
     if docx_path.exists():

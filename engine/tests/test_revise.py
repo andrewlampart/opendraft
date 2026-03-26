@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from utils.revise import (
@@ -122,7 +123,9 @@ class TestScoreDraftSimple:
     def test_citations_contribute_to_score(self):
         """Test that citations increase score."""
         no_citations = "This is content without citations."
-        with_citations = "This is content {cite_1} with citations {cite_2} and more {cite_3}."
+        with_citations = (
+            "This is content {cite_1} with citations {cite_2} and more {cite_3}."
+        )
 
         score_without = score_draft_simple(no_citations)
         score_with = score_draft_simple(with_citations)
@@ -178,9 +181,12 @@ This is our conclusion.
 
     def test_score_caps_at_100(self):
         """Test that score doesn't exceed 100."""
-        massive_draft = ("# Header\n\n" + "Word {cite_1} " * 10000 +
-                        "\n## Introduction\n## Literature Review\n## Methodology\n" +
-                        "## Results\n## Discussion\n## Conclusion\n")
+        massive_draft = (
+            "# Header\n\n"
+            + "Word {cite_1} " * 10000
+            + "\n## Introduction\n## Literature Review\n## Methodology\n"
+            + "## Results\n## Discussion\n## Conclusion\n"
+        )
         result = score_draft_simple(massive_draft)
         assert result["overall_score"] <= 100
 
@@ -274,7 +280,8 @@ Results from {cite_1} and {cite_4}.
     def test_citation_regex_pattern(self):
         """Test that citation regex matches correctly."""
         import re
-        pattern = r'\{cite_\d+\}'
+
+        pattern = r"\{cite_\d+\}"
 
         # Should match
         assert re.search(pattern, "{cite_1}")
@@ -321,7 +328,7 @@ We used methods {cite_3}. The approach was systematic.
 
 In conclusion {cite_4}. Future work should explore more.
 """
-        with patch('utils.revise.call_gemini_revise', return_value=mock_revised):
+        with patch("utils.revise.call_gemini_revise", return_value=mock_revised):
             with tempfile.TemporaryDirectory() as tmpdir:
                 folder = Path(tmpdir)
                 exports = folder / "exports"
@@ -331,14 +338,15 @@ In conclusion {cite_4}. Future work should explore more.
                 draft.write_text(original)
 
                 from utils.revise import revise_draft
+
                 result = revise_draft(folder, "Make it longer")
 
                 # Verify output
-                assert result['md_path'].exists()
-                assert result['score_after'] >= result['score_before']
+                assert result["md_path"].exists()
+                assert result["score_after"] >= result["score_before"]
 
                 # Verify citations preserved
-                revised_content = result['md_path'].read_text()
+                revised_content = result["md_path"].read_text()
                 assert "{cite_1}" in revised_content
                 assert "{cite_2}" in revised_content
                 assert "{cite_3}" in revised_content
@@ -351,15 +359,15 @@ In conclusion {cite_4}. Future work should explore more.
         original = "Content {cite_1} and {cite_2} and {cite_3}."
         bad_revision = "Content {cite_1} and {cite_2}."  # Lost cite_3
 
-        original_citations = set(re.findall(r'\{cite_\d+\}', original))
-        revised_citations = set(re.findall(r'\{cite_\d+\}', bad_revision))
+        original_citations = set(re.findall(r"\{cite_\d+\}", original))
+        revised_citations = set(re.findall(r"\{cite_\d+\}", bad_revision))
 
         missing = original_citations - revised_citations
         assert missing == {"{cite_3}"}
 
     @pytest.mark.skipif(
         not Path.home().joinpath(".opendraft/config.json").exists(),
-        reason="No API key configured"
+        reason="No API key configured",
     )
     def test_call_gemini_revise_preserves_citations_live(self):
         """Test that Gemini revision preserves citations (live API)."""

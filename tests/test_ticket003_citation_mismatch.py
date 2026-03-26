@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_verifier_has_named_entity_checks():
     """Test 1: Verify verifier.md has named entity verification"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Verifier has named entity verification")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/verifier.md")
 
@@ -35,7 +35,10 @@ def test_verifier_has_named_entity_checks():
         ("NAMED ENTITY & AUTHOR VERIFICATION" in prompt, "Has named entity section"),
         ("Named Entity Matching" in prompt, "Has named entity matching subsection"),
         ("Concept vs Instance" in prompt, "Distinguishes concept vs instance papers"),
-        ("Author Attribution Verification" in prompt, "Has author attribution verification"),
+        (
+            "Author Attribution Verification" in prompt,
+            "Has author attribution verification",
+        ),
         ("DeepMAge" in prompt, "Uses concrete example (DeepMAge)"),
         ("CRITICAL MISATTRIBUTION" in prompt, "Flags misattributions as critical"),
         ("Origin Paper" in prompt, "Checks for origin paper"),
@@ -56,15 +59,21 @@ def test_verifier_has_named_entity_checks():
 
 def test_verifier_shows_wrong_vs_right():
     """Test 2: Verify verifier shows wrong vs right example"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Verifier shows wrong vs right attribution example")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/verifier.md")
 
     checks = [
-        ("❌ WRONG" in prompt and "DeepMAge" in prompt, "Shows WRONG example with DeepMAge"),
-        ("✅ RIGHT" in prompt and "Galkin" in prompt, "Shows RIGHT example with correct author"),
+        (
+            "❌ WRONG" in prompt and "DeepMAge" in prompt,
+            "Shows WRONG example with DeepMAge",
+        ),
+        (
+            "✅ RIGHT" in prompt and "Galkin" in prompt,
+            "Shows RIGHT example with correct author",
+        ),
         ("Camillo" in prompt, "Mentions incorrect attribution (Camillo)"),
         ("concept paper" in prompt.lower(), "Warns about concept paper confusion"),
     ]
@@ -83,9 +92,9 @@ def test_verifier_shows_wrong_vs_right():
 
 def test_crafter_has_named_tool_warning():
     """Test 3: Verify crafter.md warns about named tool citations"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Crafter has named tool citation warning")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/03_compose/crafter.md")
 
@@ -111,9 +120,9 @@ def test_crafter_has_named_tool_warning():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-003 VALIDATION: Citation-Author Mismatch Prevention")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "verifier_named_entity": test_verifier_has_named_entity_checks(),
@@ -121,9 +130,9 @@ def main():
         "crafter_warning": test_crafter_has_named_tool_warning(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0

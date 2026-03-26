@@ -19,15 +19,15 @@ def load_prompt(prompt_path: str) -> str:
     path = PROJECT_ROOT / prompt_path
     if not path.exists():
         raise FileNotFoundError(f"Prompt file not found: {path}")
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
 def test_skeptic_has_contradiction_detection():
     """Test 1: Verify skeptic.md has contradiction detection"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Skeptic has contradiction detection")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/skeptic.md")
 
@@ -36,7 +36,10 @@ def test_skeptic_has_contradiction_detection():
         ("Claim Consistency Check" in prompt, "Has claim consistency check"),
         ("Hedge Consistency" in prompt, "Has hedge consistency check"),
         ("Resolution Requirement" in prompt, "Has resolution requirement"),
-        ("ZERO TOLERANCE" in prompt and "CONTRADICTING" in prompt, "Zero tolerance policy"),
+        (
+            "ZERO TOLERANCE" in prompt and "CONTRADICTING" in prompt,
+            "Zero tolerance policy",
+        ),
     ]
 
     all_passed = True
@@ -53,17 +56,21 @@ def test_skeptic_has_contradiction_detection():
 
 def test_skeptic_shows_contradiction_examples():
     """Test 2: Verify skeptic shows contradiction examples from ticket"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Skeptic shows real contradiction examples")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/skeptic.md")
 
     checks = [
-        ("interpretability" in prompt.lower() and "black box" in prompt.lower(),
-         "Shows interpretability vs black-box example"),
-        ("indisputable" in prompt.lower() and "limitations" in prompt.lower(),
-         "Shows indisputable vs limitations example"),
+        (
+            "interpretability" in prompt.lower() and "black box" in prompt.lower(),
+            "Shows interpretability vs black-box example",
+        ),
+        (
+            "indisputable" in prompt.lower() and "limitations" in prompt.lower(),
+            "Shows indisputable vs limitations example",
+        ),
         ("CONTRADICTION:" in prompt, "Labels contradictions clearly"),
         ("RESOLVED:" in prompt, "Shows resolution examples"),
     ]
@@ -82,19 +89,20 @@ def test_skeptic_shows_contradiction_examples():
 
 def test_skeptic_has_hedge_table():
     """Test 3: Verify skeptic has hedge consistency table"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Skeptic has hedge consistency table")
-    print("="*60)
+    print("=" * 60)
 
     prompt = load_prompt("engine/prompts/04_validate/skeptic.md")
 
     checks = [
         ("If You Say..." in prompt, "Has hedge table header"),
         ("You Cannot Also Say" in prompt, "Has contradiction column"),
-        ('"indisputable"' in prompt and '"has limitations"' in prompt,
-         "Lists indisputable/limitations pair"),
-        ('"proves"' in prompt and '"suggests"' in prompt,
-         "Lists proves/suggests pair"),
+        (
+            '"indisputable"' in prompt and '"has limitations"' in prompt,
+            "Lists indisputable/limitations pair",
+        ),
+        ('"proves"' in prompt and '"suggests"' in prompt, "Lists proves/suggests pair"),
     ]
 
     all_passed = True
@@ -111,9 +119,9 @@ def test_skeptic_has_hedge_table():
 
 def main():
     """Run all tests"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TICKET-006 VALIDATION: Internal Contradiction Detection")
-    print("="*60)
+    print("=" * 60)
 
     results = {
         "contradiction_detection": test_skeptic_has_contradiction_detection(),
@@ -121,9 +129,9 @@ def main():
         "hedge_table": test_skeptic_has_hedge_table(),
     }
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
