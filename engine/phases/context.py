@@ -30,6 +30,11 @@ class DraftContext:
     verbose: bool = True
     blurb: Optional[str] = None
 
+    research_goal: str = ""
+    hypotheses: List[str] = field(default_factory=list)
+    research_questions: List[str] = field(default_factory=list)
+    research_notes: Optional[str] = None
+
     toc_template: str = "default"
     thesis_work_mode: str = "literature_review"
     toc_options: Dict[str, Any] = field(default_factory=dict)
@@ -96,3 +101,23 @@ class DraftContext:
     # Token tracking (optional)
     # ------------------------------------------------------------------
     token_tracker: Any = None  # TokenTracker
+
+
+def research_design_prompt_block(ctx: DraftContext) -> str:
+    """Tekst do outline (structure) i compose — cel, hipotezy, pytania, uwagi."""
+    chunks = []
+    goal = (ctx.research_goal or "").strip()
+    if goal:
+        chunks.append(f"**Research goal:**\n{goal}")
+    hyps = [h.strip() for h in (ctx.hypotheses or []) if h and str(h).strip()]
+    if hyps:
+        lines = "\n".join(f"{i + 1}. {h}" for i, h in enumerate(hyps))
+        chunks.append(f"**Hypotheses:**\n{lines}")
+    rqs = [q.strip() for q in (ctx.research_questions or []) if q and str(q).strip()]
+    if rqs:
+        lines = "\n".join(f"{i + 1}. {q}" for i, q in enumerate(rqs))
+        chunks.append(f"**Research questions:**\n{lines}")
+    notes = (ctx.research_notes or "").strip()
+    if notes:
+        chunks.append(f"**Additional author guidance:**\n{notes}")
+    return "\n\n".join(chunks) if chunks else ""

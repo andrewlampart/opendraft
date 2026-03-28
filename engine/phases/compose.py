@@ -8,7 +8,7 @@ import time
 import logging
 import traceback
 
-from .context import DraftContext
+from .context import DraftContext, research_design_prompt_block
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +235,9 @@ def _write_introduction(ctx: DraftContext) -> None:
                 phase="writing",
             )
 
+        rd_block = research_design_prompt_block(ctx)
+        rd_suffix = f"\n\nUser-defined research framing (align introduction with this):\n{rd_block}\n" if rd_block else ""
+
         ctx.intro_output = run_agent(
             model=ctx.model,
             name="Crafter - Introduction",
@@ -242,7 +245,7 @@ def _write_introduction(ctx: DraftContext) -> None:
             user_input=f"""Write Introduction:
 
 Topic: {ctx.topic}
-
+{rd_suffix}
 Outline:
 {ctx.formatter_output[:2000]}{ctx.citation_summary}
 

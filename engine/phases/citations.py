@@ -43,6 +43,8 @@ def run_citation_management(ctx: DraftContext) -> None:
         "nalt": "NALT",
         "chicago": "Chicago",
         "mla": "MLA",
+        "vancouver": "Vancouver",
+        "harvard": "Harvard",
     }
     resolved_style = style_map.get(ctx.citation_style, "APA 7th")
 

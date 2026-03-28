@@ -535,6 +535,10 @@ def generate_draft(
     thesis_work_mode: str = "literature_review",
     toc_options: Optional[Dict] = None,
     user_results_markdown: Optional[str] = None,
+    research_goal: str = "",
+    hypotheses: Optional[List[str]] = None,
+    research_questions: Optional[List[str]] = None,
+    research_notes: Optional[str] = None,
 ) -> Tuple[Path, Path]:
     """
     Generate a complete academic draft using specialized AI agents.
@@ -558,12 +562,17 @@ def generate_draft(
         second_examiner: Second examiner name
         location: City/location for date line
         student_id: Student matriculation number
-        citation_style: Citation format - 'apa' or 'ieee' (default: 'apa')
+        citation_style: Citation format slug: 'apa', 'ieee', 'chicago', 'harvard',
+            'vancouver', also 'nalt', 'mla' (default: 'apa')
         resume_from: Path to checkpoint.json to resume from (skips completed phases)
         toc_template: Table-of-contents template id (default, classic_social, case_study, imrad_science, business_mgmt)
         thesis_work_mode: literature_review or empirical (prompt set for compose)
         toc_options: Dict with include_abbreviations, include_figures_tables, include_annex, numbering
         user_results_markdown: Optional user-provided markdown for results chapter (future)
+        research_goal: User-stated research goal (structure + compose)
+        hypotheses: 3–5 hypotheses from the job form
+        research_questions: 3–5 research questions from the job form
+        research_notes: Optional extra author guidance
 
     Returns:
         Tuple[Path, Path]: (pdf_path, docx_path) - Paths to generated draft files
@@ -673,6 +682,10 @@ def generate_draft(
             skip_validation=skip_validation,
             verbose=verbose,
             blurb=blurb,
+            research_goal=(research_goal or "").strip(),
+            hypotheses=list(hypotheses) if hypotheses else [],
+            research_questions=list(research_questions) if research_questions else [],
+            research_notes=(research_notes or "").strip() or None,
             author_name=author_name,
             institution=institution,
             department=department,

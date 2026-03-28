@@ -6,7 +6,7 @@ ABOUTME: Creates thesis outline and applies academic formatting
 
 import logging
 
-from .context import DraftContext
+from .context import DraftContext, research_design_prompt_block
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +49,9 @@ def run_structure_phase(ctx: DraftContext) -> None:
     outline_context = f"Create draft outline for: {ctx.topic}"
     if ctx.blurb:
         outline_context += f"\n\nFocus/Context: {ctx.blurb}"
+    rd = research_design_prompt_block(ctx)
+    if rd:
+        outline_context += f"\n\n{rd}"
     outline_context += (
         f"\n\nResearch gaps:\n{ctx.signal_output[:2000]}\n\n"
         f"Length: {total_words} words (document type: {doc_type}, {chapters_info} chapters)"

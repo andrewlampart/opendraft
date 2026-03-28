@@ -230,10 +230,15 @@ class CitationCompiler:
             return self._format_chicago_in_text(citation)
         elif self.style == "MLA":
             return self._format_mla_in_text(citation)
+        elif self.style == "Vancouver":
+            return self._format_ieee_in_text(citation)
+        elif self.style == "Harvard":
+            return self._format_harvard_in_text(citation)
         else:
             raise NotImplementedError(
                 f"Citation style '{self.style}' is not yet implemented. "
-                f"Supported styles: 'APA 7th', 'IEEE', 'NALT', 'Chicago', 'MLA'. "
+                f"Supported styles: 'APA 7th', 'IEEE', 'NALT', 'Chicago', 'MLA', "
+                f"'Vancouver', 'Harvard'. "
                 f"See docs/CITATION_STYLES_ROADMAP.md for planned styles."
             )
 
@@ -279,6 +284,21 @@ class CitationCompiler:
             return f"({authors[0]} and {authors[1]})"
         else:
             return f"({authors[0]} et al.)"
+
+    def _format_harvard_in_text(self, citation: Citation) -> str:
+        """
+        Harvard-style author–date in-text (UK / generic).
+
+        Uses whatever strings are in `authors` (often surnames only); not every
+        institutional Harvard variant is matched.
+        """
+        authors = citation.authors
+        year = citation.year
+        if len(authors) == 1:
+            return f"({authors[0]}, {year})"
+        if len(authors) == 2:
+            return f"({authors[0]} and {authors[1]}, {year})"
+        return f"({authors[0]} et al., {year})"
 
     def _format_nalt_in_text(self, citation: Citation) -> str:
         """Format in-text citation as NALT footnote marker [^N]."""
@@ -549,8 +569,8 @@ class CitationCompiler:
             else:
                 return "\n(No citations found)\n"
 
-        # Sort alphabetically by first author (APA, NALT, Chicago, MLA)
-        if self.style in ("APA 7th", "NALT", "Chicago", "MLA"):
+        # Sort alphabetically by first author (author–date styles)
+        if self.style in ("APA 7th", "NALT", "Chicago", "MLA", "Harvard"):
             cited_citations.sort(
                 key=lambda c: c.authors[0].lower() if c.authors else ""
             )
@@ -569,10 +589,15 @@ class CitationCompiler:
                 ref = self._format_chicago_reference(citation)
             elif self.style == "MLA":
                 ref = self._format_mla_reference(citation)
+            elif self.style == "Vancouver":
+                ref = self._format_vancouver_reference(citation)
+            elif self.style == "Harvard":
+                ref = self._format_harvard_reference(citation)
             else:
                 raise NotImplementedError(
                     f"Citation style '{self.style}' is not yet implemented. "
-                    f"Supported styles: 'APA 7th', 'IEEE', 'NALT', 'Chicago', 'MLA'. "
+                    f"Supported styles: 'APA 7th', 'IEEE', 'NALT', 'Chicago', 'MLA', "
+                    f"'Vancouver', 'Harvard'. "
                     f"See docs/CITATION_STYLES_ROADMAP.md for planned styles."
                 )
 
@@ -966,6 +991,184 @@ class CitationCompiler:
             elif url:
                 ref += f" {url}."
 
+        return ref
+
+    def _vancouver_author_string(self, authors: List[str]) -> str:
+        """NLM-style author list; up to 6 names, then et al."""
+        if not authors:
+            return ""
+        if len(authors) <= 6:
+            return ", ".join(authors)
+        return ", ".join(authors[:6]) + ", et al"
+
+    def _format_vancouver_reference(self, citation: Citation) -> str:
+        """
+        Numbered reference in a pragmatic NLM / Vancouver style.
+
+        Uses full journal titles (no MEDLINE abbreviations). In-text markers
+        are [n] like IEEE.
+        """
+        num = int(citation.id.replace("cite_", ""))
+        authors = self._vancouver_author_string(citation.authors)
+        title = citation.title
+        year = citation.year
+        source_type = citation.source_type
+        doi = citation.doi or ""
+        url = citation.url or ""
+
+        if source_type == "journal":
+            journal = citation.journal or ""
+            volume = citation.volume
+            issue = citation.issue
+            pages = citation.pages or ""
+            ref = f"[{num}] {authors}. {title}. *{journal}*. {year}"
+            mid = ""
+            if volume is not None:
+                mid = str(volume)
+                if issue is not None:
+                    mid += f"({issue})"
+            elif issue is not None:
+                mid = f"({issue})"
+            if pages:
+                mid = f"{mid}:{pages}" if mid else pages
+            if mid:
+                ref += f";{mid}"
+            ref += "."
+            if doi:
+                ref += f" doi:{doi}"
+            elif url:
+                ref += f" Available from: {url}"
+            return ref
+
+        if source_type == "book":
+            publisher = citation.publisher or ""
+            ref = f"[{num}] {authors}. *{title}*. {publisher}; {year}."
+            if doi:
+                ref += f" doi:{doi}"
+            elif url:
+                ref += f" Available from: {url}"
+            return ref
+
+        if source_type == "conference":
+            publisher = citation.publisher or ""
+            pages = citation.pages or ""
+            ref = f"[{num}] {authors}. {title}."
+            if publisher:
+                ref += f" In: {publisher}."
+            ref += f" {year}"
+            if pages:
+                ref += f":{pages}"
+            ref += "."
+            if doi:
+                ref += f" doi:{doi}"
+            elif url:
+                ref += f" Available from: {url}"
+            return ref
+
+        if source_type in ("report", "website"):
+            publisher = citation.publisher or ""
+            ref = f"[{num}] {authors}. {title}."
+            if publisher:
+                ref += f" {publisher};"
+            ref += f" {year}."
+            if doi:
+                ref += f" doi:{doi}"
+            elif url:
+                ref += f" Available from: {url}"
+            return ref
+
+        ref = f"[{num}] {authors}. {title}. {year}."
+        if doi:
+            ref += f" doi:{doi}"
+        elif url:
+            ref += f" Available from: {url}"
+        return ref
+
+    def _harvard_reference_opening(self, authors: List[str], year: int) -> str:
+        """Author–year opening for Harvard reference list."""
+        if not authors:
+            return f"({year})"
+        if len(authors) == 1:
+            return f"{authors[0]} ({year})"
+        if len(authors) == 2:
+            return f"{authors[0]} and {authors[1]} ({year})"
+        return f"{authors[0]} et al. ({year})"
+
+    def _format_harvard_reference(self, citation: Citation) -> str:
+        """
+        UK-style Harvard reference list (simplified).
+
+        Assumes `authors` entries are whatever the pipeline stored (often
+        surnames); not a full Cite Them Right / institutional variant.
+        """
+        authors = citation.authors
+        year = citation.year
+        title = citation.title
+        opening = self._harvard_reference_opening(authors, year)
+        doi = citation.doi or ""
+        url = citation.url or ""
+        source_type = citation.source_type
+
+        if source_type == "journal":
+            journal = citation.journal or ""
+            volume = citation.volume
+            issue = citation.issue
+            pages = citation.pages or ""
+            ref = f"{opening} '{title}', *{journal}*"
+            if volume is not None:
+                ref += f", vol. {volume}"
+            if issue is not None:
+                ref += f", no. {issue}"
+            if pages:
+                ref += f", pp. {pages}"
+            ref += "."
+            if doi:
+                ref += f" doi:{doi}."
+            elif url:
+                ref += f" Available at: {url}."
+            return ref
+
+        if source_type == "book":
+            publisher = citation.publisher or ""
+            ref = f"{opening} *{title}*."
+            if publisher:
+                ref += f" {publisher}."
+            if doi:
+                ref += f" doi:{doi}."
+            elif url:
+                ref += f" Available at: {url}."
+            return ref
+
+        if source_type == "conference":
+            publisher = citation.publisher or ""
+            pages = citation.pages or ""
+            ref = f"{opening} '{title}'."
+            if publisher:
+                ref += f" In *{publisher}*."
+            if pages:
+                ref += f" pp. {pages}."
+            if doi:
+                ref += f" doi:{doi}."
+            elif url:
+                ref += f" Available at: {url}."
+            return ref
+
+        if source_type in ("report", "website"):
+            publisher = citation.publisher or ""
+            ref = f"{opening} '{title}'."
+            if publisher:
+                ref += f" {publisher}."
+            if doi:
+                ref += f" doi:{doi}."
+            elif url:
+                ref += f" Available at: {url}."
+            return ref
+
+        ref = f"{opening} '{title}'."
+        if doi:
+            ref += f" doi:{doi}."
+        elif url:
+            ref += f" Available at: {url}."
         return ref
 
     def validate_compilation(self, original: str, compiled: str) -> Dict[str, Any]:

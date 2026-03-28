@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ABOUTME: Tests for citation style formatting
-ABOUTME: Verifies APA, IEEE, and NALT styles work correctly, and unsupported styles raise errors
+ABOUTME: Verifies APA, IEEE, NALT, Chicago, MLA, Vancouver, Harvard; unsupported styles raise errors
 """
 
 import pytest
@@ -244,8 +244,6 @@ class TestAPAReferenceFormatting:
 
 
 # =============================================================================
-# UNSUPPORTED STYLE TESTS
-# =============================================================================
 # CHICAGO IN-TEXT CITATION TESTS
 # =============================================================================
 
@@ -306,6 +304,50 @@ class TestMLAInTextCitations:
 
 
 # =============================================================================
+# HARVARD IN-TEXT CITATION TESTS
+# =============================================================================
+
+
+class TestHarvardInTextCitations:
+    """Harvard-style author–date in-text (UK / generic)."""
+
+    def test_single_author(self, sample_citation_single_author):
+        db = CitationDatabase(citations=[], citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        assert compiler.format_in_text_citation(sample_citation_single_author) == (
+            "(Smith, 2023)"
+        )
+
+    def test_two_authors(self, sample_citation_two_authors):
+        db = CitationDatabase(citations=[], citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        assert compiler.format_in_text_citation(sample_citation_two_authors) == (
+            "(Smith and Johnson, 2022)"
+        )
+
+    def test_multiple_authors(self, sample_citation_multiple_authors):
+        db = CitationDatabase(citations=[], citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        assert compiler.format_in_text_citation(sample_citation_multiple_authors) == (
+            "(Smith et al., 2021)"
+        )
+
+
+# =============================================================================
+# VANCOUVER IN-TEXT CITATION TESTS
+# =============================================================================
+
+
+class TestVancouverInTextCitations:
+    """Vancouver uses the same [n] markers as IEEE."""
+
+    def test_numbered_like_ieee(self, sample_citation_single_author):
+        db = CitationDatabase(citations=[], citation_style="Vancouver")
+        compiler = CitationCompiler(db)
+        assert compiler.format_in_text_citation(sample_citation_single_author) == "[1]"
+
+
+# =============================================================================
 # UNSUPPORTED STYLES TESTS
 # =============================================================================
 
@@ -314,13 +356,13 @@ class TestUnsupportedStyles:
 
     def test_unknown_style_raises_error(self, sample_citation_single_author):
         """Unknown style should raise NotImplementedError."""
-        db = CitationDatabase(citations=[], citation_style="Harvard")
+        db = CitationDatabase(citations=[], citation_style="bogus_style")  # type: ignore[arg-type]
         compiler = CitationCompiler(db)
 
         with pytest.raises(NotImplementedError) as exc_info:
             compiler.format_in_text_citation(sample_citation_single_author)
 
-        assert "Harvard" in str(exc_info.value)
+        assert "not yet implemented" in str(exc_info.value).lower()
 
 
 # =============================================================================
@@ -369,6 +411,65 @@ class TestReferenceListGeneration:
         zebra_pos = result.find("Zebra")
 
         assert alpha_pos < middle_pos < zebra_pos
+
+    def test_harvard_reference_list_sorted_alphabetically(self):
+        """Harvard sorts the bibliography by first author (like APA)."""
+        citations = [
+            Citation(
+                citation_id="cite_001",
+                authors=["Zebra"],
+                year=2023,
+                title="Z Paper",
+                source_type="journal",
+                journal="J",
+                volume=1,
+                pages="1-2",
+            ),
+            Citation(
+                citation_id="cite_002",
+                authors=["Alpha"],
+                year=2022,
+                title="A Paper",
+                source_type="journal",
+                journal="J",
+                volume=1,
+                pages="3-4",
+            ),
+        ]
+        db = CitationDatabase(citations=citations, citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        result = compiler.generate_reference_list("Text {cite_001} {cite_002}.")
+        assert result.find("Alpha") < result.find("Zebra")
+
+    def test_vancouver_reference_list_order_by_cite_id(self):
+        """Vancouver bibliography follows cite_001, cite_002 order (not alphabetical)."""
+        citations = [
+            Citation(
+                citation_id="cite_001",
+                authors=["Zebra"],
+                year=2023,
+                title="Z Paper",
+                source_type="journal",
+                journal="JZ",
+                volume=1,
+                pages="1-2",
+            ),
+            Citation(
+                citation_id="cite_002",
+                authors=["Alpha"],
+                year=2022,
+                title="A Paper",
+                source_type="journal",
+                journal="JA",
+                volume=2,
+                pages="3-4",
+            ),
+        ]
+        db = CitationDatabase(citations=citations, citation_style="Vancouver")
+        compiler = CitationCompiler(db)
+        result = compiler.generate_reference_list("Text {cite_002} then {cite_001}.")
+        assert result.find("Zebra") < result.find("Alpha")
+        assert "[1]" in result and "[2]" in result
 
 
 # =============================================================================
@@ -445,6 +546,49 @@ class TestIEEEReferenceFormatting:
         assert "Johnson" not in result
         assert "Williams" not in result
         assert "Brown" not in result
+
+
+# =============================================================================
+# VANCOUVER / HARVARD REFERENCE FORMATTING
+# =============================================================================
+
+
+class TestVancouverReferenceFormatting:
+    """NLM-shaped Vancouver reference entries (full journal titles)."""
+
+    def test_journal(self, sample_citation_single_author):
+        db = CitationDatabase(citations=[], citation_style="Vancouver")
+        compiler = CitationCompiler(db)
+        r = compiler._format_vancouver_reference(sample_citation_single_author)
+        assert r.startswith("[1]")
+        assert "Smith" in r
+        assert "Machine Learning Applications" in r
+        assert "*Nature*" in r
+        assert "2023;45(3):123-145" in r
+        assert "doi:10.1234" in r
+
+
+class TestHarvardReferenceFormatting:
+    """UK-style Harvard reference list entries (simplified)."""
+
+    def test_journal(self, sample_citation_single_author):
+        db = CitationDatabase(citations=[], citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        r = compiler._format_harvard_reference(sample_citation_single_author)
+        assert r.startswith("Smith (2023)")
+        assert "'Machine Learning Applications'" in r
+        assert "*Nature*" in r
+        assert "vol. 45" in r
+        assert "no. 3" in r
+        assert "pp. 123-145" in r
+
+    def test_book(self, sample_citation_multiple_authors):
+        db = CitationDatabase(citations=[], citation_style="Harvard")
+        compiler = CitationCompiler(db)
+        r = compiler._format_harvard_reference(sample_citation_multiple_authors)
+        assert "et al. (2021)" in r
+        assert "*AI in Healthcare*" in r
+        assert "Academic Press" in r
 
 
 # =============================================================================
