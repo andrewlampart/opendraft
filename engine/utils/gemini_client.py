@@ -122,11 +122,18 @@ class GeminiModelWrapper:
         else:
             contents = str(prompt)
 
-        return self.client.models.generate_content(
+        resp = self.client.models.generate_content(
             model=self.model_name,
             contents=contents,
             config=config if config else None,
         )
+        try:
+            from utils.usage_context import emit_llm_usage_sdk
+
+            emit_llm_usage_sdk(self.model_name, resp, "gemini_wrapper")
+        except Exception:
+            logger.debug("emit_llm_usage_sdk skipped", exc_info=True)
+        return resp
 
     def count_tokens(self, text: str) -> Any:
         """Count tokens in text."""

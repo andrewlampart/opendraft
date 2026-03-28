@@ -218,7 +218,14 @@ class GroqModel:
                 # Add small delay to avoid rate limits (2 req/min is safe for free tier)
                 time.sleep(2)
 
-                return GroqResponse(text=text, usage_metadata=usage_metadata)
+                groq_resp = GroqResponse(text=text, usage_metadata=usage_metadata)
+                try:
+                    from utils.usage_context import emit_llm_usage_sdk
+
+                    emit_llm_usage_sdk(self.model_name, groq_resp, "groq")
+                except Exception:
+                    logger.debug("emit_llm_usage_sdk (groq) skipped", exc_info=True)
+                return groq_resp
 
             except requests.exceptions.Timeout:
                 raise Exception(
