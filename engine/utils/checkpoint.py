@@ -54,6 +54,10 @@ def save_checkpoint(ctx: "DraftContext", phase: str, checkpoint_dir: Path) -> Pa
         "second_examiner": ctx.second_examiner,
         "location": ctx.location,
         "student_id": ctx.student_id,
+        "toc_template": ctx.toc_template,
+        "thesis_work_mode": ctx.thesis_work_mode,
+        "toc_options": ctx.toc_options,
+        "user_results_markdown": ctx.user_results_markdown,
         # Derived values (can be recalculated, but save for convenience)
         "language_name": ctx.language_name,
         "language_instruction": ctx.language_instruction,
@@ -140,6 +144,15 @@ def restore_context(ctx: "DraftContext", checkpoint_data: Dict[str, Any]) -> Non
     ctx.second_examiner = checkpoint_data.get("second_examiner")
     ctx.location = checkpoint_data.get("location")
     ctx.student_id = checkpoint_data.get("student_id")
+
+    ctx.toc_template = checkpoint_data.get("toc_template", getattr(ctx, "toc_template", "default"))
+    ctx.thesis_work_mode = checkpoint_data.get(
+        "thesis_work_mode", getattr(ctx, "thesis_work_mode", "literature_review")
+    )
+    ctx.toc_options = checkpoint_data.get("toc_options") or getattr(
+        ctx, "toc_options", {}
+    )
+    ctx.user_results_markdown = checkpoint_data.get("user_results_markdown")
 
     # Restore derived values
     ctx.language_name = checkpoint_data.get("language_name", ctx.language_name)

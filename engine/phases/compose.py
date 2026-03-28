@@ -13,6 +13,144 @@ from .context import DraftContext
 logger = logging.getLogger(__name__)
 
 
+def _toc_spec(ctx: DraftContext):
+    return getattr(ctx, "toc_spec", None)
+
+
+def _heading_extra(ctx: DraftContext, slot: str) -> str:
+    from utils.thesis_toc_templates import slot_instruction
+
+    s = _toc_spec(ctx)
+    if not s or s.template_id == "default":
+        return ""
+    txt = slot_instruction(s, slot, ctx.language)
+    if not txt.strip():
+        return ""
+    return f"\n\n**Required headings / structure:**\n{txt}"
+
+
+def _captions(ctx: DraftContext) -> str:
+    from utils.thesis_toc_templates import caption_convention_fragment
+
+    o = ctx.toc_options if isinstance(ctx.toc_options, dict) else {}
+    if o.get("include_figures_tables", True):
+        return caption_convention_fragment(ctx.language)
+    return ""
+
+
+def _voice(ctx: DraftContext, slot: str) -> str:
+    from utils.thesis_toc_templates import literature_empirical_voice
+
+    return literature_empirical_voice(slot, ctx.thesis_work_mode, ctx.language)
+
+
+def _theory_context(ctx: DraftContext) -> str:
+    if ctx.lit_review_output:
+        return ctx.lit_review_output[:1500]
+    return (ctx.intro_output or "")[:1500]
+
+
+def _lit_structure_requirements(ctx: DraftContext) -> str:
+    s = _toc_spec(ctx)
+    if s and s.template_id != "default":
+        return (
+            "1. Follow **Required headings / structure** exactly.\n"
+            "2. **Subsections:** use the numbering scheme from the template (### …).\n"
+        )
+    return (
+        "1. **Section numbering:** Start with ## 2.1 Literature Review\n"
+        "2. **Subsections:** Use ### 2.1.1, ### 2.1.2, etc. (at least 3 subsections)\n"
+    )
+
+
+def _meth_structure_requirements(ctx: DraftContext) -> str:
+    s = _toc_spec(ctx)
+    if s and s.template_id != "default":
+        return (
+            "1. Follow **Required headings / structure** for methodology chapters.\n"
+            "2. **Subsections:** per template (### …).\n"
+        )
+    return (
+        "1. **Section numbering:** Start with ## 2.2 Methodology\n"
+        "2. **Subsections:** Use ### 2.2.1, ### 2.2.2, etc. (at least 2-3 subsections)\n"
+    )
+
+
+def _results_structure_requirements(ctx: DraftContext) -> str:
+    s = _toc_spec(ctx)
+    if s and s.template_id != "default":
+        return (
+            "1. Follow **Required headings / structure** for results/analysis chapters.\n"
+            "2. **Subsections:** per template.\n"
+        )
+    return (
+        "1. **Section numbering:** Start with ## 2.3 Analysis and Results\n"
+        "2. **Subsections:** Use ### 2.3.1, ### 2.3.2, etc. (at least 3 subsections)\n"
+    )
+
+
+def _discussion_structure_requirements(ctx: DraftContext) -> str:
+    s = _toc_spec(ctx)
+    if s and s.template_id != "default":
+        return (
+            "1. Follow **Required headings / structure** for discussion.\n"
+            "2. **Subsections:** per template.\n"
+        )
+    return (
+        "1. **Section numbering:** Start with ## 2.4 Discussion\n"
+        "2. **Subsections:** Use ### 2.4.1, ### 2.4.2, etc. (at least 2-3 subsections)\n"
+    )
+
+
+_METH_ANTI_LIT = """
+**CRITICAL ANTI-HALLUCINATION RULES:**
+- **NEVER claim "we conducted studies"** - This is a literature review draft, not an empirical study
+- **NEVER invent datasets** (e.g., "Dataset X-500", "we analyzed 10,000 samples")
+- **NEVER fabricate experimental procedures** (e.g., "we ran experiments on...")
+- **ONLY describe methodologies from cited literature** - Use "Previous research {{cite_XXX}} used..." not "We used..."
+- **Use hypothetical/theoretical language** for proposed approaches: "A potential methodology might involve..." not "We implemented..."
+- **Focus on synthesizing existing research methods**, not claiming to have conducted new research
+"""
+
+_RESULTS_ANTI_LIT = """
+**CRITICAL ANTI-HALLUCINATION RULES:**
+- **NEVER claim "we found", "we analyzed", "our results show"** - This is a literature review, not an empirical study
+- **NEVER invent data, statistics, or results** (e.g., "we found 87% accuracy", "our analysis revealed...")
+- **NEVER fabricate datasets or sample sizes** (e.g., "Dataset X-500", "we analyzed 10,000 samples")
+- **ONLY present findings from cited literature** - Use "Research by {{cite_001}} found..." not "We found..."
+- **ONLY use data/statistics from cited sources** - All numbers must come from {{cite_XXX}} references
+- **Synthesize existing research findings**, not claim to have conducted new analysis
+- **Use language like:** "Studies have shown...", "Research indicates...", "Findings suggest..." NOT "We found...", "Our analysis..."
+"""
+
+_DISC_ANTI_LIT = """
+**CRITICAL ANTI-HALLUCINATION RULES:**
+- **NEVER claim "our results", "our findings", "we conclude"** - This is a literature review, not an empirical study
+- **NEVER invent conclusions or implications** from non-existent research
+- **ONLY discuss findings from cited literature** - Use "Research findings {{cite_001}} suggest..." not "Our findings suggest..."
+- **Synthesize existing research**, not claim to have conducted new analysis
+- **Use language like:** "The literature suggests...", "Research indicates...", "Studies have shown..." NOT "We found...", "Our analysis..."
+"""
+
+
+def _guard_methodology(ctx: DraftContext) -> str:
+    if ctx.thesis_work_mode == "literature_review":
+        return _METH_ANTI_LIT
+    return _voice(ctx, "methodology")
+
+
+def _guard_results(ctx: DraftContext) -> str:
+    if ctx.thesis_work_mode == "literature_review":
+        return _RESULTS_ANTI_LIT
+    return _voice(ctx, "results")
+
+
+def _guard_discussion(ctx: DraftContext) -> str:
+    if ctx.thesis_work_mode == "literature_review":
+        return _DISC_ANTI_LIT
+    return _voice(ctx, "discussion")
+
+
 def run_compose_phase(ctx: DraftContext) -> None:
     """
     Execute the compose phase: 7 sequential Crafter agents.
@@ -48,8 +186,16 @@ def run_compose_phase(ctx: DraftContext) -> None:
     _write_introduction(ctx)
     rate_limit_delay()
 
-    _write_literature_review(ctx)
-    rate_limit_delay()
+    spec = _toc_spec(ctx)
+    if spec and spec.template_id == "imrad_science":
+        ctx.lit_review_output = ""
+        lr = ctx.folders["drafts"] / "02_1_literature_review.md"
+        lr.parent.mkdir(parents=True, exist_ok=True)
+        lr.write_text("", encoding="utf-8")
+        logger.info("[SECTION 2.1/4] Skipped literature review file (IMRAD: sections 1–2 in introduction)")
+    else:
+        _write_literature_review(ctx)
+        rate_limit_delay()
 
     _write_methodology(ctx)
     rate_limit_delay()
@@ -104,7 +250,8 @@ Outline:
 1. Write {intro_target} words minimum
 2. Include at least 1-2 tables (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
-4. Put table details in prose paragraphs AFTER tables, not inside cells{ctx.language_instruction}""",
+4. Put table details in prose paragraphs AFTER tables, not inside cells
+{_heading_extra(ctx, "intro")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "01_introduction.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
@@ -180,9 +327,7 @@ Outline context:
 
 **CRITICAL REQUIREMENTS:**
 
-1. **Section numbering:** Start with ## 2.1 Literature Review
-2. **Subsections:** Use ### 2.1.1, ### 2.1.2, etc. (at least 3 subsections)
-3. **Word count:** {lit_review_target} words minimum
+{_lit_structure_requirements(ctx)}3. **Word count:** {lit_review_target} words minimum
 4. **Tables:** Include at least 1-2 comparison tables (e.g., Author vs. Findings)
    - **Maximum 300 characters per cell** - keep cells concise!
    - **Maximum 5 columns** per table
@@ -204,7 +349,7 @@ Outline context:
 - Evolution of the field
 - Research gaps that your draft will address
 
-**Use the abstracts provided to write evidence-based literature review with specific findings, NOT generic statements.**{ctx.language_instruction}""",
+**Use the abstracts provided to write evidence-based literature review with specific findings, NOT generic statements.**{_heading_extra(ctx, "lit_review")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "02_1_literature_review.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
@@ -266,8 +411,8 @@ def _write_methodology(ctx: DraftContext) -> None:
 
 Topic: {ctx.topic}
 
-Literature Review context (what was identified):
-{ctx.lit_review_output[-2000:]}
+Theoretical / prior sections context:
+{_theory_context(ctx)}
 
 Research gaps from Signal phase:
 {ctx.signal_output[:1500]}
@@ -279,14 +424,12 @@ Outline:
 
 **CRITICAL REQUIREMENTS:**
 
-1. **Section numbering:** Start with ## 2.2 Methodology
-2. **Subsections:** Use ### 2.2.1, ### 2.2.2, etc. (at least 2-3 subsections)
-3. **Word count:** {methodology_target} words minimum
+{_meth_structure_requirements(ctx)}3. **Word count:** {methodology_target} words minimum
 4. **Tables:** Include at least 1 methodology summary table
    - **Maximum 300 characters per cell** - keep cells concise!
    - **Maximum 5 columns** per table
    - Put details in prose AFTER the table, not inside cells
-5. **Build on Literature Review:** Reference gaps identified in section 2.1
+5. **Build on prior sections:** Reference gaps from the theoretical overview and outline
 6. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format
 
 **CITATION-CLAIM VERIFICATION:**
@@ -295,13 +438,7 @@ Outline:
 - Do NOT cite a paper about "X methodology" to describe "Y methodology"
 - If unsure, rephrase to match what the citation actually covers
 
-**\U0001f6a8 CRITICAL ANTI-HALLUCINATION RULES:**
-- **NEVER claim "we conducted studies"** - This is a literature review draft, not an empirical study
-- **NEVER invent datasets** (e.g., "Dataset X-500", "we analyzed 10,000 samples")
-- **NEVER fabricate experimental procedures** (e.g., "we ran experiments on...")
-- **ONLY describe methodologies from cited literature** - Use "Previous research {{cite_XXX}} used..." not "We used..."
-- **Use hypothetical/theoretical language** for proposed approaches: "A potential methodology might involve..." not "We implemented..."
-- **Focus on synthesizing existing research methods**, not claiming to have conducted new research
+{_guard_methodology(ctx)}
 
 **Content to cover:**
 - Research design and approach (qualitative/quantitative/mixed) - from literature
@@ -311,7 +448,7 @@ Outline:
 - Tools and technologies used - from literature, not "we used"
 - Study limitations and considerations - theoretical discussion
 
-**Connect to Literature Review:** "To address the gap identified in section 2.1 regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."**{ctx.language_instruction}""",
+**Connect to prior theory:** "To address the gap identified regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."{_heading_extra(ctx, "methodology")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "02_2_methodology.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
@@ -350,10 +487,17 @@ Outline:
 
 def _write_results(ctx: DraftContext) -> None:
     from utils.agent_runner import run_agent
+    from utils.thesis_toc_templates import (
+        empirical_results_placeholder_markdown,
+        should_skip_results_llm,
+    )
 
     results_target = ctx.word_targets["results"]
     logger.info("[SECTION 2.3/4] Starting Analysis and Results")
     section_start = time.time()
+    out_path = ctx.folders["drafts"] / "02_3_analysis_results.md"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    spec = _toc_spec(ctx)
 
     try:
         if ctx.tracker:
@@ -362,6 +506,21 @@ def _write_results(ctx: DraftContext) -> None:
                 event_type="writing",
                 phase="writing",
             )
+
+        # TODO: wire upload / editor paste → ctx.user_results_markdown from Django job field
+        if ctx.user_results_markdown and str(ctx.user_results_markdown).strip():
+            ctx.results_output = str(ctx.user_results_markdown).strip()
+            out_path.write_text(ctx.results_output, encoding="utf-8")
+            logger.info("[SECTION 2.3/4] Used user_results_markdown for results body")
+            return
+
+        if spec and should_skip_results_llm(
+            spec, ctx.thesis_work_mode, ctx.user_results_markdown
+        ):
+            ctx.results_output = empirical_results_placeholder_markdown(spec, ctx.language)
+            out_path.write_text(ctx.results_output, encoding="utf-8")
+            logger.info("[SECTION 2.3/4] Inserted empirical results placeholder (no LLM)")
+            return
 
         ctx.results_output = run_agent(
             model=ctx.model,
@@ -374,8 +533,8 @@ Topic: {ctx.topic}
 Methodology used (from section 2.2):
 {ctx.methodology_output[-1500:]}
 
-Literature Review context (theoretical framework):
-{ctx.lit_review_output[:1500]}
+Theoretical framework context:
+{_theory_context(ctx)}
 
 Research data:
 {ctx.scribe_output[1000:2500]}
@@ -384,9 +543,7 @@ Research data:
 
 **CRITICAL REQUIREMENTS:**
 
-1. **Section numbering:** Start with ## 2.3 Analysis and Results
-2. **Subsections:** Use ### 2.3.1, ### 2.3.2, etc. (at least 3 subsections)
-3. **Word count:** {results_target} words minimum
+{_results_structure_requirements(ctx)}3. **Word count:** {results_target} words minimum
 4. **Tables:** Include at least 2-3 data/results tables
    - **Maximum 300 characters per cell** - keep cells concise!
    - **Maximum 5 columns** per table
@@ -400,14 +557,7 @@ Research data:
 - Do NOT cite a study about "X" to support findings about "Y"
 - If unsure, rephrase to match what the citation actually found
 
-**\U0001f6a8 CRITICAL ANTI-HALLUCINATION RULES:**
-- **NEVER claim "we found", "we analyzed", "our results show"** - This is a literature review, not an empirical study
-- **NEVER invent data, statistics, or results** (e.g., "we found 87% accuracy", "our analysis revealed...")
-- **NEVER fabricate datasets or sample sizes** (e.g., "Dataset X-500", "we analyzed 10,000 samples")
-- **ONLY present findings from cited literature** - Use "Research by {{cite_001}} found..." not "We found..."
-- **ONLY use data/statistics from cited sources** - All numbers must come from {{cite_XXX}} references
-- **Synthesize existing research findings**, not claim to have conducted new analysis
-- **Use language like:** "Studies have shown...", "Research indicates...", "Findings suggest..." NOT "We found...", "Our analysis..."
+{_guard_results(ctx)}
 
 **Content to cover:**
 - Key findings FROM CITED LITERATURE (with specific data from cited abstracts/papers)
@@ -417,8 +567,8 @@ Research data:
 - Visual data presentation (tables summarizing findings from cited sources)
 - Comparison with baseline/benchmarks FROM CITED RESEARCH
 
-**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."**{ctx.language_instruction}""",
-            save_to=ctx.folders["drafts"] / "02_3_analysis_results.md",
+**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."{_heading_extra(ctx, "results")}{_captions(ctx)}{ctx.language_instruction}""",
+            save_to=out_path,
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -462,8 +612,17 @@ def _write_discussion(ctx: DraftContext) -> None:
     discussion_target = ctx.word_targets["discussion"]
     logger.info("[SECTION 2.4/4] Starting Discussion")
     section_start = time.time()
+    spec = _toc_spec(ctx)
+    disc_path = ctx.folders["drafts"] / "02_4_discussion.md"
+    disc_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
+        if spec and spec.skip_discussion_agent:
+            ctx.discussion_output = ""
+            disc_path.write_text("", encoding="utf-8")
+            logger.info("[SECTION 2.4/4] Skipped discussion agent (template merges discussion elsewhere)")
+            return
+
         if ctx.tracker:
             ctx.tracker.log_activity(
                 "\u270d\ufe0f Writing Discussion section...",
@@ -482,8 +641,8 @@ Topic: {ctx.topic}
 Results (from section 2.3):
 {ctx.results_output[-2000:]}
 
-Literature Review context (to compare with):
-{ctx.lit_review_output[:1500]}
+Theoretical context (to compare with):
+{_theory_context(ctx)}
 
 Research gaps addressed:
 {ctx.signal_output[:1000]}
@@ -492,9 +651,7 @@ Research gaps addressed:
 
 **CRITICAL REQUIREMENTS:**
 
-1. **Section numbering:** Start with ## 2.4 Discussion
-2. **Subsections:** Use ### 2.4.1, ### 2.4.2, etc. (at least 2-3 subsections)
-3. **Word count:** {discussion_target} words minimum
+{_discussion_structure_requirements(ctx)}3. **Word count:** {discussion_target} words minimum
 4. **Tables:** Include at least 1 summary/implications table
    - **Maximum 300 characters per cell** - keep cells concise!
    - **Maximum 5 columns** per table
@@ -502,12 +659,7 @@ Research gaps addressed:
 5. **Interpret Literature Findings:** Discuss findings FROM CITED SOURCES, not from new research
 6. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format
 
-**\U0001f6a8 CRITICAL ANTI-HALLUCINATION RULES:**
-- **NEVER claim "our results", "our findings", "we conclude"** - This is a literature review, not an empirical study
-- **NEVER invent conclusions or implications** from non-existent research
-- **ONLY discuss findings from cited literature** - Use "Research findings {{cite_001}} suggest..." not "Our findings suggest..."
-- **Synthesize existing research**, not claim to have conducted new analysis
-- **Use language like:** "The literature suggests...", "Research indicates...", "Studies have shown..." NOT "We found...", "Our analysis..."
+{_guard_discussion(ctx)}
 
 **Content to cover:**
 - Interpretation of findings FROM CITED LITERATURE (synthesized in section 2.3)
@@ -529,8 +681,8 @@ You MUST include these explicit phrases to connect back to previous sections:
 
 **Example opening:** "The findings FROM LITERATURE synthesized in section 2.3 reveal significant insights that both align with and extend the theoretical frameworks discussed in section 2.1. As noted in the literature review (section 2.1), previous studies by [Author] {{cite_001}} demonstrated [X]; research findings {{cite_002}}{{cite_003}} confirm this relationship while also revealing [new insight]."
 
-**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.**{ctx.language_instruction}""",
-            save_to=ctx.folders["drafts"] / "02_4_discussion.md",
+**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.{_heading_extra(ctx, "discussion")}{_captions(ctx)}{ctx.language_instruction}""",
+            save_to=disc_path,
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
@@ -642,7 +794,7 @@ Main findings:
 2. Include at least 1 summary table (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells
-5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{ctx.language_instruction}""",
+5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{_heading_extra(ctx, "conclusion")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "03_conclusion.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
@@ -690,7 +842,14 @@ def _write_appendices(ctx: DraftContext) -> None:
     chapter_start = time.time()
 
     try:
-        if appendices_target == "0":
+        opts = ctx.toc_options if isinstance(ctx.toc_options, dict) else {}
+        if not opts.get("include_annex", True):
+            logger.info("  Skipping appendices (toc_options.include_annex is false)")
+            ctx.appendix_output = ""
+            ap = ctx.folders["drafts"] / "04_appendices.md"
+            ap.parent.mkdir(parents=True, exist_ok=True)
+            ap.write_text("", encoding="utf-8")
+        elif appendices_target == "0":
             logger.info("  Skipping appendices for research paper format")
             ctx.appendix_output = ""
         else:

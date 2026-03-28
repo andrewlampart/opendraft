@@ -34,7 +34,7 @@ import logging
 import traceback
 import psutil
 import os
-from typing import Tuple, Optional, List, Dict
+from typing import Tuple, Optional, List, Dict, Any
 from datetime import datetime
 
 # Suppress WeasyPrint stderr warnings
@@ -373,6 +373,24 @@ class PipelineValidationError(ValueError):
     pass
 
 
+def _attach_toc_spec(ctx: "DraftContext") -> None:
+    from utils.thesis_toc_templates import (
+        build_thesis_toc_spec,
+        normalize_template_id,
+        normalize_toc_options,
+    )
+
+    ctx.toc_options = normalize_toc_options(
+        ctx.toc_options if isinstance(ctx.toc_options, dict) else {}
+    )
+    ctx.toc_template = normalize_template_id(ctx.toc_template)
+    if ctx.thesis_work_mode not in ("literature_review", "empirical"):
+        ctx.thesis_work_mode = "literature_review"
+    ctx.toc_spec = build_thesis_toc_spec(
+        ctx.toc_template, ctx.language, ctx.toc_options
+    )
+
+
 def validate_research_phase(ctx: "DraftContext") -> None:
     """Validate research phase outputs before proceeding to structure."""
     if not ctx.scout_result:
@@ -429,6 +447,11 @@ def validate_compose_phase(ctx: "DraftContext") -> None:
         ctx.discussion_output,
     ]
     filled_sections = sum(1 for s in body_sections if s)
+
+    # IMRAD: literature review is folded into intro (sections 1–2); allow empty lit_review
+    if getattr(ctx, "toc_spec", None) and ctx.toc_spec.template_id == "imrad_science":
+        if (ctx.methodology_output or ctx.results_output) and filled_sections >= 1:
+            return
 
     if filled_sections == 0:
         raise PipelineValidationError(
@@ -508,6 +531,10 @@ def generate_draft(
     student_id: Optional[str] = None,
     citation_style: str = "apa",
     resume_from: Optional[Path] = None,
+    toc_template: str = "default",
+    thesis_work_mode: str = "literature_review",
+    toc_options: Optional[Dict] = None,
+    user_results_markdown: Optional[str] = None,
 ) -> Tuple[Path, Path]:
     """
     Generate a complete academic draft using specialized AI agents.
@@ -533,6 +560,10 @@ def generate_draft(
         student_id: Student matriculation number
         citation_style: Citation format - 'apa' or 'ieee' (default: 'apa')
         resume_from: Path to checkpoint.json to resume from (skips completed phases)
+        toc_template: Table-of-contents template id (default, classic_social, case_study, imrad_science, business_mgmt)
+        thesis_work_mode: literature_review or empirical (prompt set for compose)
+        toc_options: Dict with include_abbreviations, include_figures_tables, include_annex, numbering
+        user_results_markdown: Optional user-provided markdown for results chapter (future)
 
     Returns:
         Tuple[Path, Path]: (pdf_path, docx_path) - Paths to generated draft files
@@ -554,6 +585,9 @@ def generate_draft(
     logger.info(f"Language: {language}")
     logger.info(f"Academic Level: {academic_level}")
     logger.info(f"Output Type: {output_type}")
+    logger.info(
+        f"TOC template: {toc_template}, work mode: {thesis_work_mode}"
+    )
     logger.info(f"Validation: {'Skipped' if skip_validation else 'Enabled'}")
     logger.info(f"Tracker: {'Enabled' if tracker else 'Disabled'}")
     logger.info(f"Streamer: {'Enabled' if streamer else 'Disabled'}")
@@ -647,6 +681,10 @@ def generate_draft(
             second_examiner=second_examiner,
             location=location,
             student_id=student_id,
+            toc_template=toc_template or "default",
+            thesis_work_mode=thesis_work_mode or "literature_review",
+            toc_options=dict(toc_options) if toc_options else {},
+            user_results_markdown=user_results_markdown,
             config=config,
             model=model,
             folders=folders,
@@ -656,6 +694,7 @@ def generate_draft(
             tracker=tracker,
             streamer=streamer,
         )
+        _attach_toc_spec(ctx)
 
         # Optional token tracker
         try:
@@ -701,6 +740,7 @@ def generate_draft(
                 f"\n\n**LANGUAGE REQUIREMENT:** Write the ENTIRE output in {ctx.language_name}. "
                 f"All text, headings, and content must be in {ctx.language_name}."
             )
+            _attach_toc_spec(ctx)
 
             # Reload citation database if citations phase was completed
             if completed_phase in ["citations", "compose", "validate", "compile"]:

@@ -181,9 +181,13 @@ def _score_completeness(ctx: "DraftContext", issues: List[str]) -> int:
     score = 0
 
     # Required sections (5 points each)
+    lit_content = ctx.lit_review_output
+    spec = getattr(ctx, "toc_spec", None)
+    if spec and spec.template_id == "imrad_science":
+        lit_content = ctx.lit_review_output or ctx.intro_output
     sections = [
         ("Introduction", ctx.intro_output, 5),
-        ("Literature Review", ctx.lit_review_output, 5),
+        ("Literature Review", lit_content, 5),
         ("Methodology", ctx.methodology_output, 5),
         ("Results", ctx.results_output, 5),
         ("Conclusion", ctx.conclusion_output, 5),

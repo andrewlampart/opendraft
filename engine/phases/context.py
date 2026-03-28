@@ -30,6 +30,12 @@ class DraftContext:
     verbose: bool = True
     blurb: Optional[str] = None
 
+    toc_template: str = "default"
+    thesis_work_mode: str = "literature_review"
+    toc_options: Dict[str, Any] = field(default_factory=dict)
+    user_results_markdown: Optional[str] = None
+    toc_spec: Any = None
+
     # Academic metadata (optional, for cover page)
     author_name: Optional[str] = None
     institution: Optional[str] = None

@@ -9,12 +9,71 @@ import time
 import logging
 import zipfile
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 from datetime import datetime
 
 from .context import DraftContext
 
 logger = logging.getLogger(__name__)
+
+
+def _extract_figure_captions(md: str) -> List[str]:
+    seen = set()
+    out: List[str] = []
+    for m in re.finditer(r"!\[([^\]]*)\]\([^)]+\)", md):
+        cap = (m.group(1) or "").strip()
+        if cap and cap not in seen:
+            seen.add(cap)
+            out.append(cap)
+    return out
+
+
+def _extract_table_captions(md: str) -> List[str]:
+    out: List[str] = []
+    seen = set()
+    for line in md.splitlines():
+        s = line.strip()
+        if re.match(r"^:\s*(Table|Tabela)\s+", s, re.I):
+            t = re.sub(r"^:\s*", "", s).strip()
+            if t not in seen:
+                seen.add(t)
+                out.append(t)
+        m = re.match(r"^\*\*((?:Table|Tabela)\s+[^*]+)\*\*\s*$", s, re.I)
+        if m:
+            t = m.group(1).strip()
+            if t not in seen:
+                seen.add(t)
+                out.append(t)
+    return out
+
+
+def _format_lof_lot(
+    figures: List[str],
+    tables: List[str],
+    fig_heading: str,
+    tbl_heading: str,
+    lang_pl: bool,
+) -> str:
+    parts = []
+    if figures:
+        parts.append("## " + fig_heading + "\n\n" + "\n".join(f"- {c}" for c in figures))
+    else:
+        note = (
+            "*(Brak wykrytych podpisów rysunków — użyj `![Rys. N. podpis](url)` w treści.)*"
+            if lang_pl
+            else "*(No figure captions found — use `![Fig. N. caption](url)` in the body.)*"
+        )
+        parts.append("## " + fig_heading + "\n\n" + note)
+    if tables:
+        parts.append("## " + tbl_heading + "\n\n" + "\n".join(f"- {c}" for c in tables))
+    else:
+        note = (
+            "*(Brak wykrytych podpisów tabel — użyj linii `: Tabela N. podpis` pod tabelą.)*"
+            if lang_pl
+            else "*(No table captions found — use `: Table N. caption` below each table.)*"
+        )
+        parts.append("## " + tbl_heading + "\n\n" + note)
+    return "\n\n".join(parts)
 
 
 def run_expose_export(ctx: DraftContext) -> Tuple[Path, Path]:
@@ -282,15 +341,26 @@ def run_compile_and_export(ctx: DraftContext) -> Tuple[Path, Path]:
         )
         ctx.tracker.check_cancellation()
 
-    # Strip headers from section outputs (clean_agent_output removes preambles/metadata/cite_MISSING)
-    intro_clean = _strip_first_header(clean_agent_output(ctx.intro_output))
-    body_clean = _strip_first_header(clean_agent_output(ctx.body_output))
-    conclusion_clean = _strip_first_header(clean_agent_output(ctx.conclusion_output))
+    spec = getattr(ctx, "toc_spec", None)
+    modern_shell = bool(spec and not spec.use_legacy_document_shell)
+    lang_base = (ctx.language or "en").split("-")[0].lower()
+    lang_pl = lang_base == "pl"
+
+    # Strip headers from section outputs (modern shell keeps top-level # headings from crafters)
+    if modern_shell:
+        intro_clean = clean_agent_output(ctx.intro_output).strip()
+        body_clean = clean_agent_output(ctx.body_output).strip()
+        conclusion_clean = clean_agent_output(ctx.conclusion_output).strip()
+    else:
+        intro_clean = _strip_first_header(clean_agent_output(ctx.intro_output))
+        body_clean = _strip_first_header(clean_agent_output(ctx.body_output))
+        conclusion_clean = _strip_first_header(clean_agent_output(ctx.conclusion_output))
 
     appendices_file = ctx.folders["drafts"] / "04_appendices.md"
     if appendices_file.exists():
         appendix_content = appendices_file.read_text(encoding="utf-8")
-        appendix_clean = _strip_first_header(clean_agent_output(appendix_content))
+        ap_raw = clean_agent_output(appendix_content)
+        appendix_clean = ap_raw.strip() if modern_shell else _strip_first_header(ap_raw)
     else:
         appendix_clean = ""
 
@@ -316,7 +386,79 @@ def run_compile_and_export(ctx: DraftContext) -> Tuple[Path, Path]:
     yaml_location = ctx.location or "Munich"
     yaml_student_id = ctx.student_id or "N/A"
 
-    full_draft = f"""---
+    opts = ctx.toc_options if isinstance(ctx.toc_options, dict) else {}
+
+    if modern_shell and spec is not None:
+        ref_h = spec.references_heading_pl if lang_pl else spec.references_heading_en
+        abbr_block = ""
+        if opts.get("include_abbreviations"):
+            ah = spec.abbreviations_heading_pl if lang_pl else spec.abbreviations_heading_en
+            note = (
+                "*(Wykaz do uzupełnienia w edytorze.)*"
+                if lang_pl
+                else "*(Complete this list in the editor.)*"
+            )
+            abbr_block = f"## {ah}\n\n{note}\n\n\\newpage\n\n"
+        lists_block = ""
+        if opts.get("include_figures_tables", True):
+            joined_core = f"{intro_clean}\n{body_clean}\n{conclusion_clean}"
+            fh = spec.list_figures_heading_pl if lang_pl else spec.list_figures_heading_en
+            th = spec.list_tables_heading_pl if lang_pl else spec.list_tables_heading_en
+            lists_block = (
+                "\n\n\\newpage\n\n"
+                + _format_lof_lot(
+                    _extract_figure_captions(joined_core),
+                    _extract_table_captions(joined_core),
+                    fh,
+                    th,
+                    lang_pl,
+                )
+            )
+        appendix_block = ""
+        if appendix_clean.strip():
+            appendix_block = f"\n\n\\newpage\n\n{appendix_clean}"
+        full_draft = f"""---
+title: "{ctx.topic}"
+author: "{yaml_author}"
+date: "{current_date}"
+institution: "{yaml_institution}"
+department: "{yaml_department}"
+faculty: "{yaml_faculty}"
+degree: "{degree}"
+advisor: "{yaml_advisor}"
+second_examiner: "{yaml_second_examiner}"
+location: "{yaml_location}"
+student_id: "{yaml_student_id}"
+project_type: "{draft_type}"
+word_count: "{word_count:,} words"
+pages: "{pages_estimate}"
+generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
+---
+
+## Abstract
+[Abstract will be generated]
+
+\\newpage
+
+{abbr_block}{intro_clean}
+
+\\newpage
+
+{body_clean}
+
+\\newpage
+
+{conclusion_clean}
+{lists_block}
+
+\\newpage
+
+# {ref_h}
+[Citations will be compiled]
+{appendix_block}
+"""
+    else:
+        full_draft = f"""---
 title: "{ctx.topic}"
 author: "{yaml_author}"
 date: "{current_date}"
@@ -386,10 +528,10 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
 
     # Remove template References section and append generated one
     compiled_draft = re.sub(
-        r"^\s*#+ (?:\d+\.\s*)?(?:References|Bibliography)\s*\n\s*\[Citations will be compiled\]\s*",
+        r"^\s*#+ (?:\d+\.\s*)?(?:References|Bibliography|Bibliografia|Piśmiennictwo|Spis\s+literatury)\s*\n\s*\[Citations will be compiled\]\s*",
         "",
         compiled_draft,
-        flags=re.MULTILINE,
+        flags=re.MULTILINE | re.IGNORECASE,
     )
     compiled_draft = compiled_draft + reference_list
 
@@ -456,7 +598,8 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
 
     final_draft = clean_ai_language(final_draft)
     final_draft = strip_meta_text(final_draft)
-    final_draft = localize_chapter_headings(final_draft, ctx.language)
+    if not modern_shell:
+        final_draft = localize_chapter_headings(final_draft, ctx.language)
     final_md_path.write_text(final_draft, encoding="utf-8")
 
     if ctx.verbose:
