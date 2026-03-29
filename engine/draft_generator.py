@@ -367,6 +367,102 @@ def get_word_count_targets(academic_level: str) -> dict:
     return targets.get(academic_level, targets["master"])
 
 
+# Section keys with word ranges (see compose phase); WPP is approximate A4 PL.
+_DEFAULT_WORDS_PER_PAGE = 320
+
+_WORD_TARGET_SECTION_KEYS = (
+    "introduction",
+    "literature_review",
+    "methodology",
+    "results",
+    "discussion",
+    "conclusion",
+    "appendices",
+    "total",
+)
+
+
+def _parse_word_range_string(spec: str) -> tuple[int, int]:
+    t = (spec or "").replace(",", "").strip()
+    if t == "0":
+        return (0, 0)
+    if "-" not in t:
+        raise ValueError(f"unexpected word range: {spec!r}")
+    a, b = t.split("-", 1)
+    return int(a.strip()), int(b.strip())
+
+
+def _format_word_range(low: int, high: int) -> str:
+    if low == 0 and high == 0:
+        return "0"
+    return f"{low:,}-{high:,}"
+
+
+def _round_word_bound(n: int, step: int = 50) -> int:
+    return max(0, round(n / step) * step)
+
+
+def apply_custom_word_targets(
+    base: dict,
+    *,
+    pages_min: Optional[int] = None,
+    pages_max: Optional[int] = None,
+    publication_count: Optional[int] = None,
+    words_per_page: int = _DEFAULT_WORDS_PER_PAGE,
+    scale_clamp: tuple[float, float] = (0.25, 4.0),
+) -> dict:
+    """
+    Copy word_targets and apply optional wizard scope: publication count (citations + deep research)
+    and scale word ranges from target page band (midpoint vs baseline total midpoint).
+    """
+    out = dict(base)
+    if publication_count is not None:
+        n = max(5, min(200, int(publication_count)))
+        out["min_citations"] = n
+        out["deep_research_min_sources"] = n
+    if pages_min is None or pages_max is None:
+        return out
+    pmin, pmax = int(pages_min), int(pages_max)
+    user_low = pmin * words_per_page
+    user_high = pmax * words_per_page
+    user_mid = (user_low + user_high) / 2.0
+    try:
+        base_lo, base_hi = _parse_word_range_string(str(out.get("total", "")))
+    except (ValueError, TypeError):
+        return out
+    if base_lo < 0 or base_hi < 0:
+        return out
+    base_mid = (base_lo + base_hi) / 2.0
+    if base_mid <= 0:
+        return out
+    factor = user_mid / base_mid
+    lo_c, hi_c = scale_clamp
+    factor = max(lo_c, min(hi_c, factor))
+    for key in _WORD_TARGET_SECTION_KEYS:
+        raw = out.get(key)
+        if raw is None:
+            continue
+        s = str(raw).strip()
+        if key == "appendices" and s == "0":
+            out[key] = "0"
+            continue
+        try:
+            lo, hi = _parse_word_range_string(s)
+        except (ValueError, TypeError):
+            continue
+        if lo == 0 and hi == 0:
+            out[key] = "0"
+            continue
+        nlo = _round_word_bound(int(lo * factor))
+        nhi = _round_word_bound(int(hi * factor))
+        if nlo > nhi:
+            nlo, nhi = nhi, nlo
+        if nlo == nhi and nhi > 0:
+            nhi = nlo + 50
+        out[key] = _format_word_range(nlo, nhi)
+    return out
+
+
 class PipelineValidationError(ValueError):
     """Raised when inter-phase validation fails."""
 
@@ -539,6 +635,9 @@ def generate_draft(
     hypotheses: Optional[List[str]] = None,
     research_questions: Optional[List[str]] = None,
     research_notes: Optional[str] = None,
+    target_pages_min: Optional[int] = None,
+    target_pages_max: Optional[int] = None,
+    target_publication_count: Optional[int] = None,
 ) -> Tuple[Path, Path]:
     """
     Generate a complete academic draft using specialized AI agents.
@@ -572,6 +671,8 @@ def generate_draft(
         hypotheses: 3–5 hypotheses from the job form
         research_questions: 3–5 research questions from the job form
         research_notes: Optional extra author guidance
+        target_pages_min/max: Optional page range; scales section word targets vs academic baseline
+        target_publication_count: Optional min citations and deep-research source floor
 
     Returns:
         Tuple[Path, Path]: (pdf_path, docx_path) - Paths to generated draft files
@@ -666,6 +767,12 @@ def generate_draft(
 
         # Prepare word targets and language
         word_targets = get_word_count_targets(academic_level)
+        word_targets = apply_custom_word_targets(
+            word_targets,
+            pages_min=target_pages_min,
+            pages_max=target_pages_max,
+            publication_count=target_publication_count,
+        )
         language_name = get_language_name(language)
         language_instruction = f"\n\n**LANGUAGE REQUIREMENT:** Write the ENTIRE output in {language_name}. All text, headings, and content must be in {language_name}."
 
