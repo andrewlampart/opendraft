@@ -562,8 +562,7 @@ def generate_draft(
         second_examiner: Second examiner name
         location: City/location for date line
         student_id: Student matriculation number
-        citation_style: Citation format slug: 'apa', 'ieee', 'chicago', 'harvard',
-            'vancouver', also 'nalt', 'mla' (default: 'apa')
+        citation_style: Citation format - 'apa' or 'ieee' (default: 'apa')
         resume_from: Path to checkpoint.json to resume from (skips completed phases)
         toc_template: Table-of-contents template id (default, classic_social, case_study, imrad_science, business_mgmt)
         thesis_work_mode: literature_review or empirical (prompt set for compose)

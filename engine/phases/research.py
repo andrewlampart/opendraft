@@ -39,11 +39,7 @@ def run_research_phase(ctx: DraftContext) -> None:
         )
         ctx.tracker.check_cancellation()
 
-    # Prepare research topics
-    topic_context = ctx.topic
-    if ctx.blurb:
-        topic_context = f"{ctx.topic}\n\nFocus/Context: {ctx.blurb}"
-
+    # Prepare research topics (first entry narrows Scout when user gave focus)
     research_topics = [
         f"{ctx.topic} fundamentals and background",
         f"{ctx.topic} current state of research",
@@ -54,6 +50,11 @@ def run_research_phase(ctx: DraftContext) -> None:
     ]
     if ctx.blurb:
         research_topics.insert(0, f"{ctx.topic} - {ctx.blurb}")
+    elif (ctx.research_goal or "").strip():
+        snippet = (ctx.research_goal or "").strip().replace("\n", " ")
+        if len(snippet) > 320:
+            snippet = snippet[:320] + "…"
+        research_topics.insert(0, f"{ctx.topic} — {snippet}")
 
     # -----------------------------------------------------------------------
     # AGENT: Scout
