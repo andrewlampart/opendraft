@@ -10,6 +10,7 @@ from typing import List, Optional, Literal
 from .base import PDFEngine, PDFGenerationOptions, EngineResult
 from .libreoffice_engine import LibreOfficeEngine
 from .pandoc_engine import PandocLatexEngine
+from .typst_engine import TypstPDFEngine
 from utils.exceptions import PDFExportError, ConfigurationError
 
 # WeasyPrint is optional - it requires system libraries (libgobject, pango, etc.)
@@ -37,15 +38,15 @@ class PDFEngineFactory:
     - Dependency Inversion: Returns abstract PDFEngine interface
     """
 
-    # Pandoc/XeLaTeX first; WeasyPrint optional fallback when LaTeX fails (content/timeout).
-    _ENGINE_CLASSES = [PandocLatexEngine]
+    # Typst (when pandoc+typst CLI present) first; then Pandoc/XeLaTeX; WeasyPrint fallback.
+    _ENGINE_CLASSES = [TypstPDFEngine, PandocLatexEngine]
     if WEASYPRINT_AVAILABLE and WeasyPrintEngine is not None:
         _ENGINE_CLASSES.append(WeasyPrintEngine)
 
     @classmethod
     def create(
         cls,
-        engine_type: Literal["auto", "libreoffice", "pandoc", "weasyprint"] = "auto",
+        engine_type: Literal["auto", "libreoffice", "pandoc", "weasyprint", "typst"] = "auto",
     ) -> Optional[PDFEngine]:
         """
         Create a PDF engine instance.
@@ -62,9 +63,10 @@ class PDFEngineFactory:
         if engine_type == "auto":
             return cls._auto_select()
 
-        # Map engine type to class - Pandoc/XeLaTeX only
+        # Map engine type to class
         engine_map = {
             "pandoc": PandocLatexEngine,
+            "typst": TypstPDFEngine,
         }
 
         engine_class = engine_map.get(engine_type)
@@ -72,7 +74,7 @@ class PDFEngineFactory:
             raise PDFExportError(
                 engine=engine_type,
                 reason=f"Unknown engine type: {engine_type}",
-                recovery_hint="Use 'auto', 'libreoffice', 'pandoc', or 'weasyprint'",
+                recovery_hint="Use 'auto', 'pandoc', 'typst', or 'weasyprint'",
             )
 
         engine = engine_class()

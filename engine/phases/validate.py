@@ -30,6 +30,13 @@ def run_validate_phase(ctx: DraftContext) -> None:
     if ctx.verbose:
         print("\n🔍 PHASE 3.5: QUALITY ASSURANCE")
 
+    try:
+        from utils.citation_claim_verify import run_citation_claim_verification
+
+        run_citation_claim_verification(ctx)
+    except Exception as e:
+        logger.warning("citation claim verification skipped: %s", e)
+
     # Build QA review content from chapter outputs
     all_chapters_for_qa = _build_qa_content(ctx)
 

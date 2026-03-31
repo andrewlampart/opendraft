@@ -638,6 +638,8 @@ def generate_draft(
     target_pages_min: Optional[int] = None,
     target_pages_max: Optional[int] = None,
     target_publication_count: Optional[int] = None,
+    survey_pdf_path: Optional[Path] = None,
+    empirical_dataset_path: Optional[Path] = None,
 ) -> Tuple[Path, Path]:
     """
     Generate a complete academic draft using specialized AI agents.
@@ -673,6 +675,8 @@ def generate_draft(
         research_notes: Optional extra author guidance
         target_pages_min/max: Optional page range; scales section word targets vs academic baseline
         target_publication_count: Optional min citations and deep-research source floor
+        survey_pdf_path: Optional local path to questionnaire PDF (empirical)
+        empirical_dataset_path: Optional path to CSV/XLSX with raw results
 
     Returns:
         Tuple[Path, Path]: (pdf_path, docx_path) - Paths to generated draft files
@@ -815,6 +819,20 @@ def generate_draft(
         )
         _attach_toc_spec(ctx)
 
+        ctx.survey_pdf_path = (
+            Path(survey_pdf_path) if survey_pdf_path is not None else None
+        )
+        ctx.empirical_dataset_path = (
+            Path(empirical_dataset_path)
+            if empirical_dataset_path is not None
+            else None
+        )
+        ctx.survey_questionnaire_text = ""
+        if ctx.survey_pdf_path and ctx.survey_pdf_path.is_file():
+            from utils.pdf_extractor import extract_survey_text
+
+            ctx.survey_questionnaire_text = extract_survey_text(ctx.survey_pdf_path)
+
         # Optional token tracker
         try:
             from utils.token_tracker import TokenTracker
@@ -919,6 +937,9 @@ def generate_draft(
             get_next_phase(completed_phase) == "compose"
             or completed_phase == "citations"
         ):
+            from phases.data_analysis import run_data_analysis_phase
+
+            run_data_analysis_phase(ctx)
             run_phase_with_retry(run_compose_phase, ctx, "compose")
             validate_compose_phase(ctx)
             save_checkpoint(ctx, "compose", output_dir)

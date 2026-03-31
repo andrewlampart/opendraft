@@ -60,6 +60,9 @@ class PDFGenerationOptions:
     enable_toc: bool = True  # Changed from False - academic papers need TOC by default
     toc_depth: int = 3
 
+    # Typst preamble (PL vs EN academic norms)
+    document_language: str = "pl"
+
     def __post_init__(self):
         """Set default heading styles if not provided."""
         if self.heading_styles is None:

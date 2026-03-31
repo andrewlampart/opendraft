@@ -151,6 +151,50 @@ def _guard_discussion(ctx: DraftContext) -> str:
     return _voice(ctx, "discussion")
 
 
+def _empirical_methodology_block(ctx: DraftContext) -> str:
+    parts = []
+    st = (ctx.survey_questionnaire_text or "").strip()
+    if st:
+        parts.append(
+            "**Survey / questionnaire (from uploaded PDF):**\n" + st[:5000]
+        )
+    plan = (ctx.empirical_analysis_plan_yaml or "").strip()
+    if plan:
+        parts.append(
+            "**Registered analysis plan (YAML):**\n```yaml\n"
+            + plan[:4000]
+            + "\n```"
+        )
+    if not parts:
+        return ""
+    return "\n\n" + "\n\n".join(parts) + "\n\n"
+
+
+def _empirical_results_block(ctx: DraftContext) -> str:
+    from utils.fact_sheet import extract_allowed_numbers_from_empirical
+
+    em = (ctx.empirical_results_markdown or "").strip()
+    if not em:
+        return ""
+    nums = extract_allowed_numbers_from_empirical(ctx)
+    nblock = (
+        f"\n**Numeric literals from automated analysis (prefer only these):** {nums}\n"
+        if nums
+        else ""
+    )
+    return (
+        "\n\n"
+        + em
+        + nblock
+        + "\n**Do not report statistics that contradict the JSON above.**\n\n"
+    )
+
+
+def _fact_sheet_block(ctx: DraftContext) -> str:
+    fs = (ctx.methodology_fact_sheet or "").strip()
+    return f"\n\n{fs}\n\n" if fs else ""
+
+
 def run_compose_phase(ctx: DraftContext) -> None:
     """
     Execute the compose phase: 7 sequential Crafter agents.
@@ -202,6 +246,11 @@ def run_compose_phase(ctx: DraftContext) -> None:
 
     _write_results(ctx)
     rate_limit_delay()
+
+    if (ctx.methodology_output or "").strip() and (ctx.results_output or "").strip():
+        from utils.fact_sheet import build_methodology_fact_sheet
+
+        ctx.methodology_fact_sheet = build_methodology_fact_sheet(ctx)
 
     _write_discussion(ctx)
 
@@ -451,12 +500,22 @@ Outline:
 - Tools and technologies used - from literature, not "we used"
 - Study limitations and considerations - theoretical discussion
 
-**Connect to prior theory:** "To address the gap identified regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."{_heading_extra(ctx, "methodology")}{_captions(ctx)}{ctx.language_instruction}""",
+**Connect to prior theory:** "To address the gap identified regarding X, a potential methodology could follow approaches described in {{cite_XXX}}..."{_empirical_methodology_block(ctx)}{_heading_extra(ctx, "methodology")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "02_2_methodology.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
             token_stage="crafter_methodology",
+        )
+
+        from utils.compose_review import writer_reviewer_loop
+
+        ctx.methodology_output = writer_reviewer_loop(
+            ctx,
+            section_title="Methodology",
+            initial_markdown=ctx.methodology_output,
+            save_path=ctx.folders["drafts"] / "02_2_methodology.md",
+            extra_constraints=ctx.language_instruction or "",
         )
 
         section_time = time.time() - section_start
@@ -525,6 +584,8 @@ def _write_results(ctx: DraftContext) -> None:
             logger.info("[SECTION 2.3/4] Inserted empirical results placeholder (no LLM)")
             return
 
+        from utils.compose_review import writer_reviewer_loop
+
         ctx.results_output = run_agent(
             model=ctx.model,
             name="Crafter - Analysis and Results",
@@ -570,12 +631,20 @@ Research data:
 - Visual data presentation (tables summarizing findings from cited sources)
 - Comparison with baseline/benchmarks FROM CITED RESEARCH
 
-**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."{_heading_extra(ctx, "results")}{_captions(ctx)}{ctx.language_instruction}""",
+**Connect sections:** "Research applying methodologies similar to those described in section 2.2 has found..." and "These findings from the literature relate to the theoretical framework in section 2.1..."{_empirical_results_block(ctx)}{_heading_extra(ctx, "results")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=out_path,
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
             token_stage="crafter_results",
+        )
+
+        ctx.results_output = writer_reviewer_loop(
+            ctx,
+            section_title="Analysis and Results",
+            initial_markdown=ctx.results_output,
+            save_path=out_path,
+            extra_constraints=_empirical_results_block(ctx) + (ctx.language_instruction or ""),
         )
 
         section_time = time.time() - section_start
@@ -684,12 +753,22 @@ You MUST include these explicit phrases to connect back to previous sections:
 
 **Example opening:** "The findings FROM LITERATURE synthesized in section 2.3 reveal significant insights that both align with and extend the theoretical frameworks discussed in section 2.1. As noted in the literature review (section 2.1), previous studies by [Author] {{cite_001}} demonstrated [X]; research findings {{cite_002}}{{cite_003}} confirm this relationship while also revealing [new insight]."
 
-**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.{_heading_extra(ctx, "discussion")}{_captions(ctx)}{ctx.language_instruction}""",
+**Remember:** Explicitly reference "section 2.1" at least 3-5 times throughout the Discussion to maintain strong academic coherence. ALWAYS cite sources for any findings discussed.{_fact_sheet_block(ctx)}{_heading_extra(ctx, "discussion")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=disc_path,
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
             token_stage="crafter_discussion",
+        )
+
+        from utils.compose_review import writer_reviewer_loop
+
+        ctx.discussion_output = writer_reviewer_loop(
+            ctx,
+            section_title="Discussion",
+            initial_markdown=ctx.discussion_output,
+            save_path=disc_path,
+            extra_constraints=_fact_sheet_block(ctx) + (ctx.language_instruction or ""),
         )
 
         section_time = time.time() - section_start
@@ -797,12 +876,22 @@ Main findings:
 2. Include at least 1 summary table (if relevant)
 3. **Table constraints**: Maximum 300 chars per cell, maximum 5 columns
 4. Put table details in prose paragraphs AFTER tables, not inside cells
-5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{_heading_extra(ctx, "conclusion")}{_captions(ctx)}{ctx.language_instruction}""",
+5. **Citations:** ONLY use citations from the CITATION DATABASE above with {{cite_XXX}} format{_fact_sheet_block(ctx)}{_heading_extra(ctx, "conclusion")}{_captions(ctx)}{ctx.language_instruction}""",
             save_to=ctx.folders["drafts"] / "03_conclusion.md",
             skip_validation=ctx.skip_validation,
             verbose=ctx.verbose,
             token_tracker=ctx.token_tracker,
             token_stage="crafter_conclusion",
+        )
+
+        from utils.compose_review import writer_reviewer_loop
+
+        ctx.conclusion_output = writer_reviewer_loop(
+            ctx,
+            section_title="Conclusion",
+            initial_markdown=ctx.conclusion_output,
+            save_path=ctx.folders["drafts"] / "03_conclusion.md",
+            extra_constraints=_fact_sheet_block(ctx) + (ctx.language_instruction or ""),
         )
 
         chapter_time = time.time() - chapter_start

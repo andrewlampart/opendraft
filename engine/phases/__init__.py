@@ -11,6 +11,7 @@ from .citations import run_citation_management
 from .compose import run_compose_phase
 from .validate import run_validate_phase
 from .compile import run_compile_and_export, run_expose_export
+from .data_analysis import run_data_analysis_phase
 
 __all__ = [
     "DraftContext",
@@ -21,4 +22,5 @@ __all__ = [
     "run_validate_phase",
     "run_compile_and_export",
     "run_expose_export",
+    "run_data_analysis_phase",
 ]

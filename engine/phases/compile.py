@@ -632,7 +632,10 @@ generated_by: "OpenDraft AI - https://github.com/federicodeponte/opendraft"
         print("📄 Exporting PDF (professional formatting)...")
 
     pdf_success, pdf_error = export_pdf(
-        md_file=final_md_path, output_pdf=pdf_path, engine="pandoc"
+        md_file=final_md_path,
+        output_pdf=pdf_path,
+        engine="pandoc",
+        document_language=lang_base,
     )
 
     if not pdf_success:

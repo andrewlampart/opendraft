@@ -6,6 +6,7 @@ ABOUTME: Supports multiple PDF engines (LibreOffice, Pandoc, WeasyPrint) with au
 
 import sys
 import argparse
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional, Literal, Tuple
 
@@ -103,8 +104,9 @@ def extract_metadata_from_yaml(md_file: Path) -> dict:
 def export_pdf(
     md_file: Path,
     output_pdf: Path,
-    engine: Literal["auto", "libreoffice", "pandoc", "weasyprint"] = "auto",
+    engine: Literal["auto", "libreoffice", "pandoc", "weasyprint", "typst"] = "auto",
     options: Optional[PDFGenerationOptions] = None,
+    document_language: Optional[str] = None,
 ) -> Tuple[bool, Optional[str]]:
     """
     Export markdown to PDF using specified engine.
@@ -135,6 +137,9 @@ def export_pdf(
 
     # Create options with metadata if not provided
     if options is None:
+        meta_lang = metadata.get("language") or metadata.get("lang")
+        doc_lang = document_language or meta_lang or "pl"
+        doc_lang = str(doc_lang).split("-")[0].lower() or "pl"
         options = PDFGenerationOptions(
             title=metadata.get("title"),
             subtitle=metadata.get("subtitle"),
@@ -147,7 +152,11 @@ def export_pdf(
             student_id=metadata.get("student_id"),
             project_type=metadata.get("project_type"),
             system_credit=metadata.get("system_credit"),
+            document_language=doc_lang,
         )
+    elif document_language is not None:
+        dl = str(document_language).split("-")[0].lower() or "pl"
+        options = replace(options, document_language=dl)
 
     logger.info("=" * 70)
     logger.info(f"Generating PDF: {output_pdf.name}")

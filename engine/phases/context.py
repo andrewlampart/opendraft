@@ -41,6 +41,15 @@ class DraftContext:
     user_results_markdown: Optional[str] = None
     toc_spec: Any = None
 
+    # Empirical uploads (paths copied into job output dir by Django task)
+    survey_pdf_path: Optional[Path] = None
+    empirical_dataset_path: Optional[Path] = None
+    survey_questionnaire_text: str = ""
+    empirical_analysis_plan_yaml: str = ""
+    empirical_results_json: str = ""
+    empirical_results_markdown: str = ""
+    methodology_fact_sheet: str = ""
+
     # Academic metadata (optional, for cover page)
     author_name: Optional[str] = None
     institution: Optional[str] = None
