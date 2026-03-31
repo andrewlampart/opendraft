@@ -930,8 +930,8 @@ def run_revise_command(argv):
     parser.add_argument(
         "--model",
         "-m",
-        default="gemini-3-flash-preview",
-        help="Gemini model to use (default: gemini-3-flash-preview)",
+        default="gemini-3.1-flash-lite-preview",
+        help="Gemini model to use (default: gemini-3.1-flash-lite-preview)",
     )
 
     args = parser.parse_args(argv)

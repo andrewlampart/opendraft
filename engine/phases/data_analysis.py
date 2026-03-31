@@ -18,6 +18,121 @@ logger = logging.getLogger(__name__)
 
 _MAX_REPAIR_ROUNDS = 3
 
+_ANALYSIS_SCRIPT_CANONICAL_SKELETON = """# OpenDraft analysis script — fill only the ANALYSES region
+import json
+import os
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+DATA_CSV = Path(os.environ["OPENDRAFT_DATA_CSV"])
+RESULT_JSON = Path(os.environ["OPENDRAFT_RESULT_JSON"])
+WORK_DIR = RESULT_JSON.parent
+
+df = pd.read_csv(DATA_CSV, encoding="utf-8", sep=None, engine="python")
+df.columns = df.columns.str.strip()
+
+results = {
+    "analyses": [],
+    "dataset": {"row_count": int(len(df)), "columns": list(df.columns)},
+}
+
+
+def save_fig(filename: str) -> str:
+    out_path = WORK_DIR / filename
+    plt.tight_layout()
+    plt.savefig(str(out_path), dpi=120)
+    plt.close()
+    return filename
+
+
+# --- ANALYSES: one try/except per plan item ---
+# [FILL START] Implement every analysis from the YAML plan here.
+#
+# Example (adapt ids/columns/tests from plan):
+# try:
+#     x = pd.to_numeric(df["col"], errors="coerce").dropna()
+#     fig, ax = plt.subplots()
+#     ax.hist(x, bins="auto")
+#     fn = save_fig("fig_my_id.png")
+#     results["analyses"].append({
+#         "id": "my_id",
+#         "summary": "Histogram",
+#         "statistics": {"n": int(x.shape[0])},
+#         "figure": fn,
+#     })
+# except Exception as e:
+#     results["analyses"].append({"id": "my_id", "error": str(e)})
+# [FILL END]
+
+RESULT_JSON.write_text(
+    json.dumps(results, ensure_ascii=False, default=str),
+    encoding="utf-8",
+)
+"""
+
+_TEST_PROCEDURE_REFERENCE = """- chi2 / chi_square / chi2_contingency → pd.crosstab then scipy.stats.chi2_contingency
+- ttest_ind / t_test_independent → scipy.stats.ttest_ind
+- ttest_rel / paired t-test → scipy.stats.ttest_rel
+- pearsonr / pearson → scipy.stats.pearsonr
+- spearmanr / spearman → scipy.stats.spearmanr
+- mannwhitneyu / mann_whitney → scipy.stats.mannwhitneyu
+- kruskal / kruskal_wallis → scipy.stats.kruskal (use appropriately for group count)
+- shapiro → scipy.stats.shapiro
+- f_oneway / anova_oneway → scipy.stats.f_oneway
+- descriptive / describe → DataFrame.describe() or Series.value_counts for categoricals
+- binom / proportion → scipy.stats.binomtest when applicable"""
+
+
+def _repair_error_hints(last_err: str) -> str:
+    m = last_err or ""
+    low = m.lower()
+    hints: list[str] = []
+    if (
+        "[ast validation]" in low
+        or "forbidden call: open" in low
+        or "forbidden attribute: open" in low
+    ):
+        hints.append(
+            "AST: never use open(). Use Path.read_text/write_text, pd.read_csv for CSV, "
+            "RESULT_JSON.write_text for JSON output."
+        )
+    if "syntaxerror" in low or "indentationerror" in low:
+        hints.append("Fix Python syntax and indentation; balance parentheses/brackets/braces.")
+    if (
+        "keyerror" in low
+        or "not in index" in low
+        or ("column" in low and "does not exist" in low)
+    ):
+        hints.append(
+            "Columns: keep df.columns.str.strip(); use exact names from the plan; "
+            "check `col in df.columns` before indexing."
+        )
+    if (
+        "not json serializable" in low
+        or "float64" in m
+        or "int64" in m
+        or "bool_" in m
+    ):
+        hints.append(
+            "JSON: use json.dumps(..., default=str) on write (as in skeleton) or cast "
+            "numpy/scipy scalars with float()/int()."
+        )
+    if "cannot connect to x" in low or ("display" in low and "could not" in low):
+        hints.append("Plots: matplotlib.use('Agg') must run before pyplot import (keep skeleton order).")
+    if not hints:
+        hints.append(
+            "Keep the canonical skeleton (imports, paths, df load, save_fig, final write) "
+            "and env vars OPENDRAFT_DATA_CSV / OPENDRAFT_RESULT_JSON."
+        )
+    return "\n".join(f"- {h}" for h in hints)
+
 
 def _generate(ctx: DraftContext, system: str, user: str) -> str:
     from utils.text_utils import clean_agent_output
@@ -188,19 +303,38 @@ Keep analyses aligned with hypotheses / research questions. At most 8 analyses."
             phase="data_analysis",
         )
 
-    system_code = """You are a Python data analyst. Write ONE complete Python script.
+    system_code = (
+        "You are a Python data analyst. Output exactly ONE complete, runnable Python script.\n\n"
+        "Follow the CANONICAL SKELETON below for imports, DATA_CSV/RESULT_JSON/WORK_DIR, "
+        "df loading (encoding=\"utf-8\", sep=None, engine=\"python\"), df.columns.str.strip(), "
+        "results and save_fig, and the final RESULT_JSON.write_text. Replace only the block "
+        "between [FILL START] and [FILL END] with real code: one try/except per YAML analysis, "
+        "each appending a dict with keys id, summary, statistics (dict), and figure (filename "
+        "from save_fig) OR error (string).\n\n"
+        "Allowed: json, os, pathlib, pandas, numpy, scipy.stats, matplotlib (Agg backend as shown). "
+        "Forbidden: open(), subprocess, socket, requests, __import__, eval, exec.\n\n"
+        "CANONICAL SKELETON:\n"
+        + _ANALYSIS_SCRIPT_CANONICAL_SKELETON
+    )
+    column_types_json = json.dumps(profile.get("column_types") or {}, ensure_ascii=False)
+    user_code = f"""Analysis plan (YAML):
+{plan_yaml}
 
-Rules:
-- Read the CSV path from environment variable OPENDRAFT_DATA_CSV using os.environ and pathlib.Path.
-- Write a JSON-serializable dict to the path in OPENDRAFT_RESULT_JSON (use json.dump or Path.write_text).
-- Use pandas (pd.read_csv). You may use numpy, scipy.stats, statistics, math, json, os, pathlib.
-- Do NOT use: open() as a function name for files — use Path.read_text/write_text or pd.read_csv only.
-- Do NOT use subprocess, socket, requests, or __import__.
-- Handle missing values sensibly (dropna or fillna) and coerce numeric columns where needed.
-- The output JSON must include key "analyses" (list of per-analysis result dicts with id, summary, statistics) and key "dataset" (row_count, columns).
-- If a test cannot be run, record error in that analysis entry instead of crashing the whole script.
-"""
-    user_code = f"""Analysis plan (YAML):\n{plan_yaml}\n\nColumn names must match exactly: {profile.get("columns")}\n\nReturn ONLY the Python source code, no fences."""
+**Exact column names (after strip — must match):** {profile.get("columns")}
+
+**Inferred column types from sample rows (numeric / categorical / date / unknown):**
+{column_types_json}
+
+**CSV:** UTF-8; keep pd.read_csv(..., encoding="utf-8", sep=None, engine="python") as in the skeleton.
+
+**Map test_or_procedure from the plan to code:**
+{_TEST_PROCEDURE_REFERENCE}
+
+**Figures:** For each analysis in the plan, save one PNG via save_fig("fig_<plan_id>.png") using a safe filename (e.g. alphanumeric + underscore from id) and set "figure" to that filename. Prefer histogram or boxplot for numeric variables; bar chart of counts for categorical; scatter when two numeric variables fit the procedure.
+
+**Per-analysis isolation:** Each analysis in its own try/except; failures append {{"id": "...", "error": str(e)}} for that item only.
+
+Return ONLY the full Python source code, no markdown fences."""
 
     script = _strip_code_fence(_generate(ctx, system_code, user_code))
 
@@ -212,6 +346,13 @@ Rules:
                 event_type="info",
                 phase="data_analysis",
             )
+        logger.info(
+            "data_analysis attempt %s/%s — script (%d chars):\n%s",
+            attempt + 1,
+            _MAX_REPAIR_ROUNDS,
+            len(script),
+            script[:3000],
+        )
         ok, msg, data = run_analysis_script(
             script,
             data_csv=csv_path,
@@ -234,8 +375,17 @@ Rules:
             return
 
         last_err = msg or "unknown error"
-        logger.warning("data_analysis attempt %s failed: %s", attempt + 1, last_err[:500])
+        logger.warning(
+            "data_analysis attempt %s/%s FAILED.\n--- STDERR/OUTPUT ---\n%s\n--- END ---",
+            attempt + 1,
+            _MAX_REPAIR_ROUNDS,
+            last_err[:4000],
+        )
+        repair_hints = _repair_error_hints(last_err)
         repair_user = f"""The script failed. Fix it.
+
+Specific hints (apply as needed):
+{repair_hints}
 
 Error output:
 ```
@@ -252,7 +402,9 @@ Return ONLY the corrected full Python script."""
         script = _strip_code_fence(
             _generate(
                 ctx,
-                system_code + "\nPreserve the same env vars OPENDRAFT_DATA_CSV and OPENDRAFT_RESULT_JSON.",
+                system_code
+                + "\nOn repair: keep the same canonical skeleton structure and env vars "
+                "OPENDRAFT_DATA_CSV / OPENDRAFT_RESULT_JSON.\n",
                 repair_user,
             )
         )

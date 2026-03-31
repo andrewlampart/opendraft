@@ -111,7 +111,7 @@ def find_draft_in_folder(folder: Path) -> Optional[Path]:
 def call_gemini_revise(
     draft: str,
     instructions: str,
-    model: str = "gemini-3-flash-preview",
+    model: str = "gemini-3.1-flash-lite-preview",
     max_retries: int = 3,
 ) -> str:
     """
@@ -291,7 +291,7 @@ def revise_draft(
     target: Path,
     instructions: str,
     version_suffix: str = None,
-    model: str = "gemini-3-flash-preview",
+    model: str = "gemini-3.1-flash-lite-preview",
 ) -> Dict[str, Any]:
     """
     Revise an existing draft based on instructions.

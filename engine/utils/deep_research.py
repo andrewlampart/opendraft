@@ -123,7 +123,7 @@ class DeepResearchPlanner:
 
             client = genai.Client(api_key=api_key)
             # Use Gemini 3 Flash Preview for fast research planning
-            self.model = GeminiModelWrapper(client, "gemini-3-flash-preview")
+            self.model = GeminiModelWrapper(client, "gemini-3.1-flash-lite-preview")
 
     def create_research_plan(
         self,

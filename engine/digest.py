@@ -31,7 +31,7 @@ DIGEST_PROMPT = (Path(__file__).parent / "prompts" / "digest.md").read_text()
 
 def generate_script(
     document_path: Path,
-    model_name: str = "gemini-3-flash-preview",
+    model_name: str = "gemini-3.1-flash-lite-preview",
     max_chars: int = 100000,
 ) -> tuple[str, dict]:
     """
@@ -116,7 +116,7 @@ def generate_digest(
     document_path: Path,
     output_dir: Optional[Path] = None,
     voice: str = "rachel",
-    model_name: str = "gemini-3-flash-preview",
+    model_name: str = "gemini-3.1-flash-lite-preview",
     generate_audio: bool = True,
 ) -> dict:
     """
@@ -185,8 +185,8 @@ def main():
     parser.add_argument("--no-audio", action="store_true", help="Skip audio generation")
     parser.add_argument(
         "--model",
-        default="gemini-3-flash-preview",
-        help="Gemini model (default: gemini-3-flash-preview)",
+        default="gemini-3.1-flash-lite-preview",
+        help="Gemini model (default: gemini-3.1-flash-lite-preview)",
     )
 
     args = parser.parse_args()

@@ -53,7 +53,7 @@ class GeminiModelWrapper:
 
     Usage:
         client = genai.Client(api_key=api_key)
-        model = GeminiModelWrapper(client, "gemini-2.0-flash")
+        model = GeminiModelWrapper(client, "gemini-2.5-flash")
         response = model.generate_content("Hello")
         print(response.text)
     """
@@ -69,7 +69,7 @@ class GeminiModelWrapper:
 
         Args:
             client: google.genai.Client instance
-            model_name: Model name (e.g., "gemini-2.0-flash")
+            model_name: Model name (e.g., "gemini-2.5-flash")
             temperature: Default temperature for generation
         """
         self.client = client
@@ -145,7 +145,7 @@ class GeminiModelWrapper:
 
 def create_gemini_client(
     api_key: Optional[str] = None,
-    model_name: str = "gemini-2.0-flash",
+    model_name: str = "gemini-2.5-flash",
     temperature: float = 0.7,
 ) -> GeminiModelWrapper:
     """

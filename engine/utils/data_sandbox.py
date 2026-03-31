@@ -9,6 +9,7 @@ from __future__ import annotations
 import ast
 import csv
 import json
+import re
 import logging
 import os
 import subprocess
@@ -246,6 +247,8 @@ ALLOWED_TOP_LEVEL_MODULES: Set[str] = {
     "np",
     "scipy",
     "scipy.stats",
+    "matplotlib",
+    "matplotlib.pyplot",
 }
 
 FORBIDDEN_NAMES: Set[str] = {
@@ -299,6 +302,37 @@ def validate_analysis_script(source: str) -> Tuple[bool, str]:
     return True, ""
 
 
+_DATE_PATTERNS = (
+    re.compile(r"^\d{4}-\d{2}-\d{2}"),
+    re.compile(r"^\d{2}[./-]\d{2}[./-]\d{4}"),
+    re.compile(r"^\d{2}[./-]\d{2}[./-]\d{2}$"),
+)
+
+
+def _infer_column_type_from_samples(values: List[str]) -> str:
+    """Infer numeric / categorical / date / unknown from header sample cells (no pandas)."""
+    non_empty = [str(v).strip() for v in values if v is not None and str(v).strip() != ""]
+    if not non_empty:
+        return "unknown"
+    numeric_ok = 0
+    date_ok = 0
+    n = len(non_empty)
+    for v in non_empty:
+        vs = v.replace(",", ".").replace(" ", "")
+        try:
+            float(vs)
+            numeric_ok += 1
+        except ValueError:
+            pass
+        if any(p.match(v) for p in _DATE_PATTERNS):
+            date_ok += 1
+    if numeric_ok >= max(1, int(0.8 * n)):
+        return "numeric"
+    if date_ok >= max(1, int(0.8 * n)):
+        return "date"
+    return "categorical"
+
+
 def profile_csv(path: Path, *, sample_rows: int = 5) -> Dict[str, Any]:
     """Lightweight CSV profile without pandas (stdlib)."""
     path = Path(path)
@@ -306,6 +340,7 @@ def profile_csv(path: Path, *, sample_rows: int = 5) -> Dict[str, Any]:
         "path": str(path),
         "columns": [],
         "sample_rows": [],
+        "column_types": {},
         "row_count_estimate": 0,
         "error": "",
     }
@@ -329,6 +364,11 @@ def profile_csv(path: Path, *, sample_rows: int = 5) -> Dict[str, Any]:
                     rows.append(row[: len(cols)])
             out["sample_rows"] = rows
             out["row_count_estimate"] = n
+            col_types: Dict[str, str] = {}
+            for i, col in enumerate(cols):
+                col_vals = [row[i] if i < len(row) else "" for row in rows]
+                col_types[col] = _infer_column_type_from_samples(col_vals)
+            out["column_types"] = col_types
     except Exception as e:
         out["error"] = str(e)
     return out
@@ -416,9 +456,21 @@ def run_analysis_script(
     Production: set OPENDRAFT_SANDBOX_MODE=docker (or auto + OPENDRAFT_SANDBOX_IMAGE)
     and mount Docker socket; dataset mounted read-only inside the container.
     """
+    data_csv = Path(data_csv)
+    logger.info(
+        "Sandbox: data_csv=%s exists=%s size=%s mode=%s",
+        data_csv,
+        data_csv.is_file(),
+        data_csv.stat().st_size if data_csv.is_file() else "N/A",
+        _sandbox_mode(),
+    )
+
     ok, msg = validate_analysis_script(script_source)
     if not ok:
-        return False, msg, None
+        logger.warning("Sandbox AST validation FAILED: %s", msg)
+        return False, f"[AST validation] {msg}", None
+
+    logger.info("Sandbox AST validation OK")
 
     workdir = Path(workdir)
     workdir.mkdir(parents=True, exist_ok=True)
@@ -428,22 +480,31 @@ def run_analysis_script(
         result_path.unlink()
 
     script_path.write_text(script_source, encoding="utf-8")
+    logger.info("Sandbox: script written to %s (%d chars)", script_path, len(script_source))
 
     use_docker, docker_err = _use_docker_executor()
+    logger.info("Sandbox executor: use_docker=%s docker_err=%r", use_docker, docker_err)
     if _sandbox_mode() == "docker" and docker_err:
         return False, docker_err, None
 
     if use_docker:
+        logger.info("Sandbox: launching Docker executor")
         return _run_analysis_docker(
             workdir=workdir,
             data_csv=data_csv,
             timeout_sec=timeout_sec,
         )
 
-    return _run_analysis_subprocess(
+    logger.info("Sandbox: launching subprocess executor (timeout=%ds)", timeout_sec)
+    ok2, err2, data2 = _run_analysis_subprocess(
         script_path=script_path,
         workdir=workdir,
         result_path=result_path,
         data_csv=data_csv,
         timeout_sec=timeout_sec,
     )
+    if ok2:
+        logger.info("Sandbox subprocess OK, result keys=%s", list(data2.keys()) if data2 else None)
+    else:
+        logger.warning("Sandbox subprocess FAILED:\n%s", err2[:4000])
+    return ok2, err2, data2

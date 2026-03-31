@@ -301,7 +301,7 @@ class GeminiGroundedClient(BaseAPIClient):
             )
 
         # Use Gemini 2.5 Flash for fast grounding with two-step approach
-        self.model_name = "gemini-2.5-flash"
+        self.model_name = "gemini-3.1-flash-lite-preview"
 
         # Multi-key rotation for 429 rate limit handling
         self._fallback_keys = {

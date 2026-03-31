@@ -22,14 +22,28 @@ class ModelPricing:
     provider: str = ""
 
 
-# Pricing updated February 2026
+# Pricing updated March 2026
 MODEL_PRICING: Dict[str, ModelPricing] = {
-    # Gemini 3 family (Preview)
+    # Gemini 3.1 / 3 family (Preview)
+    "gemini-3.1-pro-preview": ModelPricing(
+        input_price=2.00,
+        output_price=12.00,
+        name="Gemini 3.1 Pro Preview",
+        display_name="Gemini 3.1 Pro (Preview)",
+        provider="gemini",
+    ),
+    "gemini-3.1-pro-preview-customtools": ModelPricing(
+        input_price=2.00,
+        output_price=12.00,
+        name="Gemini 3.1 Pro Preview (custom tools)",
+        display_name="Gemini 3.1 Pro (Preview, custom tools)",
+        provider="gemini",
+    ),
     "gemini-3-pro-preview": ModelPricing(
         input_price=2.00,
         output_price=12.00,
         name="Gemini 3 Pro Preview",
-        display_name="Gemini 3.0 Pro (Preview)",
+        display_name="Gemini 3.0 Pro (Preview, deprecated)",
         provider="gemini",
     ),
     "gemini-3-flash-preview": ModelPricing(
@@ -37,6 +51,13 @@ MODEL_PRICING: Dict[str, ModelPricing] = {
         output_price=3.00,
         name="Gemini 3 Flash Preview",
         display_name="Gemini 3.0 Flash (Preview)",
+        provider="gemini",
+    ),
+    "gemini-3.1-flash-lite-preview": ModelPricing(
+        input_price=0.25,
+        output_price=1.50,
+        name="Gemini 3.1 Flash-Lite Preview",
+        display_name="Gemini 3.1 Flash-Lite (Preview)",
         provider="gemini",
     ),
     # Gemini 2.5 family
@@ -148,7 +169,7 @@ def get_model_pricing(model_name: str) -> Optional[ModelPricing]:
     """
     Look up pricing for a model name.
 
-    Supports partial matching: 'gemini-3-pro' matches 'gemini-3-pro-preview'.
+    Supports partial matching: e.g. 'gemini-3.1-pro' matches 'gemini-3.1-pro-preview'.
     Returns None if no match found.
     """
     # Exact match first

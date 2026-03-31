@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir \
     "pandas>=2.0.0,<3" \
     "numpy>=1.26.0,<3" \
     "scipy>=1.11.0,<2" \
+    "matplotlib>=3.8.0,<4" \
     "openpyxl>=3.1.0,<4"
 
 RUN groupadd --gid 1000 sandbox \
