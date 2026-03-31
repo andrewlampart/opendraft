@@ -259,6 +259,31 @@ FORBIDDEN_NAMES: Set[str] = {
     "open",  # scripts must use Path.read/write only via pathlib or we inject
     "input",
     "breakpoint",
+    # os module dangerous methods
+    "system",
+    "popen",
+    "execv",
+    "execve",
+    "execvp",
+    "execvpe",
+    "spawnl",
+    "spawnle",
+    "spawnlp",
+    "spawnlpe",
+    "spawnv",
+    "spawnve",
+    "spawnvp",
+    "spawnvpe",
+    "fork",
+    "forkpty",
+    "posix_spawn",
+    # other dangerous builtins/attrs
+    "globals",
+    "locals",
+    "vars",
+    "getattr",
+    "setattr",
+    "delattr",
 }
 
 

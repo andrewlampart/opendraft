@@ -205,7 +205,7 @@ def _run_narrator(ctx: DraftContext, qa_content: str) -> None:
 5. Consistent hedging language
 
 **Target:** Academic {ctx.academic_level}-level draft
-**Citation style:** {ctx.citation_database.citation_style}""",
+**Citation style:** {getattr(ctx.citation_database, 'citation_style', None) or 'APA 7th'}""",
             save_to=ctx.folders["drafts"] / "qa_voice_unification.md",
             skip_validation=True,
             verbose=ctx.verbose,

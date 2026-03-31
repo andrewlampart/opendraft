@@ -126,6 +126,11 @@ def _repair_error_hints(last_err: str) -> str:
         )
     if "cannot connect to x" in low or ("display" in low and "could not" in low):
         hints.append("Plots: matplotlib.use('Agg') must run before pyplot import (keep skeleton order).")
+    if "modulenotfounderror" in low or "no module named" in low:
+        hints.append(
+            "Import: allowed libs only. If matplotlib/pandas/scipy is missing, install it in the "
+            "worker image; subprocess sandbox uses the same Python env as the app."
+        )
     if not hints:
         hints.append(
             "Keep the canonical skeleton (imports, paths, df load, save_fig, final write) "
@@ -256,6 +261,9 @@ def run_data_analysis_phase(ctx: DraftContext) -> None:
         ctx.empirical_results_markdown = (
             f"**Dataset profiling failed:** {profile.get('error')}\n"
             "Results section should describe limitations and request manual analysis."
+        )
+        ctx.empirical_results_json = json.dumps(
+            {"error": profile.get("error"), "columns": []}, ensure_ascii=False
         )
         return
 
@@ -409,7 +417,7 @@ Return ONLY the corrected full Python script."""
             )
         )
 
-    logger.error("data_analysis exhausted repairs")
+    logger.error("data_analysis exhausted repairs; last_error=%s", last_err[:8000])
     if tr:
         tr.log_activity(
             "Sandbox wyczerpał naprawy — generowanie placeholdera (LLM)",

@@ -243,8 +243,15 @@ def split_scribe_to_papers(
         paper_content = scribe_output[start:end].strip()
 
         try:
-            paper_num = match.group(1) if match.lastindex >= 1 else str(i + 1)
-            title = match.group(2) if match.lastindex >= 2 else f"paper_{i+1}"
+            g1 = match.group(1) if match.lastindex >= 1 else ""
+            g2 = match.group(2) if match.lastindex >= 2 else ""
+            # alt_pattern: group(1)=title, group(2)=authors — no numeric id
+            if g1.lstrip().lstrip("#").strip().isdigit():
+                paper_num = g1.strip()
+                title = g2 or f"paper_{i+1}"
+            else:
+                paper_num = str(i + 1)
+                title = g1 or f"paper_{i+1}"
         except Exception:
             paper_num = str(i + 1)
             title = f"paper_{i+1}"
@@ -258,7 +265,11 @@ def split_scribe_to_papers(
         year = year_match.group(1) if year_match else "na"
         title_slug = _slugify(title, 40)
 
-        filename = f"paper_{int(paper_num):03d}_{author}_{year}_{title_slug}.md"
+        try:
+            num_int = int(paper_num)
+        except (ValueError, TypeError):
+            num_int = i + 1
+        filename = f"paper_{num_int:03d}_{author}_{year}_{title_slug}.md"
         file_path = papers_dir / filename
 
         file_path.write_text(paper_content, encoding="utf-8")
@@ -278,7 +289,7 @@ def extract_all_citations_as_papers(
     """
     Extract ALL citations from scout_raw.md as individual paper files.
 
-    This ensures all citations (typically 50+) become accessible paper files
+    This ensures collected citations become accessible paper files
     for Cursor usage, not just the subset analyzed by Scribe (typically 5-10).
     """
     created_files = []

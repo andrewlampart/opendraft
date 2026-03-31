@@ -479,7 +479,7 @@ def literature_empirical_voice(
     base = (lang or "en").split("-")[0].lower()
     pl = base == "pl"
 
-    if lit:
+    if work_mode == "literature_review":
         if slot in ("methodology", "results", "discussion"):
             if pl:
                 return (

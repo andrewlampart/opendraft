@@ -318,7 +318,7 @@ def get_word_count_targets(academic_level: str) -> dict:
             "appendices": "0",
             "chapters": "3-4",
             "min_citations": 10,
-            "deep_research_min_sources": 20,
+            "deep_research_min_sources": 10,
             "estimated_time_minutes": "5-10",
         },
         "bachelor": {
@@ -332,7 +332,7 @@ def get_word_count_targets(academic_level: str) -> dict:
             "appendices": "500-1,000",
             "chapters": "5-7",
             "min_citations": 15,
-            "deep_research_min_sources": 40,
+            "deep_research_min_sources": 15,
             "estimated_time_minutes": "8-15",
         },
         "master": {
@@ -346,7 +346,7 @@ def get_word_count_targets(academic_level: str) -> dict:
             "appendices": "2,000-3,000",
             "chapters": "7-10",
             "min_citations": 25,
-            "deep_research_min_sources": 50,
+            "deep_research_min_sources": 25,
             "estimated_time_minutes": "10-25",
         },
         "phd": {
@@ -360,7 +360,7 @@ def get_word_count_targets(academic_level: str) -> dict:
             "appendices": "5,000-8,000",
             "chapters": "10-15",
             "min_citations": 50,
-            "deep_research_min_sources": 100,
+            "deep_research_min_sources": 50,
             "estimated_time_minutes": "20-40",
         },
     }

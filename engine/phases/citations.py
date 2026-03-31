@@ -124,8 +124,9 @@ def _build_citation_summary(citation_database) -> str:
     citation_summary += f"\n{'='*80}\n\n"
 
     for i, citation in enumerate(citation_database.citations, 1):
-        authors_str = ", ".join(citation.authors[:3])
-        if len(citation.authors) > 3:
+        aut = citation.authors if isinstance(citation.authors, list) else []
+        authors_str = ", ".join(aut[:3])
+        if len(aut) > 3:
             authors_str += " et al."
 
         citation_summary += (

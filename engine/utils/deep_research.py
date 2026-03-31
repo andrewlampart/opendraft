@@ -80,7 +80,7 @@ class DeepResearchPlanner:
     2. Execution: Orchestrator runs planned queries through fallback chain
 
     Benefits:
-    - 50+ sources vs 20-30 typical
+    - Target-aware query count (scales with min_sources)
     - Seed reference expansion
     - Autonomous gap identification
     - Systematic coverage
@@ -90,7 +90,7 @@ class DeepResearchPlanner:
         self,
         gemini_model: Optional[Any] = None,
         api_key: Optional[str] = None,
-        min_sources: int = 50,
+        min_sources: int = 25,
         verbose: bool = True,
     ):
         """
@@ -124,6 +124,16 @@ class DeepResearchPlanner:
             client = genai.Client(api_key=api_key)
             # Use Gemini 3 Flash Preview for fast research planning
             self.model = GeminiModelWrapper(client, "gemini-3.1-flash-lite-preview")
+
+    def _aim_query_count(self) -> int:
+        """Sugerowana liczba zapytań w prompcie i obcięcie list (max 100)."""
+        return min(100, max(8, int(self.min_sources * 2)))
+
+    def _min_queries_for_plan(self) -> int:
+        """Minimalna liczba zapytań w validate_plan — skaluje się z min_sources."""
+        n = max(1, int(self.min_sources))
+        inner = max(5, (n + 3) // 2)
+        return max(3, min(30, inner))
 
     def create_research_plan(
         self,
@@ -519,12 +529,13 @@ class DeepResearchPlanner:
             if query not in queries:
                 queries.append(query)
 
-        if len(queries) >= 5:
+        if len(queries) >= max(3, self._min_queries_for_plan() - 2):
             logger.info(
                 f"Generated fallback plan with {len(queries)} queries from text"
             )
+            cap = self._aim_query_count()
             return {
-                "queries": queries[:100],
+                "queries": queries[:cap],
                 "strategy": "Fallback strategy generated from text response",
                 "outline": "Section headings to be determined from research results",
             }
@@ -592,10 +603,11 @@ class DeepResearchPlanner:
                 prompt += f"- {ref}\n"
             prompt += "\nUse these as starting points. Find related work, citing papers, and recent developments.\n\n"
 
-        prompt += """**Output Format:**
+        aim_q = self._aim_query_count()
+        prompt += f"""**Output Format:**
 Return JSON with keys:
 - strategy: Brief research strategy description (2-3 paragraphs)
-- queries: List of specific search queries to execute (aim for 100)
+- queries: List of specific search queries to execute (aim for {aim_q}, not more than 100)
 - outline: Structured outline with section headings
 
 **Query Diversity:** Generate mix of academic AND industry queries for source diversity:
@@ -706,10 +718,10 @@ Return ONLY valid JSON, no markdown blocks or explanations.
             logger.warning("Plan missing required keys")
             return False
 
-        # Check query count
         queries = plan.get("queries", [])
-        if len(queries) < 10:
-            logger.warning(f"Too few queries: {len(queries)} < 10")
+        min_q = self._min_queries_for_plan()
+        if len(queries) < min_q:
+            logger.warning(f"Too few queries: {len(queries)} < {min_q}")
             return False
 
         # Estimate coverage

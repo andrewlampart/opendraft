@@ -25,6 +25,7 @@ lxml>=4.9.0                 # Fast XML/HTML parser for BeautifulSoup
 pandas>=2.0.0
 numpy>=1.26.0
 scipy>=1.11.0
+matplotlib>=3.8.0
 openpyxl>=3.1.0
 pymupdf>=1.24.0
 

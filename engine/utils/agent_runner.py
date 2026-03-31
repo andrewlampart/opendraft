@@ -10,6 +10,7 @@ These are the essential utilities needed by draft_generator.py and modal_worker.
 import sys
 import time
 import logging
+import math
 import os
 import json
 from pathlib import Path
@@ -612,14 +613,14 @@ def research_citations_via_api(
     model: Any,
     research_topics: Optional[List[str]] = None,
     output_path: Optional[Path] = None,
-    target_minimum: int = 50,
+    target_minimum: int = 25,
     verbose: bool = True,
     # Deep Research Mode parameters
     use_deep_research: bool = False,
     topic: Optional[str] = None,
     scope: Optional[str] = None,
     seed_references: Optional[List[str]] = None,
-    min_sources_deep: int = 100,
+    min_sources_deep: int = 25,
     # Timeout control
     per_topic_timeout_seconds: int = 90,  # Increased from 30s - citations need time to search multiple APIs
     # Progress reporting
@@ -636,7 +637,7 @@ def research_citations_via_api(
 
     2. **Deep Research Mode** (use_deep_research=True):
        - Uses DeepResearchPlanner for autonomous research strategy
-       - Creates 50+ systematic queries from topic + scope + seed references
+       - Query count scales with min_sources_deep (from word_targets)
        - Best for comprehensive literature reviews (dissertations, draft)
 
     API Fallback Chain:
@@ -646,14 +647,14 @@ def research_citations_via_api(
         model: Configured Gemini model instance (used for planning and LLM fallback)
         research_topics: List of research topics (required if use_deep_research=False)
         output_path: Path to save Scout-compatible markdown output (required if provided)
-        target_minimum: Minimum citations required to pass quality gate (default: 50)
+        target_minimum: Minimum citations required to pass quality gate (from min_citations)
         verbose: Whether to print progress messages (default: True)
 
         use_deep_research: Enable deep research mode (default: False)
         topic: Main research topic (required if use_deep_research=True)
         scope: Optional research scope constraints (e.g., "EU focus; B2C and B2B")
         seed_references: Optional seed papers to expand from
-        min_sources_deep: Minimum sources for deep research (default: 100)
+        min_sources_deep: Planner target / floor aligned with deep_research_min_sources in word_targets
         per_topic_timeout_seconds: Maximum time to spend on each research topic (default: 90)
         progress_callback: Optional callback(message, event_type) for progress reporting
 
@@ -983,8 +984,12 @@ def research_citations_via_api(
         except Exception as e:
             return (idx, research_topic, [], str(e))
 
-    # Early stopping at 50 citations
-    early_stop_threshold = 50
+    # Stop once raw citation list is ~ready for quality gate (buffer for dedup/failures).
+    # Must scale with target_minimum — wizard "10 źródeł" must not run a 50-citation sweep.
+    early_stop_threshold = min(
+        200,
+        max(target_minimum + 5, int(math.ceil(target_minimum * 1.15))),
+    )
 
     # Parallel or sequential based on config
     if PARALLEL_WORKERS > 1:

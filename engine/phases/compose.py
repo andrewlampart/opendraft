@@ -944,6 +944,9 @@ def _write_appendices(ctx: DraftContext) -> None:
         elif appendices_target == "0":
             logger.info("  Skipping appendices for research paper format")
             ctx.appendix_output = ""
+            ap = ctx.folders["drafts"] / "04_appendices.md"
+            ap.parent.mkdir(parents=True, exist_ok=True)
+            ap.write_text("", encoding="utf-8")
         else:
             ctx.appendix_output = run_agent(
                 model=ctx.model,
